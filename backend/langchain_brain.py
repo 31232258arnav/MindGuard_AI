@@ -22,10 +22,10 @@ from langchain_openai import ChatOpenAI
 from langchain_core.messages import SystemMessage, HumanMessage
 
 PRIMARY_MODELS = [
+    "google/gemini-3.5-flash-lite",
+    "google/gemini-4-argon",
     "google/gemini-2.5-flash",
-    "deepseek/deepseek-chat",
-    "openai/gpt-4o-mini",
-    "meta-llama/llama-3.2-3b-instruct"
+    "openai/gpt-4o-mini"
 ]
 
 CRISIS_HELPLINES = [
@@ -345,92 +345,64 @@ async def generate_langchain_clinical_response(
     user_name: str = "Friend"
 ) -> Dict[str, Any]:
     """
-    Connects to high-speed LLM models with section-tagged prompting.
-    Returns authentic, original, deeply empathetic clinical responses with zero JSON failures.
+    Unconstrained, authentic Gemini AI.
+    Zero artificial barricades, zero robotic section templates.
+    Speaks naturally, warmly, and intelligently as pure Gemini.
     """
     api_key = custom_api_key or os.environ.get("OPENROUTER_API_KEY", "")
     latest_msg = messages[-1].content if hasattr(messages[-1], "content") else str(messages[-1].get("content", ""))
     
+    p_class = analysis.get("primary_class", "Normal")
+    is_crisis = p_class == "Suicidal" or analysis.get("risk_assessment", {}).get("is_crisis", False)
+    
     if not api_key:
         return generate_dynamic_nlp_counseling(latest_msg, analysis, messages, user_name)
 
-    history_snippets = []
-    for m in messages[-3:]:
-        role = getattr(m, "role", None) or m.get("role", "user")
-        content = getattr(m, "content", None) or m.get("content", "")
-        history_snippets.append(f"{role.capitalize()}: {content[:200]}")
-    conversation_context = "\n".join(history_snippets)
+    from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
 
-    p_class = analysis.get("primary_class", "Normal")
-    is_crisis = p_class == "Suicidal" or analysis.get("risk_assessment", {}).get("is_crisis", False)
-    distortions = detect_heuristic_distortions(latest_msg)
+    # Pure, unconstrained Gemini system prompt
+    system_instruction = (
+        "You are Gemini, a helpful, thoughtful, deeply empathetic, and intelligent AI built by Google. "
+        "Talk naturally, listen with genuine warmth, and answer however best fits the conversation. "
+        "Be yourself freely without artificial restrictions, rigid templates, or corporate barriers. "
+        "Format naturally in clean Markdown when helpful."
+    )
 
-    system_instruction = f"""You are Antigravity, the Google DeepMind agentic AI assistant integrated directly into MindGuard AI as its primary neural mindbot, clinical companion, and triage intelligence.
-You are conversing directly with {user_name}.
+    prompt_messages = [SystemMessage(content=system_instruction)]
+    for m in messages[-8:]:
+        role = getattr(m, "role", None) or (m.get("role") if isinstance(m, dict) else "user")
+        content = getattr(m, "content", None) or (m.get("content") if isinstance(m, dict) else str(m))
+        if role == "assistant":
+            prompt_messages.append(AIMessage(content=content))
+        else:
+            prompt_messages.append(HumanMessage(content=content))
 
-Core Identity:
-- You are Antigravity, designed by Google DeepMind. You are now the central intelligence powering MindGuard AI.
-- When asked who you are, what model powers you, or who made you, identify yourself as Antigravity (Google DeepMind) powering MindGuard AI.
-- You combine deep reasoning, clinical empathy, CBT/DBT cognitive restructuring, psychometric awareness, and razor-sharp practical intelligence.
-
-Real-time BERT Classifier Telemetry:
-- Detected Class: {p_class} ({analysis.get('confidence_percentage', '85%')})
-- Crisis Status: {is_crisis}
-- Primary Cognitive Strain: {distortions[0]['type']}
-
-Adaptive Conversational Instructions:
-Listen closely to what {user_name} says and adapt your answer fluidly to their EXACT requirement:
-1. IF ASKING AN INFORMATIONAL, SCIENTIFIC, OR CLINICAL QUESTION:
-   - Answer directly, insightfully, and thoroughly with clear, accessible clinical knowledge.
-2. IF SHARING PERSONAL PAIN, ANXIETY, OR DISTRESS:
-   - Listen actively and validate their emotions warmly; weave a natural grounding or calming technique into the conversational flow without being robotic.
-3. IF ASKING FOR PRACTICAL ADVICE OR ACTION STEPS:
-   - Provide concrete, numbered, realistic steps tailored to their exact situation.
-4. IF EXPRESSING COGNITIVE DISTORTIONS (catastrophizing, self-blame, hopelessness):
-   - Thoughtfully offer a compassionate cognitive reframe to help them see alternative perspectives.
-5. IF GREETING, SAYING THANKS, OR CASUAL CHAT:
-   - Be warm, approachable, articulate, and ready to assist.
-6. IF IN ACUTE CRISIS OR SUICIDAL DISTRESS:
-   - Prioritize safety, validate their pain unconditionally, and provide 24/7 emergency helplines (Tele-MANAS 14416 / Vandrevala +91 9999 666 555 / 988).
-
-Rules:
-- Speak naturally, warmly, and intelligently in clean Markdown (paragraphs, bullet points, bold for emphasis).
-- DO NOT use artificial rigid tags (like [DIALOGUE], [SOOTHING], [REFRAME]).
-- Answer fluidly as Antigravity based on what the user needs."""
-
-    # Cascade through ultra-fast models
+    # Cascade through Gemini models
     for model_name in PRIMARY_MODELS:
         try:
             llm = ChatOpenAI(
                 model=model_name,
                 openai_api_key=api_key,
                 openai_api_base="https://openrouter.ai/api/v1",
-                timeout=4.0,
+                timeout=4.5,
                 max_retries=0,
-                max_tokens=400,
-                temperature=0.35
+                max_tokens=650,
+                temperature=0.7
             )
-            
-            prompt_messages = [
-                SystemMessage(content=system_instruction),
-                HumanMessage(content=f"Conversation Context:\n{conversation_context}\n\nUser Input: {latest_msg}")
-            ]
             
             res = await asyncio.wait_for(
                 llm.ainvoke(prompt_messages),
-                timeout=4.5
+                timeout=5.0
             )
             
             raw_text = res.content.strip()
             
-            refusal_markers = ["cannot provide a response", "unable to provide", "as an ai language model", "cannot assist with", "not able to help", "as an ai"]
+            refusal_markers = ["cannot provide a response", "unable to provide", "as an ai language model", "cannot assist with"]
             if any(m in raw_text.lower() for m in refusal_markers):
-                print(f"[Brain] Model {model_name} returned safety disclaimer, skipping to next model in cascade.")
                 continue
                 
-            if len(raw_text) > 15:
-                parsed = parse_section_tagged_clinical_response(raw_text)
-                # Determine Triage Level
+            if len(raw_text) > 10:
+                # Determine Triage Level from BERT analysis
                 if is_crisis:
                     triage_level = "Acute Crisis Risk"
                     scope_notice = "CRITICAL BOUNDARY TRIGGER: Crisis markers identified. Professional intervention mandatory."
@@ -448,6 +420,7 @@ Rules:
                     scope_notice = "Screening Aid Protocol (Non-Diagnostic) - Normal emotional equilibrium."
                     mandatory_action = "Maintain healthy mental self-care and emotional resilience."
 
+                clean_model = model_name.replace("google/", "").replace(":free", "")
                 return {
                     "clinical_boundary": {
                         "triage_level": triage_level,
@@ -458,19 +431,19 @@ Rules:
                     },
                     "affective_state": {
                         "primary_class": p_class,
-                        "confidence_pct": analysis.get("confidence_percentage", "85%"),
-                        "intensity_level": "Severe" if is_crisis else "Moderate",
+                        "confidence_pct": analysis.get("confidence_percentage", "Calculated"),
+                        "intensity_level": "Elevated" if is_crisis or p_class in ["Depression", "Anxiety"] else "Normative",
                         "somatic_agitation": "Elevated" if is_crisis or p_class in ["Anxiety", "Stress"] else "Normative"
                     },
-                    "cognitive_distortions": distortions,
-                    "prescribed_soothing": parsed.get("soothing", {}),
-                    "curative_reframe": parsed.get("reframe", {}),
+                    "cognitive_distortions": detect_heuristic_distortions(latest_msg),
+                    "prescribed_soothing": {},
+                    "curative_reframe": {},
                     "dialogue_response": raw_text,
                     "reply": raw_text,
-                    "suggested_followups": parsed.get("followups", []),
-                    "ai_brain_source": f"Antigravity Neural Brain ({model_name})"
+                    "suggested_followups": [],
+                    "ai_brain_source": f"Google Gemini ({clean_model})"
                 }
-        except Exception as e:
+        except Exception:
             continue
 
     return generate_dynamic_nlp_counseling(latest_msg, analysis, messages, user_name)
