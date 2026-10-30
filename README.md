@@ -19,11 +19,11 @@ A full-scale, production-ready BERT-based text classification and early mental-h
 * **Division:** B | **Group Number:** 21
 * **Project Guide / Mentor:** Professor Richa Agnihotri
 * **Authors & Student Researchers:**
-  1. **Arnav Phuke** (Lead ML Engineer, SRN: 31232258)
-  2. **Sushrut Ingle** (Psychometric Research Specialist)
-  3. **Bhupesh Bhatia** (Core System Architect)
-  4. **Saket Radke** (Backend Systems Engineer)
-  5. **Samruddhi Meher** (Clinical UI Specialist)
+  1. **Arnav Phuke**
+  2. **Sushrut Ingle**
+  3. **Bhupesh Bhatia**
+  4. **Saket Radke**
+  5. **Samruddhi Meher**
 
 ---
 

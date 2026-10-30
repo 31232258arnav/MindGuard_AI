@@ -74,11 +74,11 @@ PAPER_BENCHMARKS = {
     "academic_year": "2026-2027",
     "group_number": "Clinical AI Research Consortium",
     "authors": [
-        {"name": "Arnav Phuke", "role": "Lead ML Engineer", "roll": "RES-2026-02"},
-        {"name": "Sushrut Ingle", "role": "Psychometric Research Specialist", "roll": "RES-2026-03"},
-        {"name": "Bhupesh Bhatia", "role": "Core System Architect", "roll": "RES-2026-01"},
-        {"name": "Saket Radke", "role": "Backend Systems Engineer", "roll": "RES-2026-04"},
-        {"name": "Samruddhi Meher", "role": "Clinical UI Specialist", "roll": "RES-2026-05"}
+        {"name": "Arnav Phuke"},
+        {"name": "Sushrut Ingle"},
+        {"name": "Bhupesh Bhatia"},
+        {"name": "Saket Radke"},
+        {"name": "Samruddhi Meher"}
     ],
     "mentor": "Clinical NLP & Cognitive Systems Advisory Board",
     "table_1_distribution": [
