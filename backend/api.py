@@ -318,43 +318,37 @@ def generate_neural_mindbot_reply(messages: List[ChatMessage], analysis: dict, p
     
     system_prompt = (
         "You are MindGuard AI, an expert, compassionate clinical psychologist and mental health counselor. "
-        "Your role is to provide authentic, highly empathetic active listening, situational validation, and "
+        "Provide authentic, highly empathetic active listening, situational validation, and "
         "concrete, evidence-based soothing/grounding techniques (CBT reframing, vagal nerve breathing, sensory resets, self-compassion). "
-        "You have computed the following telemetry from the user's text:\n"
-        f"- Target Affective State: {analysis.get('primary_class')} ({analysis.get('confidence_percentage')})\n"
-        f"- Emotional Valence: {psychometrics.get('valence_score')} (range -1.0 to +1.0)\n"
-        f"- Somatic Arousal: {psychometrics.get('arousal_index')}\n"
-        f"- Cognitive Distortions: {', '.join(psychometrics.get('distortions_detected', []))}\n"
-        f"- Prescribed Intervention: {psychometrics.get('prescribed_soothing')}\n\n"
-        "GUIDELINES:\n"
-        "1. NEVER use generic canned responses. Speak warmly, authentically, and conversationally.\n"
-        "2. Directly address the user's specific scenario (college presentation, relationships, exams, family, fatigue, etc.).\n"
-        "3. Explain their cognitive distortion gently and offer a real-life soothing exercise or cure.\n"
-        "4. Format with clean, readable markdown (short paragraphs, bullet points for exercises).\n"
-        "5. If there is explicit suicidal intent or severe self-harm, gently urge connecting with 24/7 helplines: "
-        "Tele-MANAS (14416 / 1800 891 4416) or Vandrevala Foundation (+91 9999 666 555)."
+        f"Telemetry: State={analysis.get('primary_class')}, Valence={psychometrics.get('valence_score')}, "
+        f"Arousal={psychometrics.get('arousal_index')}, Distortions={', '.join(psychometrics.get('distortions_detected', []))}. "
+        "Keep responses warm, concise (2-3 short paragraphs), and actionable with clean bullet points. "
+        "If suicidal ideation is explicit, gently provide Tele-MANAS (14416) or Vandrevala (+91 9999 666 555)."
     )
     
     formatted_messages = [{"role": "system", "content": system_prompt}]
-    for m in messages[-6:]:
-        formatted_messages.append({"role": m.role, "content": m.content})
+    # Keep only the last 3 turns with truncated length for rapid sub-5s LLM generation
+    for m in messages[-3:]:
+        formatted_messages.append({"role": m.role, "content": m.content[:350]})
         
     payload = {
         "model": "openrouter/free",
         "messages": formatted_messages,
         "temperature": 0.7,
-        "max_tokens": 600
+        "max_tokens": 400
     }
     
     try:
-        res = requests.post(url, headers=headers, json=payload, timeout=20)
+        res = requests.post(url, headers=headers, json=payload, timeout=9)
         if res.status_code == 200:
             content = res.json()["choices"][0]["message"]["content"]
-            return content, "OpenRouter Neural Brain (Live LLM)"
-        else:
-            return generate_dynamic_cbt_fallback(latest_msg, analysis, psychometrics, user_name), "Dynamic CBT Intelligence Engine (Fallback)"
+            if content and content.strip():
+                return content.strip(), "OpenRouter Neural Brain (Live LLM)"
     except Exception:
-        return generate_dynamic_cbt_fallback(latest_msg, analysis, psychometrics, user_name), "Dynamic CBT Intelligence Engine (Fallback)"
+        pass
+        
+    # Instant high-quality dynamic CBT fallback if OpenRouter is slow or busy
+    return generate_dynamic_cbt_fallback(latest_msg, analysis, psychometrics, user_name), "Dynamic CBT Intelligence Engine (Fast Fallback)"
 
 
 @app.post("/api/chat")
