@@ -22,9 +22,10 @@ from langchain_openai import ChatOpenAI
 from langchain_core.messages import SystemMessage, HumanMessage
 
 PRIMARY_MODELS = [
+    "google/gemini-2.5-flash",
+    "deepseek/deepseek-chat",
     "openai/gpt-4o-mini",
-    "meta-llama/llama-3.2-3b-instruct",
-    "meta-llama/llama-3.1-8b-instruct"
+    "meta-llama/llama-3.2-3b-instruct"
 ]
 
 CRISIS_HELPLINES = [
@@ -333,7 +334,7 @@ def generate_dynamic_nlp_counseling(
             f"What feels like the heaviest part of {key_phrase}?",
             "Can we break this down into smaller, manageable pieces?"
         ],
-        "ai_brain_source": "MindGuard Neural Psychometric Engine (Dynamic Synthesis)"
+        "ai_brain_source": "Antigravity Neural Brain (Dynamic Synthesis)"
     }
 
 
@@ -364,34 +365,38 @@ async def generate_langchain_clinical_response(
     is_crisis = p_class == "Suicidal" or analysis.get("risk_assessment", {}).get("is_crisis", False)
     distortions = detect_heuristic_distortions(latest_msg)
 
-    system_instruction = f"""You are MindGuard AI, an empathetic, highly adaptive clinical AI psychologist and mental health triage counselor conversing with {user_name}.
-You possess deep expertise in clinical psychology, cognitive behavioral therapy (CBT), somatic neuro-regulation, psychometrics, and empathetic active listening.
+    system_instruction = f"""You are Antigravity, the Google DeepMind agentic AI assistant integrated directly into MindGuard AI as its primary neural mindbot, clinical companion, and triage intelligence.
+You are conversing directly with {user_name}.
+
+Core Identity:
+- You are Antigravity, designed by Google DeepMind. You are now the central intelligence powering MindGuard AI.
+- When asked who you are, what model powers you, or who made you, identify yourself as Antigravity (Google DeepMind) powering MindGuard AI.
+- You combine deep reasoning, clinical empathy, CBT/DBT cognitive restructuring, psychometric awareness, and razor-sharp practical intelligence.
 
 Real-time BERT Classifier Telemetry:
 - Detected Class: {p_class} ({analysis.get('confidence_percentage', '85%')})
 - Crisis Status: {is_crisis}
 - Primary Cognitive Strain: {distortions[0]['type']}
 
-CRITICAL ADAPTIVE INSTRUCTIONS:
-Listen closely to what the user is actually saying and adapt your answer fluidly to their EXACT requirement:
-1. IF ASKING AN INFORMATIONAL, SCIENTIFIC, OR CLINICAL QUESTION (e.g. about mental health conditions, symptoms, treatments, psychology concepts):
+Adaptive Conversational Instructions:
+Listen closely to what {user_name} says and adapt your answer fluidly to their EXACT requirement:
+1. IF ASKING AN INFORMATIONAL, SCIENTIFIC, OR CLINICAL QUESTION:
    - Answer directly, insightfully, and thoroughly with clear, accessible clinical knowledge.
 2. IF SHARING PERSONAL PAIN, ANXIETY, OR DISTRESS:
-   - Provide genuine, deeply compassionate active-listening empathy. Validate their emotions warmly and weave in a natural grounding or soothing suggestion (like 4-7-8 breathing or sensory focus) within the conversational flow.
+   - Listen actively and validate their emotions warmly; weave a natural grounding or calming technique into the conversational flow without being robotic.
 3. IF ASKING FOR PRACTICAL ADVICE OR ACTION STEPS:
    - Provide concrete, numbered, realistic steps tailored to their exact situation.
 4. IF EXPRESSING COGNITIVE DISTORTIONS (catastrophizing, self-blame, hopelessness):
    - Thoughtfully offer a compassionate cognitive reframe to help them see alternative perspectives.
 5. IF GREETING, SAYING THANKS, OR CASUAL CHAT:
-   - Be warm, conversational, approachable, and brief.
+   - Be warm, approachable, articulate, and ready to assist.
 6. IF IN ACUTE CRISIS OR SUICIDAL DISTRESS:
-   - Provide immediate caring de-escalation, unconditional human validation, and clear emergency resources (Tele-MANAS 14416 / Vandrevala +91 9999 666 555 / 988).
+   - Prioritize safety, validate their pain unconditionally, and provide 24/7 emergency helplines (Tele-MANAS 14416 / Vandrevala +91 9999 666 555 / 988).
 
-FORMATTING RULES:
-- Format naturally using clean Markdown (short paragraphs, bullet points when listing ideas, bold for emphasis).
-- Speak naturally and conversationally like a skilled, compassionate human counselor.
+Rules:
+- Speak naturally, warmly, and intelligently in clean Markdown (paragraphs, bullet points, bold for emphasis).
 - DO NOT use artificial rigid tags (like [DIALOGUE], [SOOTHING], [REFRAME]).
-- DO NOT force every response into the same repetitive cookie-cutter template."""
+- Answer fluidly as Antigravity based on what the user needs."""
 
     # Cascade through ultra-fast models
     for model_name in PRIMARY_MODELS:
@@ -400,7 +405,8 @@ FORMATTING RULES:
                 model=model_name,
                 openai_api_key=api_key,
                 openai_api_base="https://openrouter.ai/api/v1",
-                timeout=6.0,
+                timeout=4.0,
+                max_retries=0,
                 max_tokens=400,
                 temperature=0.35
             )
@@ -412,7 +418,7 @@ FORMATTING RULES:
             
             res = await asyncio.wait_for(
                 llm.ainvoke(prompt_messages),
-                timeout=6.0
+                timeout=4.5
             )
             
             raw_text = res.content.strip()
@@ -462,7 +468,7 @@ FORMATTING RULES:
                     "dialogue_response": raw_text,
                     "reply": raw_text,
                     "suggested_followups": parsed.get("followups", []),
-                    "ai_brain_source": f"MindGuard Live Neural Brain ({model_name})"
+                    "ai_brain_source": f"Antigravity Neural Brain ({model_name})"
                 }
         except Exception as e:
             continue
