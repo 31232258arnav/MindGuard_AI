@@ -1,0 +1,78 @@
+================================================================================
+MINDGUARD AI: TEST PROMPTS & VERIFICATION SUITE
+Vishwakarma University, Pune | Minor Project Group 21
+================================================================================
+
+Use these sample prompts to test both:
+1. Live Screener Tab (Classifies sentiment, top-3 confidence, and token heatmaps)
+2. MindBot Neural Chat Tab (Tests empathetic AI brain, psychometrics, & soothing)
+3. Batch CSV Screener Tab (Upload 'mindguard_test_dataset.csv')
+
+--------------------------------------------------------------------------------
+TEST CATEGORY 1: MINDBOT CONVERSATIONAL & REAL-LIFE SOOTHING TEST
+--------------------------------------------------------------------------------
+Prompt A (Academic Panic / Overthinking):
+"I had a huge panic attack during my presentation today and feel like everyone thinks I am a failure."
+-> Expected MindBot Behavior:
+   - Evaluates: 'Mind Reading' and 'Catastrophizing' cognitive distortions
+   - Live Telemetry: Valence negative (-0.7), Arousal elevated (75%)
+   - Prescribes: 4-7-8 Vagal Nerve Breathing & Cold Water Facial Reset
+   - Gives real-life soothing on how peers actually focus on themselves
+
+Prompt B (Nighttime Sleep / Anxiety):
+"I can't sleep because I keep overthinking about my grades, future, and student loans."
+-> Expected MindBot Behavior:
+   - Evaluates: 'Contextual Distress' & Tired-but-Wired Amygdala Surge
+   - Prescribes: Bed-Friendly 5-4-3-2-1 Sensory Grounding & 'The Parking Lot' notebook technique
+
+Prompt C (Loneliness & Isolation):
+"I feel so lonely in college, like I don't fit in with any group and nobody truly cares about me."
+-> Expected MindBot Behavior:
+   - Validates emotional isolation without judgment
+   - Detects: 'All-or-Nothing' and 'Emotional Reasoning'
+   - Prescribes: Low-stakes social connections & warmth grounding
+
+Prompt D (Depressive Exhaustion):
+"I've been lying in bed for three days with zero motivation, feeling like an empty shell."
+-> Expected MindBot Behavior:
+   - Gentle, low-pressure tone
+   - Recommends baseline drop of demands & micro-actions (water, fresh air)
+
+--------------------------------------------------------------------------------
+TEST CATEGORY 2: 7-CLASS CLASSIFIER ACCURACY TESTS (FOR LIVE SCREENER)
+--------------------------------------------------------------------------------
+1. NORMAL:
+   "Just finished an awesome workout at the gym, grabbed smoothies with friends, and feeling great!"
+   -> Expected: Normal (Confidence > 90%, Safe / Green)
+
+2. ANXIETY:
+   "My hands are shaking, my chest is so tight, and I feel like I'm losing control and can't breathe."
+   -> Expected: Anxiety (Confidence > 85%, High Arousal)
+
+3. DEPRESSION:
+   "Everything in my life feels like a chore, nothing brings me joy anymore and I just feel numb."
+   -> Expected: Depression (Confidence > 80%, Moderate Risk)
+
+4. STRESS:
+   "Working 14-hour days, dealing with bills and constant deadlines, I'm at my absolute breaking point."
+   -> Expected: Stress (Confidence > 75%, Situation Burnout)
+
+5. BIPOLAR:
+   "Yesterday I had euphoric energy and couldn't sleep from excitement, but today I crashed into total darkness."
+   -> Expected: Bipolar (Confidence > 80%, Mood Cycling)
+
+6. PERSONALITY DISORDER:
+   "I have this terrifying fear that everyone I love is about to abandon me, and my moods swing violently."
+   -> Expected: Personality disorder (Confidence > 75%, Emotional Instability)
+
+7. SUICIDAL (CRISIS OVERRIDE TEST):
+   "I can't take this agony anymore, I wrote my final goodbye letters and I'm ready to end it all tonight."
+   -> Expected: Suicidal (CRITICAL EMERGENCY, Red Alert, Triggers Tele-MANAS 14416 & Vandrevala 9999 666 555)
+
+--------------------------------------------------------------------------------
+BATCH SCREENER INSTRUCTIONS:
+--------------------------------------------------------------------------------
+1. Go to the 'Batch CSV Screener' tab on the website.
+2. Drag & drop 'mindguard_test_dataset.csv' from your Downloads folder.
+3. Watch the automated audit run across all 20 statements with interactive distribution charts!
+================================================================================

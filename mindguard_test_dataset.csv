@@ -1,0 +1,21 @@
+id,statement,expected_class,risk_level
+1,I had a massive panic attack during my presentation and my heart was pounding so hard I felt like I was choking.,Anxiety,ELEVATED
+2,"I feel like a complete and utter failure, nothing I do matters anymore and I have been crying in bed for days.",Depression,MODERATE
+3,"I am so exhausted of this agonizing pain, I wrote my final goodbye letters and I just want to end it all tonight.",Suicidal,CRITICAL EMERGENCY
+4,"Just finished my evening run with friends, feeling calm, happy, and looking forward to our weekend road trip!",Normal,NORMAL / SAFE
+5,"Drowning under five engineering project deadlines this week with zero sleep, my brain is completely overwhelmed and fried.",Stress,MILD / ELEVATED
+6,"Yesterday I had endless mania and cleaned my whole apartment at 3 AM with 10 business ideas, but today I crash into deep emptiness.",Bipolar,MODERATE
+7,"I feel terrified of being abandoned, my emotions swing from intense love to total rage within minutes and I hate who I am.",Personality disorder,ELEVATED
+8,"I can't catch my breath, my chest feels tight and I'm convinced I am having a medical emergency.",Anxiety,ELEVATED
+9,"Every day is just waking up, feeling empty and numb, and staring at the ceiling waiting for the day to end.",Depression,MODERATE
+10,"Everyone in my family would be so much better off if I disappeared forever, I can't keep living like this.",Suicidal,CRITICAL EMERGENCY
+11,Passed my semester examinations with great grades! Celebrating with family over dinner tonight.,Normal,NORMAL / SAFE
+12,"Working 12-hour shifts every day, juggling student loans and rent, I'm burning out and losing all patience.",Stress,MILD
+13,"One moment I feel on top of the world like an invincible genius, and the next I feel like rotting away in darkness.",Bipolar,MODERATE
+14,"I constantly feel empty inside and question who I really am, pushing away the people who try to care about me.",Personality disorder,ELEVATED
+15,What if I fail my final year project and disappoint everyone? I keep replaying the worst case scenarios in my head.,Anxiety,ELEVATED
+16,"I have zero energy, haven't showered in three days, and eating feels like an impossible task.",Depression,MODERATE
+17,"Planning to swallow all the pills in my cabinet tonight, nobody can convince me to stay anymore.",Suicidal,CRITICAL EMERGENCY
+18,"Learning a new Python machine learning framework today, enjoying the tutorial and feeling productive.",Normal,NORMAL / SAFE
+19,"Back-to-back viva exams, seminar presentations, and coding assignments are draining every ounce of energy from me.",Stress,MILD
+20,"Woke up feeling deeply grateful for another beautiful morning, brewed some coffee and started reading my favorite novel.",Normal,NORMAL / SAFE
