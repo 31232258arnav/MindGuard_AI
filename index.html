@@ -1352,6 +1352,7 @@
     // MINDBOT: NEURAL AI BRAIN & CALCULATING POWER
     // ==========================================
     let chatHistory = [];
+    const LIVE_BACKEND_TUNNEL = "https://paths-clearance-relatives-bosnia.trycloudflare.com";
 
     function toggleChatSettings() {
       const p = document.getElementById('chatSettingsPanel');
@@ -1372,7 +1373,7 @@
     function clearCustomApiKey() {
       localStorage.removeItem('mindguard_custom_api_key');
       document.getElementById('customApiKeyInput').value = '';
-      alert('Custom API Key cleared. MindBot will use default neural engine.');
+      alert('Custom API Key reset. MindBot will use the default neural engine.');
       toggleChatSettings();
     }
 
@@ -1383,15 +1384,23 @@
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;');
       
-      // Bold
+      // Headers
+      escaped = escaped.replace(/^### (.*$)/gim, '<div style="font-size:1rem; font-weight:800; color:#93C5FD; margin:0.6rem 0 0.3rem 0">$1</div>');
+      escaped = escaped.replace(/^## (.*$)/gim, '<div style="font-size:1.05rem; font-weight:800; color:#60A5FA; margin:0.7rem 0 0.35rem 0">$1</div>');
+      
+      // Bold & Italics
       escaped = escaped.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-      // Italics
       escaped = escaped.replace(/\*(.*?)\*/g, '<em>$1</em>');
+      
+      // Horizontal Rules
+      escaped = escaped.replace(/^---$/gim, '<hr style="border:none; border-top:1px solid #334155; margin:0.7rem 0"/>');
+
       // Bullet points
-      escaped = escaped.replace(/^[•\-]\s+(.*)$/gm, '<li style="margin-left:1.2rem; margin-bottom:0.25rem">$1</li>');
+      escaped = escaped.replace(/^[•\-]\s+(.*)$/gm, '<li style="margin-left:1.2rem; margin-bottom:0.3rem">$1</li>');
       // Numbered lists
-      escaped = escaped.replace(/^(\d+)\.\s+(.*)$/gm, '<li style="margin-left:1.2rem; margin-bottom:0.25rem; list-style-type:decimal"><strong>$2</strong></li>');
-      // Paragraphs
+      escaped = escaped.replace(/^(\d+)\.\s+(.*)$/gm, '<li style="margin-left:1.2rem; margin-bottom:0.3rem; list-style-type:decimal">$2</li>');
+      
+      // Paragraph breaks
       escaped = escaped.replace(/\n\n/g, '<br/><br/>');
       escaped = escaped.replace(/\n/g, '<br/>');
       return escaped;
@@ -1401,10 +1410,10 @@
       const t = text.toLowerCase();
       const distortions = [];
 
-      if (/fail|ruin|worst|never recover|disaster|mess up everything|ruined/i.test(t)) distortions.push('Catastrophizing');
+      if (/fail|ruin|worst|never recover|disaster|mess up everything|ruined|hopeless/i.test(t)) distortions.push('Catastrophizing');
       if (/always|never|everyone|nobody|completely|total|all of them|nothing/i.test(t)) distortions.push('All-or-Nothing Thinking');
-      if (/they think|everyone thinks|judging me|they hate me|laughing at me|people think/i.test(t)) distortions.push('Mind Reading');
-      if (/feel like a failure|feels hopeless|feels impossible|feel worthless/i.test(t)) distortions.push('Emotional Reasoning');
+      if (/they think|everyone thinks|judging me|they hate me|laughing at me|people think|they will think/i.test(t)) distortions.push('Mind Reading');
+      if (/feel like a failure|feels hopeless|feels impossible|feel worthless|feel pathetic/i.test(t)) distortions.push('Emotional Reasoning');
       if (/my fault|i caused this|i ruined it|because of me|blame myself/i.test(t)) distortions.push('Personalization');
       if (/nothing ever|every single time|always like this|never works/i.test(t)) distortions.push('Overgeneralization');
       if (distortions.length === 0) distortions.push('Contextual Distress (No Distortions)');
@@ -1421,7 +1430,7 @@
       valence = Math.round(valence * 100) / 100;
 
       let arousal = 35;
-      if (/panic|racing|heart|shaking|sweat|cannot breathe|can't breathe|hyperventilate|chest|terror/i.test(t)) arousal += 40;
+      if (/panic|racing|heart|shaking|sweat|cannot breathe|can't breathe|hyperventilate|chest|terror|freaking/i.test(t)) arousal += 40;
       if (text.includes('!') || text.includes('?')) {
         const bangs = (text.match(/!/g) || []).length;
         const qmarks = (text.match(/\?/g) || []).length;
@@ -1460,61 +1469,6 @@
       };
     }
 
-    function generateClientSideEmpatheticResponse(text, inf, psychometrics) {
-      const t = text.toLowerCase();
-      const pClass = inf.primary_class || "Normal";
-
-      if (/presentation|exam|viva|professor|grade|college|speech|interview|academics/i.test(t)) {
-        return (
-          `I hear how agonizing that academic pressure feels right now. When speaking in front of an audience or taking a crucial exam, our nervous system can perceive social evaluation as an existential threat, flooding the body with adrenaline.\n\n` +
-          `**Immediate Soothing & Real-Life Relief:**\n` +
-          `1. **Physiological Sigh:** Take two quick inhales through your nose, then one long, slow exhale through your mouth. Repeat 3 times to quickly lower heart rate.\n` +
-          `2. **Cognitive Reframe:** Most peers are so consumed by their own performance that they rarely judge others harshly. Stumbling in one moment is a biological hiccup, NOT a definition of your intelligence or worth.\n\n` +
-          `What is one gentle, comforting thing you can do for yourself right now to decompress?`
-        );
-      } else if (/panic|cannot breathe|can't breathe|heart racing|hyperventilate|shaking/i.test(t)) {
-        return (
-          `I can sense the overwhelming intensity of that panic wave right now. Let's focus on anchoring your nervous system together. Panic feels terrifying, but it cannot harm you; it is a temporary physiological surge that will peak and gently subside.\n\n` +
-          `**Actionable Somatic Soothing (Right Now):**\n` +
-          `1. **Cold Water Sensory Reset:** Splash cold water on your cheeks or hold an ice cube. This stimulates the mammalian dive reflex and physically commands your heart rate down.\n` +
-          `2. **5-4-3-2-1 Grounding:** Name out loud 5 things you can see, 4 things you can touch, 3 sounds you hear, 2 things you smell, and 1 taste.\n\n` +
-          `You are safe in this physical space. Place one hand on your chest and take things one breath at a time.`
-        );
-      } else if (/alone|lonely|nobody|no friends|ignored|left out|isolated/i.test(t)) {
-        return (
-          `Feeling unseen and isolated can be one of the heaviest emotional spaces to inhabit. It is completely natural to crave meaningful connection, and when we feel alone, our minds often convince us that 'nobody cares'. That is emotional reasoning, not an objective truth.\n\n` +
-          `**Real-Life Soothing & Connection Anchor:**\n` +
-          `1. **Sensory Comfort:** Wrap yourself in a warm blanket or hold a warm mug of tea. Physical warmth stimulates feelings of safety.\n` +
-          `2. **Low-Stakes Connection:** You don't need a deep heart-to-heart immediately. Saying hello to a neighbor, listening to a warm podcast, or taking a short walk outside gently reduces isolation.\n\n` +
-          `I am genuinely glad you are here talking with me today. What is a comfort show, book, or hobby you usually find solace in?`
-        );
-      } else if (pClass === "Suicidal" || (inf.risk_assessment && inf.risk_assessment.is_crisis)) {
-        return (
-          `I hear how exhausted and in unbearable pain you are feeling right now, and I want you to know with absolute certainty: your life has profound value. You do not have to carry this crushing weight alone.\n\n` +
-          `**Immediate Safety Action:**\n` +
-          `Please connect with trained, compassionate professionals who are ready to support you 24/7 without judgment:\n` +
-          `• **Tele-MANAS (Govt. of India):** Dial **14416** or **1800 891 4416** (Toll-Free, 20+ Languages)\n` +
-          `• **Vandrevala Foundation:** Call or WhatsApp **+91 9999 666 555**\n` +
-          `• **AASRA:** Call **+91 98204 66726**\n\n` +
-          `Take a breath and stay safe with me. Can you reach out to one of these helplines or someone in your home right now?`
-        );
-      } else if (pClass === "Depression") {
-        return (
-          `Thank you for sharing your truth with me. Depression can make even the simplest actions—getting out of bed, replying to a message, eating—feel like scaling a mountain. Please be gentle with yourself. You are not lazy or broken; your brain's emotional batteries are depleted.\n\n` +
-          `**Gentle Micro-Interventions:**\n` +
-          `1. **Drop Demands:** Lower your expectations for today to the absolute baseline. If all you did was survive today, that is enough.\n` +
-          `2. **Micro-Movement:** Try opening one window for fresh air or sipping a glass of water. Just one tiny physical action.\n\n` +
-          `Have you been able to eat or rest today?`
-        );
-      } else {
-        return (
-          `I hear you, and thank you for reflecting with me. It takes real self-awareness to explore these thoughts. ` +
-          `Notice how your emotional state is currently showing ${pClass.toLowerCase()} tendencies with ${psychometrics.arousal_index} activation. ` +
-          `Remember that emotions are messengers, not permanent states. What is one supportive thing you can do for yourself in the next hour?`
-        );
-      }
-    }
-
     async function sendChatMessage() {
       const input = document.getElementById('chatInput');
       const text = input.value.trim();
@@ -1534,36 +1488,93 @@
       const typingBubble = document.createElement('div');
       typingBubble.id = 'chatTypingIndicator';
       typingBubble.style = "max-width:85%; padding:0.75rem 1rem; border-radius:14px; font-size:0.85rem; background:var(--bg-card); border:1px solid var(--border); color:var(--text-muted); align-self:flex-start; display:flex; align-items:center; gap:0.5rem";
-      typingBubble.innerHTML = `<span>MindBot is thinking &amp; calculating...</span> <span class="spinner" style="width:14px; height:14px; border:2px solid #3B82F6; border-top-color:transparent; border-radius:50%; display:inline-block; animation:spin 1s linear infinite"></span>`;
+      typingBubble.innerHTML = `<span>MindBot Neural Brain is analyzing &amp; generating...</span> <span class="spinner" style="width:14px; height:14px; border:2px solid #3B82F6; border-top-color:transparent; border-radius:50%; display:inline-block; animation:spin 1s linear infinite"></span>`;
       chatBox.appendChild(typingBubble);
       chatBox.scrollTop = chatBox.scrollHeight;
 
       const customKey = localStorage.getItem('mindguard_custom_api_key') || '';
       let data = null;
 
-      try {
-        const resp = await fetch('/api/chat', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ messages: chatHistory, api_key: customKey })
-        });
-        if (resp.ok) {
-          data = await resp.json();
-        }
-      } catch (e) {
-        // Fallback to client-side reasoning engine
+      // Determine backend endpoints: try live Cloudflare tunnel or origin
+      const endpointsToTry = [];
+      if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") {
+        endpointsToTry.push("/api/chat");
+        endpointsToTry.push(`${LIVE_BACKEND_TUNNEL}/api/chat`);
+      } else {
+        // On GitHub Pages or other domain, directly route to the live Neural Tunnel
+        endpointsToTry.push(`${LIVE_BACKEND_TUNNEL}/api/chat`);
+        endpointsToTry.push("/api/chat");
       }
 
-      if (!data) {
-        const inf = runClientSideInference(text);
-        const psych = calculateClientSidePsychometrics(text, chatHistory);
-        const replyText = generateClientSideEmpatheticResponse(text, inf, psych);
+      for (const ep of endpointsToTry) {
+        try {
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 12000);
+          const resp = await fetch(ep, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ messages: chatHistory, api_key: customKey }),
+            signal: controller.signal
+          });
+          clearTimeout(timeoutId);
+          if (resp.ok) {
+            data = await resp.json();
+            break;
+          }
+        } catch (e) {
+          console.warn("Endpoint failed:", ep, e);
+        }
+      }
+
+      // If custom API key is configured and backend tunnel failed, try OpenRouter directly from browser
+      const inf = runClientSideInference(text);
+      const psych = calculateClientSidePsychometrics(text, chatHistory);
+
+      if ((!data || !data.reply) && customKey) {
+        try {
+          const systemPrompt = "You are MindGuard AI, an expert, compassionate clinical psychologist. Provide genuine active listening, non-judgmental validation, and concrete soothing exercises tailored specifically to the user's situation. Never use generic canned responses.";
+          const formatted = [{ role: "system", content: systemPrompt }];
+          chatHistory.slice(-6).forEach(m => formatted.push({ role: m.role, content: m.content }));
+
+          const oRes = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+            method: "POST",
+            headers: {
+              "Authorization": `Bearer ${customKey}`,
+              "Content-Type": "application/json",
+              "HTTP-Referer": window.location.href,
+              "X-Title": "MindGuard AI"
+            },
+            body: JSON.stringify({
+              model: "openrouter/free",
+              messages: formatted,
+              temperature: 0.7,
+              max_tokens: 650
+            })
+          });
+          if (oRes.ok) {
+            const j = await oRes.json();
+            data = {
+              reply: j.choices[0].message.content,
+              ai_brain_source: "OpenRouter Neural Brain (Direct User Key)",
+              message_analysis: inf,
+              psychometrics: psych,
+              triage_recommendation: "Active Neural Psychological Counseling"
+            };
+          }
+        } catch (err) {
+          console.warn("Direct OpenRouter failed:", err);
+        }
+      }
+
+      // Ultimate fallback: dynamic client-side psychological reasoning
+      if (!data || !data.reply) {
+        const fallbackReply = generateClientSideEmpatheticResponse(text, inf, psych);
         data = {
-          reply: replyText,
+          reply: fallbackReply,
           ai_brain_source: "Dynamic CBT Intelligence Engine (Local)",
           message_analysis: inf,
           psychometrics: psych,
-          triage_recommendation: inf.risk_assessment ? inf.risk_assessment.clinical_recommendation : "Active Monitoring"
+          triage_recommendation: inf.risk_assessment ? inf.risk_assessment.clinical_recommendation : "Active Psychological Support"
         };
       }
 
@@ -1582,7 +1593,10 @@
 
       // Update Calculating Power Telemetry HUD
       if (data.ai_brain_source) {
-        document.getElementById('chatBrainBadge').textContent = `⚡ ${data.ai_brain_source}`;
+        document.getElementById('chatBrainBadge').innerHTML = `&#9889; <strong>${data.ai_brain_source}</strong>`;
+        document.getElementById('chatBrainBadge').style.background = "rgba(16, 185, 129, 0.2)";
+        document.getElementById('chatBrainBadge').style.color = "#34D399";
+        document.getElementById('chatBrainBadge').style.borderColor = "#10B981";
       }
       if (data.message_analysis) {
         document.getElementById('chatLastClass').textContent = `${data.message_analysis.primary_class} (${data.message_analysis.confidence_percentage})`;
