@@ -18,11 +18,11 @@ A full-scale, production-ready BERT-based text classification and early mental-h
 * **Division:** Research Division | **Group Number:** 21
 * **Project Guide / Mentor:** Clinical NLP & Cognitive Systems Advisory Board
 * **Authors & Student Researchers:**
-  1. **Lead ML Engineer** (Roll No: RES-2026-02)
-  2. **Psychometric Research Specialist** (Roll No: RES-2026-03)
-  3. **Core System Architect** (Roll No: RES-2026-01)
-  4. **Backend Systems Engineer** (Roll No: RES-2026-04)
-  5. **Clinical UI Specialist** (Roll No: RES-2026-05)
+  1. **Arnav Phuke** (Lead ML Engineer, Roll No: RES-2026-02)
+  2. **Sushrut Ingle** (Psychometric Research Specialist, Roll No: RES-2026-03)
+  3. **Bhupesh Bhatia** (Core System Architect, Roll No: RES-2026-01)
+  4. **Saket Radke** (Backend Systems Engineer, Roll No: RES-2026-04)
+  5. **Samruddhi Meher** (Clinical UI Specialist, Roll No: RES-2026-05)
 
 ---
 
