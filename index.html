@@ -513,10 +513,12 @@
           
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem; margin-top:0.5rem">
             <span style="font-size:0.75rem; color:var(--text-muted)">Manual text input or document audit:</span>
-            <label style="font-size:0.75rem; background:rgba(37,99,235,0.15); border:1px solid rgba(59,130,246,0.4); color:#60A5FA; padding:0.3rem 0.75rem; border-radius:6px; cursor:pointer; font-weight:700; display:flex; align-items:center; gap:0.35rem">
-              &#128206; Upload File (PDF/DOCX/CSV/TXT)
+            <div style="display:flex; align-items:center; gap:0.4rem">
+              <button type="button" onclick="document.getElementById('screenerFileInput').click()" style="font-size:0.75rem; background:rgba(37,99,235,0.15); border:1px solid rgba(59,130,246,0.4); color:#60A5FA; padding:0.35rem 0.75rem; border-radius:6px; cursor:pointer; font-weight:700; display:inline-flex; align-items:center; gap:0.35rem">
+                &#128206; Upload File (PDF/DOCX/CSV/TXT)
+              </button>
               <input type="file" id="screenerFileInput" accept=".pdf,.docx,.csv,.txt" style="display:none" onchange="handleScreenerFileUpload(event)">
-            </label>
+            </div>
           </div>
           <div id="screenerFileNotice" style="display:none; font-size:0.8rem; color:#34D399; margin-bottom:0.6rem; padding:0.5rem 0.85rem; background:rgba(16,185,129,0.12); border:1px solid rgba(16,185,129,0.3); border-radius:8px"></div>
           
@@ -540,7 +542,7 @@
             </div>
           </div>
           
-          <textarea id="screenerInput" placeholder="Type or paste a statement here... (e.g. 'Today was a great day and I am feeling good about life')"></textarea>
+          <textarea id="screenerInput" ondragover="event.preventDefault()" ondrop="handleScreenerFileDrop(event)" placeholder="Type or paste a statement here, or drag & drop any PDF, DOCX, CSV, or TXT document..."></textarea>
 
           <div style="font-size:0.75rem; color:var(--text-dim); margin-top:0.35rem; display:flex; justify-content:space-between">
             <span>WordPiece Tokenizer: Max Length 128 tokens</span>
@@ -746,6 +748,21 @@
       <div class="card">
         <div class="card-title">📋 Clinical Screening Battery (PHQ-9 & GAD-7 Dual Scales)</div>
         <div class="card-desc">Standardized clinical psychological rating scales paired with BERT NLP sentiment validation.</div>
+
+        <!-- Clinical Document Intake Auto-Audit -->
+        <div style="background:#0B111E; border:1px solid rgba(59,130,246,0.35); border-radius:12px; padding:1.1rem 1.25rem; margin-bottom:1.5rem">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.75rem">
+            <div>
+              <div style="font-size:0.95rem; font-weight:800; color:#FFFFFF">&#128196; Clinical Notes & Psychiatric Intake Document Audit</div>
+              <div style="font-size:0.8rem; color:var(--text-muted); margin-top:0.2rem">Upload therapy case notes, psychiatric transcripts, or patient journals (.pdf, .docx, .csv, .txt) to automatically calculate and populate PHQ-9 & GAD-7 scores.</div>
+            </div>
+            <button type="button" onclick="document.getElementById('clinicalFileInput').click()" class="btn-primary" style="padding:0.45rem 0.9rem; font-size:0.8rem; white-space:nowrap; display:flex; align-items:center; gap:0.4rem">
+              &#128206; Upload Clinical Document
+            </button>
+            <input type="file" id="clinicalFileInput" accept=".pdf,.docx,.csv,.txt" style="display:none" onchange="handleClinicalFileUpload(event)">
+          </div>
+          <div id="clinicalFileStatus" style="display:none; margin-top:0.75rem; font-size:0.82rem; padding:0.6rem 0.85rem; border-radius:8px"></div>
+        </div>
 
         <div class="grid-2">
           <!-- PHQ-9 Section -->
@@ -1041,9 +1058,9 @@
 
         <div style="border:2px dashed var(--border); border-radius:12px; padding:2.5rem; text-align:center; background:#0B111E; cursor:pointer" onclick="document.getElementById('fileUploadInput').click()">
           <div style="font-size:2.5rem; margin-bottom:0.5rem">📁</div>
-          <div style="font-size:1rem; font-weight:700; color:#FFFFFF">Click to upload CSV or TXT file</div>
-          <div style="font-size:0.8rem; color:var(--text-muted); margin-top:0.25rem">Accepts CSV with 'statement' column or plain text with one statement per line.</div>
-          <input type="file" id="fileUploadInput" accept=".csv,.txt" style="display:none" onchange="handleFileUpload(event)">
+          <div style="font-size:1rem; font-weight:700; color:#FFFFFF">Click to upload CSV, TXT, PDF, or DOCX file</div>
+          <div style="font-size:0.8rem; color:var(--text-muted); margin-top:0.25rem">Accepts CSV datasets, TXT statement lists, PDF psychiatric reports, and Word DOCX transcripts.</div>
+          <input type="file" id="fileUploadInput" accept=".csv,.txt,.pdf,.docx,.json" style="display:none" onchange="handleFileUpload(event)">
         </div>
 
         <div id="batchLoading" style="display:none; text-align:center; padding:2rem">
@@ -1598,119 +1615,67 @@ Notice that our minds often magnify setbacks into permanent verdicts. What you a
       };
     }
 
-    // Render MindBot Structured Clinical Output Card
-    function renderStructuredMindBotCard(chatBox, data) {
+    // Render Adaptive MindBot Conversational Response (Requirement-Driven, Fluid Markdown)
+    function renderAdaptiveMindBotCard(chatBox, data) {
       const bubble = document.createElement('div');
-      bubble.style = "max-width:88%; padding:1.1rem 1.25rem; border-radius:14px; font-size:0.9rem; background:var(--bg-card); border:1px solid var(--border); color:var(--text-main); align-self:flex-start; line-height:1.55; display:flex; flex-direction:column; gap:0.85rem; box-shadow:0 8px 24px rgba(0,0,0,0.3)";
+      bubble.style = "max-width:88%; padding:1rem 1.25rem; border-radius:14px; font-size:0.92rem; background:var(--bg-card); border:1px solid var(--border); color:var(--text-main); align-self:flex-start; line-height:1.65; display:flex; flex-direction:column; gap:0.75rem; box-shadow:0 8px 24px rgba(0,0,0,0.3)";
 
       const cb = data.clinical_boundary || {};
       const af = data.affective_state || {};
-      const ps = data.prescribed_soothing || {};
-      const cr = data.curative_reframe || {};
-      const followups = data.suggested_followups || [];
       const dialogue = data.dialogue_response || data.reply || "";
+      const source = data.ai_brain_source || "MindGuard Neural AI";
+      const isCrisis = cb.crisis_triggered || cb.triage_level === "Acute Crisis Risk" || af.primary_class === "Suicidal";
 
-      // 1. Clinical Boundary & Triage Header
-      let triageColor = "#3B82F6";
-      let triageBg = "rgba(59,130,246,0.15)";
-      let triageBorder = "rgba(59,130,246,0.4)";
-      if (cb.triage_level === "Acute Crisis Risk") {
-        triageColor = "#EF4444";
-        triageBg = "rgba(239,68,68,0.2)";
-        triageBorder = "#EF4444";
-      } else if (cb.triage_level === "Moderate Clinical Strain") {
-        triageColor = "#F59E0B";
-        triageBg = "rgba(245,158,11,0.15)";
-        triageBorder = "rgba(245,158,11,0.4)";
-      } else if (cb.triage_level === "Safe / Baseline") {
-        triageColor = "#10B981";
-        triageBg = "rgba(16,185,129,0.15)";
-        triageBorder = "rgba(16,185,129,0.4)";
-      }
+      // Subtle, elegant telemetry pill
+      let badgeColor = "#3B82F6";
+      let badgeBg = "rgba(59,130,246,0.12)";
+      if (isCrisis) { badgeColor = "#EF4444"; badgeBg = "rgba(239,68,68,0.2)"; }
+      else if (af.primary_class === "Depression") { badgeColor = "#8B5CF6"; badgeBg = "rgba(139,92,246,0.15)"; }
+      else if (af.primary_class === "Anxiety") { badgeColor = "#F59E0B"; badgeBg = "rgba(245,158,11,0.15)"; }
+      else if (af.primary_class === "Normal") { badgeColor = "#10B981"; badgeBg = "rgba(16,185,129,0.12)"; }
 
       let headerHtml = `
-        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:0.6rem">
-          <div style="display:flex; align-items:center; gap:0.5rem">
-            <span style="font-size:0.75rem; font-weight:800; padding:0.25rem 0.65rem; border-radius:6px; background:${triageBg}; color:${triageColor}; border:1px solid ${triageBorder}">
-              &#128737;&#65039; TRIAGE: ${cb.triage_level || 'Evaluated'}
-            </span>
-            <span style="font-size:0.75rem; color:var(--text-muted)">${cb.scope_statement || 'Screening Aid (Non-Diagnostic)'}</span>
-          </div>
-          <span style="font-size:0.72rem; color:#60A5FA; background:rgba(37,99,235,0.1); padding:0.2rem 0.5rem; border-radius:4px">
-            ${af.primary_class ? af.primary_class + ' (' + (af.confidence_pct || 'Evaluated') + ')' : ''}
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.4rem; border-bottom:1px solid rgba(255,255,255,0.06); padding-bottom:0.45rem; font-size:0.75rem">
+          <span style="color:#94A3B8; display:flex; align-items:center; gap:0.35rem">
+            <span style="color:#10B981">&#9679;</span> ${source}
+          </span>
+          <span style="font-weight:700; padding:0.15rem 0.5rem; border-radius:4px; background:${badgeBg}; color:${badgeColor}; border:1px solid ${badgeColor}40">
+            ${af.primary_class || 'Evaluated'} ${af.confidence_pct ? '(' + af.confidence_pct + ')' : ''}
           </span>
         </div>
       `;
 
-      // 2. Empathetic Dialogue Text
+      // Fluid Natural Markdown Response
       let dialogueHtml = `
-        <div style="font-size:0.92rem; color:#F1F5F9; line-height:1.6">
+        <div style="font-size:0.92rem; color:#F1F5F9; line-height:1.65">
           ${formatMarkdown(dialogue)}
         </div>
       `;
 
-      // 3. Prescribed Soothing Protocol (Actionable Steps)
-      let soothingHtml = "";
-      if (ps && ps.name) {
-        const steps = ps.action_steps || [];
-        soothingHtml = `
-          <div style="background:rgba(15,23,42,0.85); border:1px solid rgba(59,130,246,0.3); border-radius:10px; padding:0.85rem 1rem">
-            <div style="display:flex; align-items:center; gap:0.4rem; font-weight:700; color:#60A5FA; font-size:0.85rem; margin-bottom:0.45rem">
-              <span>&#129496; Prescribed Soothing Protocol:</span>
-              <span style="color:#93C5FD">${ps.name}</span>
-            </div>
-            <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:0.5rem">${ps.technique_type || 'Somatic Neuro-Regulation'}</div>
-            <ol style="margin:0; padding-left:1.2rem; font-size:0.82rem; color:#E2E8F0; display:flex; flex-direction:column; gap:0.35rem">
-              ${steps.map(s => `<li>${s}</li>`).join('')}
-            </ol>
-          </div>
-        `;
-      }
-
-      // 4. Curative Cognitive Reframe & 1-Hour Micro Action
-      let curativeHtml = "";
-      if (cr && (cr.core_insight || cr.micro_action_next_1_hour)) {
-        curativeHtml = `
-          <div style="background:rgba(16,185,129,0.08); border:1px solid rgba(16,185,129,0.3); border-radius:10px; padding:0.85rem 1rem">
-            <div style="font-weight:700; color:#34D399; font-size:0.85rem; margin-bottom:0.35rem">&#128161; Curative Cognitive Reframe:</div>
-            <div style="font-size:0.82rem; color:#CBD5E1; margin-bottom:0.45rem">${cr.core_insight || ''}</div>
-            ${cr.micro_action_next_1_hour ? `<div style="font-size:0.8rem; color:#A7F3D0; background:rgba(16,185,129,0.15); padding:0.4rem 0.65rem; border-radius:6px"><strong>Action in next hour:</strong> ${cr.micro_action_next_1_hour}</div>` : ''}
-          </div>
-        `;
-      }
-
-      // 5. Emergency Crisis Helpline Card (if crisis triggered)
+      // Emergency Helpline Banner (Rendered only on genuine crisis)
       let crisisHtml = "";
-      if (cb.crisis_triggered || cb.triage_level === "Acute Crisis Risk") {
+      if (isCrisis) {
         crisisHtml = `
-          <div style="background:rgba(239,68,68,0.2); border:2px solid #EF4444; border-radius:10px; padding:0.85rem 1rem; color:#FCA5A5">
-            <div style="font-weight:800; color:#F87171; font-size:0.88rem; margin-bottom:0.35rem">&#127384; 24/7 CONFIDENTIAL CRISIS SUPPORT</div>
-            <div style="font-size:0.82rem; margin-bottom:0.6rem">You do not have to carry this alone. Free, compassionate support is available right now:</div>
-            <div style="display:flex; flex-wrap:wrap; gap:0.5rem">
-              <a href="tel:14416" style="background:#EF4444; color:#fff; text-decoration:none; padding:0.35rem 0.75rem; border-radius:6px; font-weight:700; font-size:0.8rem">&#128222; Call Tele-MANAS (14416)</a>
-              <a href="tel:+919999666555" style="background:rgba(239,68,68,0.4); border:1px solid #EF4444; color:#fff; text-decoration:none; padding:0.35rem 0.75rem; border-radius:6px; font-weight:700; font-size:0.8rem">&#128222; Vandrevala (+91 9999 666 555)</a>
+          <div style="background:rgba(239,68,68,0.15); border:1.5px solid #EF4444; border-radius:10px; padding:0.75rem 0.9rem; color:#FCA5A5; margin-top:0.3rem">
+            <div style="font-weight:800; color:#F87171; font-size:0.85rem; margin-bottom:0.25rem">&#127384; 24/7 Free Confidential Support</div>
+            <div style="font-size:0.78rem; margin-bottom:0.45rem">You don't have to face this alone. Dedicated counselors are ready right now:</div>
+            <div style="display:flex; flex-wrap:wrap; gap:0.4rem">
+              <a href="tel:14416" style="background:#EF4444; color:#fff; text-decoration:none; padding:0.25rem 0.65rem; border-radius:6px; font-weight:700; font-size:0.75rem">&#128222; Tele-MANAS (14416)</a>
+              <a href="tel:+919999666555" style="background:rgba(239,68,68,0.3); border:1px solid #EF4444; color:#fff; text-decoration:none; padding:0.25rem 0.65rem; border-radius:6px; font-weight:700; font-size:0.75rem">&#128222; Vandrevala (+91 9999 666 555)</a>
+              <a href="tel:988" style="background:rgba(59,130,246,0.25); border:1px solid #3B82F6; color:#93C5FD; text-decoration:none; padding:0.25rem 0.65rem; border-radius:6px; font-weight:700; font-size:0.75rem">&#128222; 988 Lifeline</a>
             </div>
           </div>
         `;
       }
 
-      // 6. Clickable Follow-Up Suggestion Chips
-      let followupsHtml = "";
-      if (followups && followups.length > 0) {
-        followupsHtml = `
-          <div style="display:flex; flex-wrap:wrap; gap:0.4rem; margin-top:0.3rem">
-            ${followups.map(f => `
-              <button type="button" onclick="handleFollowupClick(this)" data-prompt="${f.replace(/"/g, '&quot;')}" style="background:rgba(30,41,59,0.9); border:1px solid rgba(255,255,255,0.15); border-radius:20px; color:#93C5FD; font-size:0.75rem; padding:0.3rem 0.75rem; cursor:pointer; transition:all 0.15s">
-                &#9889; ${f}
-              </button>
-            `).join('')}
-          </div>
-        `;
-      }
-
-      bubble.innerHTML = headerHtml + dialogueHtml + soothingHtml + curativeHtml + crisisHtml + followupsHtml;
+      bubble.innerHTML = headerHtml + dialogueHtml + crisisHtml;
       chatBox.appendChild(bubble);
       chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    // Backwards compatibility alias
+    function renderStructuredMindBotCard(chatBox, data) {
+      renderAdaptiveMindBotCard(chatBox, data);
     }
 
     function handleFollowupClick(btn) {
@@ -2365,6 +2330,88 @@ Notice that our minds often magnify setbacks into permanent verdicts. What you a
           runAnalysis();
         };
         reader.readAsText(file);
+      } finally {
+        event.target.value = '';
+      }
+    }
+
+    // Drag and Drop Handler for Screener Statement Input
+    function handleScreenerFileDrop(event) {
+      event.preventDefault();
+      if (event.dataTransfer && event.dataTransfer.files.length > 0) {
+        const fakeEvt = { target: { files: event.dataTransfer.files, value: '' } };
+        handleScreenerFileUpload(fakeEvt);
+      }
+    }
+
+    // Clinical File Upload Handler (Auto-Audits Intake Notes into PHQ-9 & GAD-7)
+    async function handleClinicalFileUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const statusEl = document.getElementById('clinicalFileStatus');
+      if (statusEl) {
+        statusEl.style.display = 'block';
+        statusEl.style.background = 'rgba(59,130,246,0.15)';
+        statusEl.style.border = '1px solid #3B82F6';
+        statusEl.style.color = '#93C5FD';
+        statusEl.innerHTML = `<span>&#9203; Auditing <strong>${file.name}</strong> for depressive & anxiety psychometrics...</span>`;
+      }
+
+      const formData = new FormData();
+      formData.append('file', file);
+
+      try {
+        const targetUrl = window.location.hostname.includes("github.io") ? `${LIVE_BACKEND_TUNNEL}/api/clinical-file-audit` : "/api/clinical-file-audit";
+        const resp = await fetch(targetUrl, {
+          method: 'POST',
+          body: formData
+        });
+
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+        const data = await resp.json();
+
+        // Populate question radios based on estimated scores
+        const phqTarget = data.estimated_phq9 || 0;
+        const gadTarget = data.estimated_gad7 || 0;
+
+        // Auto-assign PHQ-9 items
+        const phqPerItem = Math.min(3, Math.floor(phqTarget / 9));
+        for (let i = 0; i < 9; i++) {
+          const val = (i < (phqTarget % 9)) ? Math.min(3, phqPerItem + 1) : phqPerItem;
+          const radio = document.querySelector(`input[name="phq_${i}"][value="${val}"]`);
+          if (radio) radio.checked = true;
+        }
+
+        // Auto-assign GAD-7 items
+        const gadPerItem = Math.min(3, Math.floor(gadTarget / 7));
+        for (let i = 0; i < 7; i++) {
+          const val = (i < (gadTarget % 7)) ? Math.min(3, gadPerItem + 1) : gadPerItem;
+          const radio = document.querySelector(`input[name="gad_${i}"][value="${val}"]`);
+          if (radio) radio.checked = true;
+        }
+
+        calculateClinicalScores();
+
+        if (statusEl) {
+          statusEl.style.background = 'rgba(16,185,129,0.15)';
+          statusEl.style.border = '1px solid #10B981';
+          statusEl.style.color = '#34D399';
+          statusEl.innerHTML = `
+            <div>&#10003; <strong>${file.name}</strong> successfully audited!</div>
+            <div style="font-size:0.78rem; color:#E2E8F0; margin-top:0.25rem">${data.document_summary || ''}</div>
+            <div style="font-size:0.75rem; color:#A7F3D0; margin-top:0.25rem">Calculated Estimates: <strong>PHQ-9 Score: ${phqTarget}</strong> &bull; <strong>GAD-7 Score: ${gadTarget}</strong> &bull; Triage: <strong>${data.triage_level || 'Evaluated'}</strong></div>
+            ${data.soap_note ? `<div style="margin-top:0.4rem"><button type="button" onclick="downloadSoapNote('${encodeURIComponent(data.soap_note)}')" style="background:rgba(59,130,246,0.25); border:1px solid #3B82F6; color:#93C5FD; border-radius:6px; padding:0.25rem 0.65rem; font-size:0.75rem; font-weight:700; cursor:pointer">&#128190; Download Clinical SOAP Note</button></div>` : ''}
+          `;
+        }
+      } catch (err) {
+        console.error("Clinical file audit failed:", err);
+        if (statusEl) {
+          statusEl.style.background = 'rgba(239,68,68,0.15)';
+          statusEl.style.border = '1px solid #EF4444';
+          statusEl.style.color = '#FCA5A5';
+          statusEl.textContent = `Could not audit file: ${err.message}. Supported formats: PDF, DOCX, CSV, TXT.`;
+        }
       } finally {
         event.target.value = '';
       }

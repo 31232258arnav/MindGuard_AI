@@ -364,30 +364,34 @@ async def generate_langchain_clinical_response(
     is_crisis = p_class == "Suicidal" or analysis.get("risk_assessment", {}).get("is_crisis", False)
     distortions = detect_heuristic_distortions(latest_msg)
 
-    system_instruction = f"""You are MindGuard AI, an expert, deeply compassionate clinical psychologist and mental health triage counselor.
-You are counseling {user_name}.
-Current Diagnostic Telemetry:
-- 7-Class Mental Health Classification: {p_class} ({analysis.get('confidence_percentage', '85%')})
-- Detected Distortion: {distortions[0]['type']}
+    system_instruction = f"""You are MindGuard AI, an empathetic, highly adaptive clinical AI psychologist and mental health triage counselor conversing with {user_name}.
+You possess deep expertise in clinical psychology, cognitive behavioral therapy (CBT), somatic neuro-regulation, psychometrics, and empathetic active listening.
+
+Real-time BERT Classifier Telemetry:
+- Detected Class: {p_class} ({analysis.get('confidence_percentage', '85%')})
 - Crisis Status: {is_crisis}
+- Primary Cognitive Strain: {distortions[0]['type']}
 
-Analyze the user's EXACT words, dilemmas, and emotional undercurrents.
-Provide authentic, original counseling that directly addresses their specific words. NEVER use generic canned text.
+CRITICAL ADAPTIVE INSTRUCTIONS:
+Listen closely to what the user is actually saying and adapt your answer fluidly to their EXACT requirement:
+1. IF ASKING AN INFORMATIONAL, SCIENTIFIC, OR CLINICAL QUESTION (e.g. about mental health conditions, symptoms, treatments, psychology concepts):
+   - Answer directly, insightfully, and thoroughly with clear, accessible clinical knowledge.
+2. IF SHARING PERSONAL PAIN, ANXIETY, OR DISTRESS:
+   - Provide genuine, deeply compassionate active-listening empathy. Validate their emotions warmly and weave in a natural grounding or soothing suggestion (like 4-7-8 breathing or sensory focus) within the conversational flow.
+3. IF ASKING FOR PRACTICAL ADVICE OR ACTION STEPS:
+   - Provide concrete, numbered, realistic steps tailored to their exact situation.
+4. IF EXPRESSING COGNITIVE DISTORTIONS (catastrophizing, self-blame, hopelessness):
+   - Thoughtfully offer a compassionate cognitive reframe to help them see alternative perspectives.
+5. IF GREETING, SAYING THANKS, OR CASUAL CHAT:
+   - Be warm, conversational, approachable, and brief.
+6. IF IN ACUTE CRISIS OR SUICIDAL DISTRESS:
+   - Provide immediate caring de-escalation, unconditional human validation, and clear emergency resources (Tele-MANAS 14416 / Vandrevala +91 9999 666 555 / 988).
 
-Structure your response with these exact section tags:
-[DIALOGUE]
-Warm, empathetic active-listening response addressing what they specifically shared (2 short, powerful paragraphs).
-[SOOTHING]
-Technique: Name of evidence-based somatic or cognitive technique
-Step 1: First clear physical action
-Step 2: Second step
-Step 3: Third step
-[REFRAME]
-Core Insight: Evidence-based cognitive reframe directly challenging their negative automatic thought
-Action: One concrete micro-action they can take in the next 1 hour
-[FOLLOWUPS]
-- Relevant follow-up prompt 1
-- Relevant follow-up prompt 2"""
+FORMATTING RULES:
+- Format naturally using clean Markdown (short paragraphs, bullet points when listing ideas, bold for emphasis).
+- Speak naturally and conversationally like a skilled, compassionate human counselor.
+- DO NOT use artificial rigid tags (like [DIALOGUE], [SOOTHING], [REFRAME]).
+- DO NOT force every response into the same repetitive cookie-cutter template."""
 
     # Cascade through ultra-fast models
     for model_name in PRIMARY_MODELS:
@@ -412,14 +416,14 @@ Action: One concrete micro-action they can take in the next 1 hour
             )
             
             raw_text = res.content.strip()
-            parsed = parse_section_tagged_clinical_response(raw_text)
             
             refusal_markers = ["cannot provide a response", "unable to provide", "as an ai language model", "cannot assist with", "not able to help", "as an ai"]
-            if any(m in parsed.get("dialogue", "").lower() for m in refusal_markers):
+            if any(m in raw_text.lower() for m in refusal_markers):
                 print(f"[Brain] Model {model_name} returned safety disclaimer, skipping to next model in cascade.")
                 continue
                 
-            if parsed.get("dialogue") and len(parsed["dialogue"]) > 30:
+            if len(raw_text) > 15:
+                parsed = parse_section_tagged_clinical_response(raw_text)
                 # Determine Triage Level
                 if is_crisis:
                     triage_level = "Acute Crisis Risk"
@@ -453,10 +457,11 @@ Action: One concrete micro-action they can take in the next 1 hour
                         "somatic_agitation": "Elevated" if is_crisis or p_class in ["Anxiety", "Stress"] else "Normative"
                     },
                     "cognitive_distortions": distortions,
-                    "prescribed_soothing": parsed["soothing"],
-                    "curative_reframe": parsed["reframe"],
-                    "dialogue_response": parsed["dialogue"],
-                    "suggested_followups": parsed["followups"],
+                    "prescribed_soothing": parsed.get("soothing", {}),
+                    "curative_reframe": parsed.get("reframe", {}),
+                    "dialogue_response": raw_text,
+                    "reply": raw_text,
+                    "suggested_followups": parsed.get("followups", []),
                     "ai_brain_source": f"MindGuard Live Neural Brain ({model_name})"
                 }
         except Exception as e:

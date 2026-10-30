@@ -281,36 +281,82 @@ async def analyze_file_endpoint(file: UploadFile = File(...)):
 
 @app.post("/api/batch")
 async def batch_classification(file: UploadFile = File(...)):
-    """Processes a CSV file for high-throughput batch classification."""
+    """Processes any CSV, TXT, PDF, or DOCX file for high-throughput batch classification."""
+    filename = file.filename or "batch_dataset.csv"
+    ext = os.path.splitext(filename)[1].lower()
+    
     try:
-        df = pd.read_csv(file.file)
+        content_bytes = await file.read()
     except Exception as e:
-        raise HTTPException(status_code=400, detail=f"Invalid CSV file format: {str(e)}")
+        raise HTTPException(status_code=400, detail=f"Could not read uploaded file: {str(e)}")
         
-    text_column = None
-    for candidate in ["text", "statement", "prompt", "message", "utterance"]:
-        if candidate in df.columns:
-            text_column = candidate
-            break
-            
-    if not text_column:
-        for col in df.columns:
-            if df[col].dtype == object:
-                text_column = col
+    if not content_bytes:
+        raise HTTPException(status_code=400, detail="Uploaded batch file is empty.")
+
+    statements = []
+
+    # 1. Try CSV Parsing
+    if ext == ".csv" or b"," in content_bytes[:500]:
+        df = None
+        for enc in ["utf-8", "latin-1", "cp1252"]:
+            try:
+                df = pd.read_csv(io.BytesIO(content_bytes), encoding=enc)
                 break
+            except Exception:
+                continue
                 
-    if not text_column:
-        raise HTTPException(status_code=400, detail="Could not identify a text column in CSV.")
-        
+        if df is not None and not df.empty:
+            text_column = None
+            for candidate in ["text", "statement", "prompt", "message", "utterance", "content", "sentence"]:
+                for col in df.columns:
+                    if candidate in str(col).lower():
+                        text_column = col
+                        break
+                if text_column:
+                    break
+                    
+            if not text_column:
+                for col in df.columns:
+                    if df[col].dtype == object:
+                        text_column = col
+                        break
+                        
+            if text_column:
+                for _, row in df.iterrows():
+                    val = str(row[text_column]).strip() if pd.notna(row[text_column]) else ""
+                    if len(val) > 3:
+                        statements.append(val)
+
+    # 2. Try Document / TXT / PDF / DOCX extraction if not populated by CSV
+    if not statements:
+        from backend.file_analyzer import extract_file_content
+        try:
+            full_text, meta = extract_file_content(content_bytes, filename)
+            # Try lines first
+            lines = [l.strip() for l in full_text.splitlines() if len(l.strip()) > 8]
+            if len(lines) >= 2:
+                statements = lines
+            else:
+                # Split by sentence boundaries
+                sentences = [s.strip() for s in re.split(r'(?<=[.!?])\s+', full_text) if len(s.strip()) > 8]
+                statements = sentences if sentences else [full_text.strip()]
+        except Exception as e:
+            # Fallback raw line split
+            try:
+                raw_lines = [l.strip() for l in content_bytes.decode('utf-8', errors='ignore').splitlines() if len(l.strip()) > 8]
+                statements = raw_lines
+            except Exception:
+                raise HTTPException(status_code=400, detail=f"Failed to extract statements: {str(e)}")
+
+    if not statements:
+        raise HTTPException(status_code=400, detail="Could not extract any valid statements from the file.")
+
     results = []
     class_counts = {c: 0 for c in CLASSES}
     crisis_flag_count = 0
-    
-    for idx, row in df.iterrows():
-        val = str(row[text_column]) if pd.notna(row[text_column]) else ""
-        if not val.strip():
-            continue
-            
+
+    # Limit to first 250 statements for real-time responsiveness
+    for idx, val in enumerate(statements[:250]):
         pred = predictor.predict(val)
         class_counts[pred["primary_class"]] += 1
         
@@ -330,10 +376,50 @@ async def batch_classification(file: UploadFile = File(...)):
     return {
         "status": "success",
         "total_records": total_processed,
+        "total_processed": total_processed,
         "class_distribution": class_counts,
         "crisis_flags_detected": crisis_flag_count,
-        "summary": f"Analyzed {total_processed} items. Normal: {class_counts.get('Normal', 0)}, Depression: {class_counts.get('Depression', 0)}, Suicidal: {class_counts.get('Suicidal', 0)}.",
+        "summary": f"Analyzed {total_processed} items from {filename}. Normal: {class_counts.get('Normal', 0)}, Depression: {class_counts.get('Depression', 0)}, Suicidal: {class_counts.get('Suicidal', 0)}, Anxiety: {class_counts.get('Anxiety', 0)}.",
         "records": results[:100]
+    }
+
+
+@app.post("/api/clinical-file-audit")
+async def clinical_file_audit(file: UploadFile = File(...)):
+    """
+    Audits clinical notes/psychiatric intake documents and maps affective findings
+    to PHQ-9 (0-27) and GAD-7 (0-21) severity scales.
+    """
+    filename = file.filename or "clinical_notes.txt"
+    content_bytes = await file.read()
+    if not content_bytes:
+        raise HTTPException(status_code=400, detail="File is empty.")
+    
+    doc_res = analyze_document_mental_health(content_bytes, filename)
+    shares = doc_res.get("affective_profile", {}).get("class_distribution_percent", {})
+    dep_pct = shares.get("Depression", 0)
+    anx_pct = shares.get("Anxiety", 0)
+    sui_pct = shares.get("Suicidal", 0)
+    stress_pct = shares.get("Stress", 0)
+    
+    # Calculate clinical PHQ-9 estimate (0-27)
+    dep_score = int(min(27, round((dep_pct * 0.45) + (sui_pct * 0.9) + (stress_pct * 0.15))))
+    if sui_pct > 5:
+        dep_score = max(dep_score, 18)
+    
+    # Calculate clinical GAD-7 estimate (0-21)
+    gad_score = int(min(21, round((anx_pct * 0.4) + (stress_pct * 0.25))))
+    
+    return {
+        "status": "success",
+        "filename": filename,
+        "document_summary": doc_res.get("executive_summary", ""),
+        "triage_level": doc_res.get("clinical_boundary", {}).get("triage_level", "Evaluated"),
+        "estimated_phq9": dep_score,
+        "estimated_gad7": gad_score,
+        "high_risk_statements": doc_res.get("high_risk_statements", [])[:5],
+        "class_distribution": shares,
+        "soap_note": doc_res.get("soap_note", "")
     }
 
 @app.get("/api/benchmarks")
