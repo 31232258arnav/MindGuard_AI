@@ -12,13 +12,14 @@ import time
 # Add project root to sys.path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-from typing import List, Optional
+from typing import List, Optional, Dict, Any
 from fastapi import FastAPI, HTTPException, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import JSONResponse, FileResponse
 from pydantic import BaseModel
 import pandas as pd
+import requests
 
 from backend.model_engine import predictor, CLASSES, CLASS_METRICS, OVERALL_METRICS
 
@@ -48,6 +49,8 @@ class ChatMessage(BaseModel):
 class ChatSessionRequest(BaseModel):
     messages: List[ChatMessage]
     user_name: Optional[str] = "Friend"
+    api_key: Optional[str] = None
+    custom_model: Optional[str] = None
 
 # Crisis Directory
 CRISIS_HELPLINES = [
@@ -165,12 +168,200 @@ def analyze_statement(req: StatementRequest):
         
     return result
 
+def calculate_psychometrics(text: str, history: List[ChatMessage] = None) -> Dict[str, Any]:
+    """Computes cognitive distortions, emotional valence, and somatic arousal."""
+    text_lower = text.lower()
+    
+    # 1. Cognitive Distortions
+    distortions = []
+    if any(k in text_lower for k in ['fail', 'ruin', 'worst', 'never recover', 'end of world', 'disaster', 'mess up everything', 'ruined']):
+        distortions.append('Catastrophizing')
+    if any(k in text_lower for k in ['always', 'never', 'everyone', 'nobody', 'completely', 'total', 'all of them', 'nothing']):
+        distortions.append('All-or-Nothing Thinking')
+    if any(k in text_lower for k in ['they think', 'everyone thinks', 'judging me', 'they hate me', 'laughing at me', 'people think']):
+        distortions.append('Mind Reading')
+    if any(k in text_lower for k in ['i feel like a failure', 'feels hopeless', 'it feels impossible', 'feel worthless']):
+        distortions.append('Emotional Reasoning')
+    if any(k in text_lower for k in ['my fault', 'i caused this', 'i ruined it', 'because of me', 'blame myself']):
+        distortions.append('Personalization')
+    if any(k in text_lower for k in ['nothing ever', 'every single time', 'always like this', 'never works']):
+        distortions.append('Overgeneralization')
+    if not distortions:
+        distortions.append('Contextual Distress (No Distortions)')
+
+    # 2. Emotional Valence (-1.0 to +1.0)
+    neg_words = ['hate', 'terrible', 'sad', 'pain', 'hurts', 'crying', 'hopeless', 'anxious', 'scared', 'panic', 'fail', 'dying', 'tired', 'empty', 'alone', 'worthless']
+    pos_words = ['happy', 'good', 'great', 'better', 'peace', 'calm', 'hope', 'proud', 'love', 'relieved', 'grateful', 'fine', 'okay', 'excited']
+    neg_count = sum(1 for w in neg_words if w in text_lower)
+    pos_count = sum(1 for w in pos_words if w in text_lower)
+    valence = round(max(-1.0, min(1.0, (pos_count - neg_count) * 0.25 - 0.2 if neg_count > 0 else (pos_count * 0.3))), 2)
+
+    # 3. Somatic Arousal / Agitation (0% to 100%)
+    arousal = 35
+    if any(k in text_lower for k in ['panic', 'racing', 'heart', 'shaking', 'sweat', 'cannot breathe', 'hyperventilate', 'chest', 'terror', 'freaking out']):
+        arousal += 40
+    if '!' in text or '?' in text:
+        arousal += min(20, text.count('!') * 5 + text.count('?') * 3)
+    if any(k in text_lower for k in ['urgent', 'right now', 'immediately', 'screaming', 'collapsing', 'dying']):
+        arousal += 20
+    arousal = min(100, arousal)
+
+    # 4. Emotional Trajectory
+    trajectory = "Baseline Initialized"
+    if history and len(history) > 1:
+        user_msgs = [m.content for m in history if m.role == 'user']
+        if len(user_msgs) > 1:
+            prev_v = calculate_psychometrics(user_msgs[-2])['valence_score']
+            delta = round(valence - prev_v, 2)
+            if delta > 0.15:
+                trajectory = f"Improving (+{delta})"
+            elif delta < -0.15:
+                trajectory = f"Escalating Distress ({delta})"
+            else:
+                trajectory = "Stable Emotional Cadence"
+
+    # 5. Tailored Soothing Prescription
+    if arousal > 65:
+        prescription = "4-7-8 Vagal Nerve Paced Breathing & Cold Water Facial Reset (Diver's Reflex)"
+    elif 'Catastrophizing' in distortions or 'Mind Reading' in distortions:
+        prescription = "CBT Evidence-Testing Reframe (Objective Fact vs Emotion Log)"
+    elif valence < -0.4:
+        prescription = "Behavioral Micro-Step & Non-Judgmental Self-Compassion Anchor"
+    else:
+        prescription = "5-4-3-2-1 Sensory Grounding & Mindful Reflection"
+
+    return {
+        "distortions_detected": distortions,
+        "valence_score": valence,
+        "arousal_index": f"{arousal}%",
+        "trajectory": trajectory,
+        "prescribed_soothing": prescription
+    }
+
+
+def generate_dynamic_cbt_fallback(user_msg: str, analysis: dict, psychometrics: dict, user_name: str = "Friend") -> str:
+    """Intelligent situation-aware clinical response synthesizer when offline or LLM fails."""
+    t_lower = user_msg.lower()
+    p_class = analysis.get("primary_class", "Normal")
+    
+    if any(k in t_lower for k in ['presentation', 'exam', 'viva', 'professor', 'grade', 'college', 'speech', 'interview', 'fail']):
+        return (
+            "I hear how agonizing that academic stress feels right now. When speaking in front of an audience or taking a crucial exam, "
+            "our nervous system can perceive social evaluation as an existential threat, flooding your body with adrenaline. "
+            "Please remember: stumbling in a presentation is a physiological hiccup, NOT a definition of your intellect or worth.\n\n"
+            "**Immediate Soothing & Real-Life Cure:**\n"
+            "1. **Physiological Sigh:** Take two quick inhales through your nose, then one long, slow exhale through your mouth. Do this 3 times to quickly lower heart rate.\n"
+            "2. **Cognitive Reframe:** Most peers are so focused on their own evaluations that they rarely judge others harshly. One difficult moment does not undo years of your hard work.\n\n"
+            "What is one small kindness you can offer yourself right now to unwind?"
+        )
+    elif any(k in t_lower for k in ['panic', 'cannot breathe', "can't breathe", 'heart racing', 'hyperventilate', 'shaking']):
+        return (
+            "I can sense the overwhelming intensity of that panic wave right now. Let's focus on grounding your nervous system together. "
+            "Panic feels terrifying, but it cannot harm you; it is a temporary surge of adrenaline that will peak and subside.\n\n"
+            "**Actionable Somatic Soothing (Right Now):**\n"
+            "1. **Cold Water Reset:** Splash cold water on your cheeks or hold an ice cube. This triggers the mammalian dive reflex and physically forces your heart rate down.\n"
+            "2. **5-4-3-2-1 Grounding:** Name out loud 5 things you can see, 4 things you can touch, 3 sounds you hear, 2 things you smell, and 1 taste.\n\n"
+            "You are safe in this physical space. Place one hand on your chest and feel the breath slowing down."
+        )
+    elif any(k in t_lower for k in ['alone', 'lonely', 'nobody', 'no friends', 'ignored', 'left out', 'isolated']):
+        return (
+            "Feeling unseen and isolated can be one of the heaviest emotional spaces to inhabit. It is completely natural to crave meaningful connection, "
+            "and when we feel alone, our minds often convince us that 'nobody cares'. That is the emotional fog speaking, not an absolute truth.\n\n"
+            "**Real-Life Soothing & Connection Anchor:**\n"
+            "1. **Sensory Comfort:** Wrap yourself in a warm blanket or hold a hot mug of tea. Physical warmth stimulates feelings of safety.\n"
+            "2. **Low-Stakes Connection:** You don't need a deep heart-to-heart immediately. Saying hello to a neighbor, commenting in a hobby forum, or walking around outside gently reduces isolation.\n\n"
+            "I am genuinely glad you are here talking with me today. What is something you normally enjoy doing when you have quiet time?"
+        )
+    elif p_class == "Suicidal" or analysis.get("risk_assessment", {}).get("is_crisis"):
+        return (
+            "I hear how exhausted and in unbearable pain you are feeling right now, and I want you to know with absolute certainty: your life has profound value. "
+            "You do not have to carry this crushing weight alone.\n\n"
+            "**Immediate Safety Action:**\n"
+            "Please connect with trained, compassionate professionals who are ready to support you 24/7 without judgment:\n"
+            "• **Tele-MANAS (Govt. of India):** Dial **14416** or **1800 891 4416** (Toll-Free, 20+ Languages)\n"
+            "• **Vandrevala Foundation:** Call or WhatsApp **+91 9999 666 555**\n"
+            "• **AASRA:** Call **+91 98204 66726**\n\n"
+            "Take a breath and stay safe with me. Can you reach out to one of these helplines or someone in your home right now?"
+        )
+    elif p_class == "Depression":
+        return (
+            "Thank you for sharing your truth with me. Depression can make even the simplest actions—getting out of bed, replying to a message, eating—feel like scaling a mountain. "
+            "Please be gentle with yourself. You are not lazy or broken; your brain's emotional batteries are depleted.\n\n"
+            "**Gentle Micro-Interventions:**\n"
+            "1. **Drop Demands:** Lower your expectations for today to the absolute baseline. If all you did was survive today, that is enough.\n"
+            "2. **Micro-Movement:** Try opening one window for fresh air or sipping a glass of water. Just one tiny physical action.\n\n"
+            "Have you been able to eat or rest today?"
+        )
+    else:
+        return (
+            f"I hear you, and thank you for reflecting with me. It takes real self-awareness to explore these thoughts. "
+            f"Notice how your emotional state is currently showing {p_class.lower()} tendencies with {psychometrics.get('arousal_index')} activation. "
+            "Remember that emotions are messengers, not permanent states. What is one supportive thing you can do for yourself in the next hour?"
+        )
+
+
+def generate_neural_mindbot_reply(messages: List[ChatMessage], analysis: dict, psychometrics: dict, custom_key: Optional[str] = None, user_name: str = "Friend") -> tuple:
+    """Connects to live OpenRouter LLM Brain with fallback to dynamic situation-aware CBT engine."""
+    api_key = custom_key or os.environ.get("OPENROUTER_API_KEY", "")
+    latest_msg = messages[-1].content
+    
+    if not api_key:
+        return generate_dynamic_cbt_fallback(latest_msg, analysis, psychometrics, user_name), "Dynamic CBT Intelligence Engine (Local)"
+        
+    url = "https://openrouter.ai/api/v1/chat/completions"
+    headers = {
+        "Authorization": f"Bearer {api_key}",
+        "Content-Type": "application/json",
+        "HTTP-Referer": "https://31232258arnav.github.io/MindGuard_AI/",
+        "X-Title": "MindGuard AI Mental Health Platform"
+    }
+    
+    system_prompt = (
+        "You are MindGuard AI, an expert, compassionate clinical psychologist and mental health counselor. "
+        "Your role is to provide authentic, highly empathetic active listening, situational validation, and "
+        "concrete, evidence-based soothing/grounding techniques (CBT reframing, vagal nerve breathing, sensory resets, self-compassion). "
+        "You have computed the following telemetry from the user's text:\n"
+        f"- Target Affective State: {analysis.get('primary_class')} ({analysis.get('confidence_percentage')})\n"
+        f"- Emotional Valence: {psychometrics.get('valence_score')} (range -1.0 to +1.0)\n"
+        f"- Somatic Arousal: {psychometrics.get('arousal_index')}\n"
+        f"- Cognitive Distortions: {', '.join(psychometrics.get('distortions_detected', []))}\n"
+        f"- Prescribed Intervention: {psychometrics.get('prescribed_soothing')}\n\n"
+        "GUIDELINES:\n"
+        "1. NEVER use generic canned responses. Speak warmly, authentically, and conversationally.\n"
+        "2. Directly address the user's specific scenario (college presentation, relationships, exams, family, fatigue, etc.).\n"
+        "3. Explain their cognitive distortion gently and offer a real-life soothing exercise or cure.\n"
+        "4. Format with clean, readable markdown (short paragraphs, bullet points for exercises).\n"
+        "5. If there is explicit suicidal intent or severe self-harm, gently urge connecting with 24/7 helplines: "
+        "Tele-MANAS (14416 / 1800 891 4416) or Vandrevala Foundation (+91 9999 666 555)."
+    )
+    
+    formatted_messages = [{"role": "system", "content": system_prompt}]
+    for m in messages[-6:]:
+        formatted_messages.append({"role": m.role, "content": m.content})
+        
+    payload = {
+        "model": "openrouter/free",
+        "messages": formatted_messages,
+        "temperature": 0.7,
+        "max_tokens": 600
+    }
+    
+    try:
+        res = requests.post(url, headers=headers, json=payload, timeout=20)
+        if res.status_code == 200:
+            content = res.json()["choices"][0]["message"]["content"]
+            return content, "OpenRouter Neural Brain (Live LLM)"
+        else:
+            return generate_dynamic_cbt_fallback(latest_msg, analysis, psychometrics, user_name), "Dynamic CBT Intelligence Engine (Fallback)"
+    except Exception:
+        return generate_dynamic_cbt_fallback(latest_msg, analysis, psychometrics, user_name), "Dynamic CBT Intelligence Engine (Fallback)"
+
+
 @app.post("/api/chat")
 def conversational_screening(req: ChatSessionRequest):
     """
-    Conversational mental-health screening agent.
-    Maintains dialogue context, analyzes sentiment trajectory, and generates
-    empathetic, non-judgmental guidance with clinical escalation triggers.
+    Conversational mental-health screening agent with live AI Brain & calculating power.
+    Maintains dialogue context, computes cognitive distortions, and delivers real-life soothing.
     """
     if not req.messages:
         raise HTTPException(status_code=400, detail="No messages in chat session.")
@@ -178,58 +369,25 @@ def conversational_screening(req: ChatSessionRequest):
     latest_msg = req.messages[-1].content
     analysis = predictor.predict(latest_msg)
     
-    primary_class = analysis["primary_class"]
-    confidence = analysis["confidence"]
     is_crisis = analysis["risk_assessment"]["is_crisis"]
     
-    # Empathetic conversational responses based on predicted emotional state
-    if is_crisis or primary_class == "Suicidal":
-        bot_response = (
-            f"I hear how much unbearable pain you are carrying right now, and I want you to know that your life has immense value. "
-            f"You don't have to carry this heavy burden alone. Please connect with someone who can support you right this second: "
-            f"You can call or WhatsApp the Tele-MANAS helpline at 14416 (or 1800 891 4416) or Vandrevala Foundation at +91 9999 666 555. "
-            f"They are completely free, confidential, and available 24/7. Please stay safe with me."
-        )
-    elif primary_class == "Depression":
-        bot_response = (
-            f"Thank you for being open and sharing this with me. What you're feeling sounds deeply exhausting, "
-            f"and it makes complete sense that you feel drained. Depression can make even small daily moments feel like uphill battles. "
-            f"Have you been able to sleep, eat, or talk to someone you trust recently? Taking things one minute at a time is completely okay."
-        )
-    elif primary_class == "Anxiety":
-        bot_response = (
-            f"I sense how intense that anxiety and racing feeling must be right now. Let's pause for a second together. "
-            f"Try taking a slow, deep breath in for 4 seconds... hold for 4... and release for 6 seconds. "
-            f"Remind yourself that although anxiety feels overwhelming and alarming, this feeling is a temporary bodily surge and you are safe right here. "
-            f"What is one physical object in the room you can see right now?"
-        )
-    elif primary_class == "Stress":
-        bot_response = (
-            f"It sounds like you have so much weight resting on your shoulders right now with competing demands. "
-            f"Chronic stress takes a real physical toll. Remember that you do not have to solve everything all at once. "
-            f"Can we identify just one single task on your list that can be deferred or set aside until tomorrow?"
-        )
-    elif primary_class == "Bipolar":
-        bot_response = (
-            f"Navigating sharp shifts in mood, energy, and momentum can feel disorienting and overwhelming. "
-            f"Acknowledging these transitions is an important grounding step. Are you currently tracking your sleep rhythms "
-            f"or able to connect with your support system or healthcare provider?"
-        )
-    elif primary_class == "Personality disorder":
-        bot_response = (
-            f"Intense emotional waves and feelings of emptiness or relationship friction can be deeply distressing. "
-            f"Your feelings are valid, even when they feel stormy and difficult to regulate. Focusing on grounding DBT techniques "
-            f"like holding something cold or taking slow, steady breaths can help anchor the present moment."
-        )
-    else:
-        bot_response = (
-            f"It's really nice to hear from you today! You seem to be in a balanced and peaceful space. "
-            f"How has the rest of your week been going, and is there anything creative or rewarding you've been working on?"
-        )
+    # Run Calculating Power Module
+    psychometrics = calculate_psychometrics(latest_msg, req.messages)
+    
+    # Generate authentic AI Brain response
+    bot_response, brain_source = generate_neural_mindbot_reply(
+        req.messages, 
+        analysis, 
+        psychometrics, 
+        custom_key=req.api_key, 
+        user_name=req.user_name
+    )
         
     return {
         "reply": bot_response,
+        "ai_brain_source": brain_source,
         "message_analysis": analysis,
+        "psychometrics": psychometrics,
         "distress_flag": is_crisis,
         "triage_recommendation": analysis["risk_assessment"]["clinical_recommendation"],
         "crisis_directory": CRISIS_HELPLINES if is_crisis else []

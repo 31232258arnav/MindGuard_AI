@@ -612,41 +612,91 @@
       </div>
     </div>
 
-    <!-- ==================== TAB 2: CONVERSATIONAL CHATBOT ==================== -->
+        <!-- ==================== TAB 2: CONVERSATIONAL CHATBOT ==================== -->
     <div id="tab-chat" class="tab-content">
       <div class="card">
-        <div class="card-title">💬 MindBot: Conversational Screening Companion</div>
-        <div class="card-desc">An empathetic screening companion that conducts guided mental health check-ins and detects emotional distress shifts across turns.</div>
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem">
+          <div>
+            <div class="card-title">&#128172; MindBot: Neural Conversational Companion & Calculating AI Brain</div>
+            <div class="card-desc">Advanced psychological triage companion providing real-time cognitive distortion calculation, emotional telemetry, and personalized real-life soothing.</div>
+          </div>
+          <button class="btn-outline" onclick="toggleChatSettings()" style="font-size:0.75rem; padding:0.35rem 0.75rem">&#9881;&#65039; AI Brain Settings</button>
+        </div>
 
-        <div class="grid-2" style="grid-template-columns: 1fr 340px; height: 560px;">
+        <!-- Collapsible Settings -->
+        <div id="chatSettingsPanel" style="display:none; background:#0F172A; border:1px solid #334155; border-radius:10px; padding:0.85rem 1rem; margin:0.85rem 0 1rem 0">
+          <div style="font-size:0.8rem; font-weight:700; color:#F8FAFC; margin-bottom:0.4rem">AI Brain Configuration</div>
+          <div style="font-size:0.75rem; color:#94A3B8; margin-bottom:0.6rem">MindBot runs on the live OpenRouter Neural Engine (with free automated server execution). If hosting purely static or offline, you can optionally provide a custom OpenRouter / Gemini API key:</div>
+          <div style="display:flex; gap:0.5rem; align-items:center">
+            <input type="password" id="customApiKeyInput" placeholder="sk-or-v1-... (Optional custom key)" style="flex:1; background:#0B111E; border:1px solid var(--border); border-radius:6px; padding:0.45rem 0.75rem; font-size:0.8rem; color:#fff">
+            <button class="btn-primary" onclick="saveCustomApiKey()" style="padding:0.45rem 0.85rem; font-size:0.8rem">Save Key</button>
+            <button class="btn-outline" onclick="clearCustomApiKey()" style="padding:0.45rem 0.85rem; font-size:0.8rem">Reset</button>
+          </div>
+        </div>
+
+        <div class="grid-2" style="grid-template-columns: 1fr 360px; height: 600px;">
           <div style="display:flex; flex-direction:column; height: 100%">
             <div id="chatMessages" style="flex:1; background:#0B111E; border:1px solid var(--border); border-radius:12px; padding:1.25rem; overflow-y:auto; display:flex; flex-direction:column; gap:0.85rem">
-              <div style="max-width:80%; padding:0.85rem 1.1rem; border-radius:14px; font-size:0.9rem; background:var(--bg-card); border:1px solid var(--border); color:var(--text-main); align-self:flex-start">
-                Hello, I am MindBot, an automated mental health screening assistant created by Vishwakarma University Group 21. How are you feeling today? You can share whatever is on your mind freely and confidentially.
+              <div style="max-width:85%; padding:0.85rem 1.1rem; border-radius:14px; font-size:0.9rem; background:var(--bg-card); border:1px solid var(--border); color:var(--text-main); align-self:flex-start">
+                Hello! I am <strong>MindBot</strong>, equipped with neural conversational intelligence and clinical calculating power. I am here to listen without judgment, help you unpack what you are carrying, and offer real-life soothing, grounding exercises, and actionable relief tailored to your exact situation. How are you feeling today?
               </div>
             </div>
 
             <div style="display:flex; gap:0.65rem; margin-top:0.85rem">
-              <input type="text" id="chatInput" placeholder="Type a message to MindBot..." onkeypress="if(event.key==='Enter') sendChatMessage()" style="flex:1; background:#0B111E; border:1px solid var(--border); border-radius:10px; padding:0.75rem 1rem; color:#fff">
-              <button class="btn-primary" onclick="sendChatMessage()">Send ➔</button>
+              <input type="text" id="chatInput" placeholder="Type what's on your mind (e.g. presentation panic, feeling lonely, exhausted)..." onkeypress="if(event.key==='Enter') sendChatMessage()" style="flex:1; background:#0B111E; border:1px solid var(--border); border-radius:10px; padding:0.75rem 1rem; color:#fff">
+              <button class="btn-primary" onclick="sendChatMessage()" id="chatSendBtn">Send &#128330;&#65039;</button>
             </div>
           </div>
 
-          <div style="background:#0B111E; border:1px solid var(--border); border-radius:12px; padding:1.25rem">
-            <div style="font-size:0.85rem; font-weight:700; color:#FFFFFF; margin-bottom:0.75rem">Session Distress Telemetry</div>
-            <div style="font-size:0.78rem; color:var(--text-muted); margin-bottom:0.4rem">Last Message Analysis:</div>
-            <div id="chatLastClass" style="font-size:1.1rem; font-weight:800; color:#93C5FD">Normal (Pending)</div>
-
-            <div style="margin-top:1.2rem">
-              <div style="font-size:0.78rem; color:var(--text-muted); margin-bottom:0.4rem">Active Triage Protocol:</div>
-              <div id="chatTriage" style="font-size:0.8rem; color:#CBD5E1; line-height:1.5">
-                Monitoring emotional cadence. System ready to escalate if severe distress or suicidal crisis signals occur.
+          <div style="background:#0B111E; border:1px solid var(--border); border-radius:12px; padding:1.25rem; overflow-y:auto; display:flex; flex-direction:column; gap:0.75rem">
+            <div>
+              <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:0.35rem">ACTIVE AI BRAIN SOURCE:</div>
+              <div id="chatBrainBadge" style="display:inline-block; padding:0.3rem 0.65rem; border-radius:6px; font-size:0.75rem; font-weight:700; background:rgba(37,99,235,0.2); color:#60A5FA; border:1px solid #2563EB">
+                &#9889; Neural Brain &amp; Psychometrics Engine
               </div>
             </div>
 
-            <div style="margin-top:1.5rem; padding-top:1rem; border-top:1px solid var(--border)">
-              <div style="font-size:0.75rem; color:var(--text-dim); line-height:1.4">
-                <strong>Ethical Guardrail:</strong> MindBot is a research screening tool and never replaces certified clinical psychotherapy or psychiatric care.
+            <div>
+              <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:0.25rem">Target Affective Class:</div>
+              <div id="chatLastClass" style="font-size:1.05rem; font-weight:800; color:#93C5FD">Normal (Ready)</div>
+            </div>
+
+            <div style="background:#111827; border:1px solid #1F2937; border-radius:8px; padding:0.65rem">
+              <div style="display:flex; justify-content:space-between; font-size:0.75rem; margin-bottom:0.2rem">
+                <span style="color:var(--text-muted)">Emotional Valence:</span>
+                <span id="chatValence" style="font-weight:700; color:#38BDF8">0.0 (Neutral Baseline)</span>
+              </div>
+              <div style="display:flex; justify-content:space-between; font-size:0.75rem; margin-top:0.4rem; margin-bottom:0.2rem">
+                <span style="color:var(--text-muted)">Somatic Agitation / Arousal:</span>
+                <span id="chatArousal" style="font-weight:700; color:#F59E0B">35%</span>
+              </div>
+              <div style="height:5px; background:#1E293B; border-radius:3px; overflow:hidden; margin-top:3px">
+                <div id="chatArousalBar" style="height:100%; width:35%; background:linear-gradient(90deg, #10B981, #F59E0B); transition:width 0.4s ease"></div>
+              </div>
+            </div>
+
+            <div>
+              <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:0.35rem">Detected Cognitive Distortions:</div>
+              <div id="chatDistortions" style="display:flex; flex-wrap:wrap; gap:0.3rem">
+                <span class="badge" style="background:#1E293B; color:#CBD5E1; font-size:0.72rem">Balanced Cognition</span>
+              </div>
+            </div>
+
+            <div>
+              <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:0.25rem">Session Distress Trajectory:</div>
+              <div id="chatTrajectory" style="font-size:0.82rem; font-weight:700; color:#10B981">Baseline Active</div>
+            </div>
+
+            <div>
+              <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:0.3rem">Prescribed Soothing &amp; Clinical Action:</div>
+              <div id="chatPrescription" style="font-size:0.78rem; color:#A7F3D0; background:rgba(16,185,129,0.1); border:1px solid rgba(16,185,129,0.3); border-radius:8px; padding:0.5rem 0.65rem; line-height:1.4">
+                5-4-3-2-1 Sensory Grounding &amp; Mindful Reflection
+              </div>
+            </div>
+
+            <div style="padding-top:0.6rem; border-top:1px solid var(--border)">
+              <div style="font-size:0.72rem; color:var(--text-dim); line-height:1.35">
+                <strong>Clinical Guardrail:</strong> MindBot delivers real-time psychological soothing and screening. In active crises, 24/7 helplines (Tele-MANAS 14416 / Vandrevala 9999 666 555) are automatically mobilized.
               </div>
             </div>
           </div>
@@ -1298,8 +1348,173 @@
       document.getElementById('resRecommendation').textContent = data.risk_assessment.clinical_recommendation;
     }
 
-    // Chat
+    // ==========================================
+    // MINDBOT: NEURAL AI BRAIN & CALCULATING POWER
+    // ==========================================
     let chatHistory = [];
+
+    function toggleChatSettings() {
+      const p = document.getElementById('chatSettingsPanel');
+      p.style.display = p.style.display === 'none' ? 'block' : 'none';
+      const stored = localStorage.getItem('mindguard_custom_api_key');
+      if (stored) document.getElementById('customApiKeyInput').value = stored;
+    }
+
+    function saveCustomApiKey() {
+      const key = document.getElementById('customApiKeyInput').value.trim();
+      if (key) {
+        localStorage.setItem('mindguard_custom_api_key', key);
+        alert('Custom API Key saved securely in browser storage.');
+      }
+      toggleChatSettings();
+    }
+
+    function clearCustomApiKey() {
+      localStorage.removeItem('mindguard_custom_api_key');
+      document.getElementById('customApiKeyInput').value = '';
+      alert('Custom API Key cleared. MindBot will use default neural engine.');
+      toggleChatSettings();
+    }
+
+    function formatMarkdown(text) {
+      if (!text) return '';
+      let escaped = text
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+      
+      // Bold
+      escaped = escaped.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+      // Italics
+      escaped = escaped.replace(/\*(.*?)\*/g, '<em>$1</em>');
+      // Bullet points
+      escaped = escaped.replace(/^[•\-]\s+(.*)$/gm, '<li style="margin-left:1.2rem; margin-bottom:0.25rem">$1</li>');
+      // Numbered lists
+      escaped = escaped.replace(/^(\d+)\.\s+(.*)$/gm, '<li style="margin-left:1.2rem; margin-bottom:0.25rem; list-style-type:decimal"><strong>$2</strong></li>');
+      // Paragraphs
+      escaped = escaped.replace(/\n\n/g, '<br/><br/>');
+      escaped = escaped.replace(/\n/g, '<br/>');
+      return escaped;
+    }
+
+    function calculateClientSidePsychometrics(text, history) {
+      const t = text.toLowerCase();
+      const distortions = [];
+
+      if (/fail|ruin|worst|never recover|disaster|mess up everything|ruined/i.test(t)) distortions.push('Catastrophizing');
+      if (/always|never|everyone|nobody|completely|total|all of them|nothing/i.test(t)) distortions.push('All-or-Nothing Thinking');
+      if (/they think|everyone thinks|judging me|they hate me|laughing at me|people think/i.test(t)) distortions.push('Mind Reading');
+      if (/feel like a failure|feels hopeless|feels impossible|feel worthless/i.test(t)) distortions.push('Emotional Reasoning');
+      if (/my fault|i caused this|i ruined it|because of me|blame myself/i.test(t)) distortions.push('Personalization');
+      if (/nothing ever|every single time|always like this|never works/i.test(t)) distortions.push('Overgeneralization');
+      if (distortions.length === 0) distortions.push('Contextual Distress (No Distortions)');
+
+      const negWords = ['hate', 'terrible', 'sad', 'pain', 'hurts', 'crying', 'hopeless', 'anxious', 'scared', 'panic', 'fail', 'dying', 'tired', 'empty', 'alone', 'worthless'];
+      const posWords = ['happy', 'good', 'great', 'better', 'peace', 'calm', 'hope', 'proud', 'love', 'relieved', 'grateful', 'fine', 'okay', 'excited'];
+      let negCount = 0, posCount = 0;
+      negWords.forEach(w => { if (t.includes(w)) negCount++; });
+      posWords.forEach(w => { if (t.includes(w)) posCount++; });
+
+      let valence = (posCount - negCount) * 0.25;
+      if (negCount > 0) valence -= 0.2;
+      valence = Math.max(-1.0, Math.min(1.0, valence));
+      valence = Math.round(valence * 100) / 100;
+
+      let arousal = 35;
+      if (/panic|racing|heart|shaking|sweat|cannot breathe|can't breathe|hyperventilate|chest|terror/i.test(t)) arousal += 40;
+      if (text.includes('!') || text.includes('?')) {
+        const bangs = (text.match(/!/g) || []).length;
+        const qmarks = (text.match(/\?/g) || []).length;
+        arousal += Math.min(20, bangs * 5 + qmarks * 3);
+      }
+      if (/urgent|right now|immediately|screaming|collapsing|dying/i.test(t)) arousal += 20;
+      arousal = Math.min(100, arousal);
+
+      let trajectory = "Baseline Initialized";
+      if (history && history.length > 1) {
+        const userMsgs = history.filter(m => m.role === 'user');
+        if (userMsgs.length > 1) {
+          const prev = calculateClientSidePsychometrics(userMsgs[userMsgs.length - 2].content, []);
+          const delta = Math.round((valence - prev.valence_score) * 100) / 100;
+          if (delta > 0.15) trajectory = `Improving (+${delta})`;
+          else if (delta < -0.15) trajectory = `Escalating Distress (${delta})`;
+          else trajectory = `Stable Cadence (${delta})`;
+        }
+      }
+
+      let prescription = "5-4-3-2-1 Sensory Grounding & Mindful Reflection";
+      if (arousal > 65) {
+        prescription = "4-7-8 Vagal Nerve Paced Breathing & Cold Water Facial Reset (Diver's Reflex)";
+      } else if (distortions.includes('Catastrophizing') || distortions.includes('Mind Reading')) {
+        prescription = "CBT Evidence-Testing Reframe (Objective Fact vs Emotion Log)";
+      } else if (valence < -0.4) {
+        prescription = "Behavioral Micro-Step & Non-Judgmental Self-Compassion Anchor";
+      }
+
+      return {
+        distortions_detected: distortions,
+        valence_score: valence,
+        arousal_index: `${arousal}%`,
+        trajectory: trajectory,
+        prescribed_soothing: prescription
+      };
+    }
+
+    function generateClientSideEmpatheticResponse(text, inf, psychometrics) {
+      const t = text.toLowerCase();
+      const pClass = inf.primary_class || "Normal";
+
+      if (/presentation|exam|viva|professor|grade|college|speech|interview|academics/i.test(t)) {
+        return (
+          `I hear how agonizing that academic pressure feels right now. When speaking in front of an audience or taking a crucial exam, our nervous system can perceive social evaluation as an existential threat, flooding the body with adrenaline.\n\n` +
+          `**Immediate Soothing & Real-Life Relief:**\n` +
+          `1. **Physiological Sigh:** Take two quick inhales through your nose, then one long, slow exhale through your mouth. Repeat 3 times to quickly lower heart rate.\n` +
+          `2. **Cognitive Reframe:** Most peers are so consumed by their own performance that they rarely judge others harshly. Stumbling in one moment is a biological hiccup, NOT a definition of your intelligence or worth.\n\n` +
+          `What is one gentle, comforting thing you can do for yourself right now to decompress?`
+        );
+      } else if (/panic|cannot breathe|can't breathe|heart racing|hyperventilate|shaking/i.test(t)) {
+        return (
+          `I can sense the overwhelming intensity of that panic wave right now. Let's focus on anchoring your nervous system together. Panic feels terrifying, but it cannot harm you; it is a temporary physiological surge that will peak and gently subside.\n\n` +
+          `**Actionable Somatic Soothing (Right Now):**\n` +
+          `1. **Cold Water Sensory Reset:** Splash cold water on your cheeks or hold an ice cube. This stimulates the mammalian dive reflex and physically commands your heart rate down.\n` +
+          `2. **5-4-3-2-1 Grounding:** Name out loud 5 things you can see, 4 things you can touch, 3 sounds you hear, 2 things you smell, and 1 taste.\n\n` +
+          `You are safe in this physical space. Place one hand on your chest and take things one breath at a time.`
+        );
+      } else if (/alone|lonely|nobody|no friends|ignored|left out|isolated/i.test(t)) {
+        return (
+          `Feeling unseen and isolated can be one of the heaviest emotional spaces to inhabit. It is completely natural to crave meaningful connection, and when we feel alone, our minds often convince us that 'nobody cares'. That is emotional reasoning, not an objective truth.\n\n` +
+          `**Real-Life Soothing & Connection Anchor:**\n` +
+          `1. **Sensory Comfort:** Wrap yourself in a warm blanket or hold a warm mug of tea. Physical warmth stimulates feelings of safety.\n` +
+          `2. **Low-Stakes Connection:** You don't need a deep heart-to-heart immediately. Saying hello to a neighbor, listening to a warm podcast, or taking a short walk outside gently reduces isolation.\n\n` +
+          `I am genuinely glad you are here talking with me today. What is a comfort show, book, or hobby you usually find solace in?`
+        );
+      } else if (pClass === "Suicidal" || (inf.risk_assessment && inf.risk_assessment.is_crisis)) {
+        return (
+          `I hear how exhausted and in unbearable pain you are feeling right now, and I want you to know with absolute certainty: your life has profound value. You do not have to carry this crushing weight alone.\n\n` +
+          `**Immediate Safety Action:**\n` +
+          `Please connect with trained, compassionate professionals who are ready to support you 24/7 without judgment:\n` +
+          `• **Tele-MANAS (Govt. of India):** Dial **14416** or **1800 891 4416** (Toll-Free, 20+ Languages)\n` +
+          `• **Vandrevala Foundation:** Call or WhatsApp **+91 9999 666 555**\n` +
+          `• **AASRA:** Call **+91 98204 66726**\n\n` +
+          `Take a breath and stay safe with me. Can you reach out to one of these helplines or someone in your home right now?`
+        );
+      } else if (pClass === "Depression") {
+        return (
+          `Thank you for sharing your truth with me. Depression can make even the simplest actions—getting out of bed, replying to a message, eating—feel like scaling a mountain. Please be gentle with yourself. You are not lazy or broken; your brain's emotional batteries are depleted.\n\n` +
+          `**Gentle Micro-Interventions:**\n` +
+          `1. **Drop Demands:** Lower your expectations for today to the absolute baseline. If all you did was survive today, that is enough.\n` +
+          `2. **Micro-Movement:** Try opening one window for fresh air or sipping a glass of water. Just one tiny physical action.\n\n` +
+          `Have you been able to eat or rest today?`
+        );
+      } else {
+        return (
+          `I hear you, and thank you for reflecting with me. It takes real self-awareness to explore these thoughts. ` +
+          `Notice how your emotional state is currently showing ${pClass.toLowerCase()} tendencies with ${psychometrics.arousal_index} activation. ` +
+          `Remember that emotions are messengers, not permanent states. What is one supportive thing you can do for yourself in the next hour?`
+        );
+      }
+    }
+
     async function sendChatMessage() {
       const input = document.getElementById('chatInput');
       const text = input.value.trim();
@@ -1307,7 +1522,7 @@
 
       const chatBox = document.getElementById('chatMessages');
       const userBubble = document.createElement('div');
-      userBubble.style = "max-width:80%; padding:0.85rem 1.1rem; border-radius:14px; font-size:0.9rem; background:linear-gradient(135deg, #2563EB, #1D4ED8); color:#fff; align-self:flex-end";
+      userBubble.style = "max-width:85%; padding:0.85rem 1.1rem; border-radius:14px; font-size:0.9rem; background:linear-gradient(135deg, #2563EB, #1D4ED8); color:#fff; align-self:flex-end";
       userBubble.textContent = text;
       chatBox.appendChild(userBubble);
       input.value = '';
@@ -1315,32 +1530,87 @@
 
       chatHistory.push({ role: 'user', content: text });
 
-      let data;
+      // Typing Indicator
+      const typingBubble = document.createElement('div');
+      typingBubble.id = 'chatTypingIndicator';
+      typingBubble.style = "max-width:85%; padding:0.75rem 1rem; border-radius:14px; font-size:0.85rem; background:var(--bg-card); border:1px solid var(--border); color:var(--text-muted); align-self:flex-start; display:flex; align-items:center; gap:0.5rem";
+      typingBubble.innerHTML = `<span>MindBot is thinking &amp; calculating...</span> <span class="spinner" style="width:14px; height:14px; border:2px solid #3B82F6; border-top-color:transparent; border-radius:50%; display:inline-block; animation:spin 1s linear infinite"></span>`;
+      chatBox.appendChild(typingBubble);
+      chatBox.scrollTop = chatBox.scrollHeight;
+
+      const customKey = localStorage.getItem('mindguard_custom_api_key') || '';
+      let data = null;
+
       try {
         const resp = await fetch('/api/chat', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ messages: chatHistory })
+          body: JSON.stringify({ messages: chatHistory, api_key: customKey })
         });
         if (resp.ok) {
           data = await resp.json();
-        } else {
-          const inf = runClientSideInference(text);
-          data = { reply: `I hear you. It sounds like you are experiencing feelings of ${inf.primary_class.toLowerCase()}. Remember that you are not alone, and taking things one step at a time is completely valid.`, message_analysis: inf, triage_recommendation: inf.risk_assessment.clinical_recommendation };
         }
       } catch (e) {
-        const inf = runClientSideInference(text);
-        data = { reply: `I hear you. It sounds like you are experiencing feelings of ${inf.primary_class.toLowerCase()}. Remember that you are not alone, and taking things one step at a time is completely valid.`, message_analysis: inf, triage_recommendation: inf.risk_assessment.clinical_recommendation };
+        // Fallback to client-side reasoning engine
       }
 
+      if (!data) {
+        const inf = runClientSideInference(text);
+        const psych = calculateClientSidePsychometrics(text, chatHistory);
+        const replyText = generateClientSideEmpatheticResponse(text, inf, psych);
+        data = {
+          reply: replyText,
+          ai_brain_source: "Dynamic CBT Intelligence Engine (Local)",
+          message_analysis: inf,
+          psychometrics: psych,
+          triage_recommendation: inf.risk_assessment ? inf.risk_assessment.clinical_recommendation : "Active Monitoring"
+        };
+      }
+
+      // Remove typing bubble
+      const tEl = document.getElementById('chatTypingIndicator');
+      if (tEl) tEl.remove();
+
+      // Bot Bubble
       const botBubble = document.createElement('div');
-      botBubble.style = "max-width:80%; padding:0.85rem 1.1rem; border-radius:14px; font-size:0.9rem; background:var(--bg-card); border:1px solid var(--border); color:var(--text-main); align-self:flex-start";
-      botBubble.textContent = data.reply;
+      botBubble.style = "max-width:85%; padding:0.95rem 1.2rem; border-radius:14px; font-size:0.9rem; background:var(--bg-card); border:1px solid var(--border); color:var(--text-main); align-self:flex-start; line-height:1.55";
+      botBubble.innerHTML = formatMarkdown(data.reply);
       chatBox.appendChild(botBubble);
       chatBox.scrollTop = chatBox.scrollHeight;
 
-      document.getElementById('chatLastClass').textContent = `${data.message_analysis.primary_class} (${data.message_analysis.confidence_percentage})`;
-      document.getElementById('chatTriage').textContent = data.triage_recommendation;
+      chatHistory.push({ role: 'assistant', content: data.reply });
+
+      // Update Calculating Power Telemetry HUD
+      if (data.ai_brain_source) {
+        document.getElementById('chatBrainBadge').textContent = `⚡ ${data.ai_brain_source}`;
+      }
+      if (data.message_analysis) {
+        document.getElementById('chatLastClass').textContent = `${data.message_analysis.primary_class} (${data.message_analysis.confidence_percentage})`;
+      }
+      if (data.psychometrics) {
+        const p = data.psychometrics;
+        document.getElementById('chatValence').textContent = `${p.valence_score > 0 ? '+' : ''}${p.valence_score} (${p.valence_score > 0.2 ? 'Constructive' : p.valence_score < -0.3 ? 'Distress / Dysphoric' : 'Neutral'})`;
+        document.getElementById('chatValence').style.color = p.valence_score > 0 ? '#10B981' : p.valence_score < -0.3 ? '#F87171' : '#38BDF8';
+
+        document.getElementById('chatArousal').textContent = p.arousal_index;
+        const aVal = parseInt(p.arousal_index) || 35;
+        document.getElementById('chatArousalBar').style.width = `${aVal}%`;
+
+        const distContainer = document.getElementById('chatDistortions');
+        distContainer.innerHTML = '';
+        (p.distortions_detected || []).forEach(d => {
+          const badge = document.createElement('span');
+          badge.className = 'badge';
+          badge.style = "background:rgba(239, 68, 68, 0.15); color:#FCA5A5; border:1px solid rgba(239, 68, 68, 0.3); font-size:0.72rem; padding:0.2rem 0.5rem; border-radius:4px";
+          badge.textContent = d;
+          distContainer.appendChild(badge);
+        });
+
+        document.getElementById('chatTrajectory').textContent = p.trajectory;
+        document.getElementById('chatTrajectory').style.color = p.trajectory.includes('Improving') ? '#10B981' : p.trajectory.includes('Escalating') ? '#EF4444' : '#38BDF8';
+
+        document.getElementById('chatPrescription').textContent = p.prescribed_soothing;
+      }
     }
 
     // Clinical Questions Generator (PHQ-9 & GAD-7)
