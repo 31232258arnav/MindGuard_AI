@@ -15,6 +15,8 @@ import sys
 import json
 import time
 import asyncio
+import io
+import re
 from typing import List, Optional, Dict, Any
 
 # Add project root to sys.path

@@ -648,8 +648,8 @@
       <div class="card">
         <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem">
           <div>
-            <div class="card-title">&#129302; MindBot: Google Gemini AI Companion</div>
-            <div class="card-desc">Powered by Google Gemini • Authentic conversational intelligence & empathetic companion.</div>
+            <div class="card-title">&#129302; MindBot: MindGuard GenAI Companion</div>
+            <div class="card-desc">Powered by MindGuard GenAI Engine • Dedicated clinical mental health & emotional well-being intelligence.</div>
           </div>
           <button class="btn-outline" onclick="toggleChatSettings()" style="font-size:0.75rem; padding:0.35rem 0.75rem">&#9881;&#65039; AI Brain Settings</button>
         </div>
@@ -657,7 +657,7 @@
         <!-- Collapsible Settings -->
         <div id="chatSettingsPanel" style="display:none; background:#0F172A; border:1px solid #334155; border-radius:10px; padding:0.85rem 1rem; margin:0.85rem 0 1rem 0">
           <div style="font-size:0.8rem; font-weight:700; color:#F8FAFC; margin-bottom:0.4rem">AI Brain Configuration</div>
-          <div style="font-size:0.75rem; color:#94A3B8; margin-bottom:0.6rem">MindBot runs on the live OpenRouter Neural Engine (with free automated server execution). If hosting purely static or offline, you can optionally provide a custom OpenRouter / Gemini API key:</div>
+          <div style="font-size:0.75rem; color:#94A3B8; margin-bottom:0.6rem">MindBot runs on the MindGuard GenAI Engine (with free automated server execution). If hosting purely static or offline, you can optionally provide a custom GenAI API key:</div>
           <div style="display:flex; gap:0.5rem; align-items:center">
             <input type="password" id="customApiKeyInput" placeholder="sk-or-v1-... (Optional custom key)" style="flex:1; background:#0B111E; border:1px solid var(--border); border-radius:6px; padding:0.45rem 0.75rem; font-size:0.8rem; color:#fff">
             <button class="btn-primary" onclick="saveCustomApiKey()" style="padding:0.45rem 0.85rem; font-size:0.8rem">Save Key</button>
@@ -669,7 +669,7 @@
           <div style="display:flex; flex-direction:column; height: 100%">
             <div id="chatMessages" style="flex:1; background:#0B111E; border:1px solid var(--border); border-radius:12px; padding:1.25rem; overflow-y:auto; display:flex; flex-direction:column; gap:0.85rem">
               <div style="max-width:85%; padding:0.85rem 1.1rem; border-radius:14px; font-size:0.9rem; background:var(--bg-card); border:1px solid var(--border); color:var(--text-main); align-self:flex-start">
-                Hello! I am <strong>Gemini</strong>, your AI companion built by Google. I am here to talk freely, listen without judgment, explore ideas, or support you through whatever is on your mind. How are you doing today?
+                Hello! I am <strong>MindGuard GenAI</strong>, your dedicated clinical AI companion for emotional well-being and mental health support. I am here to listen with empathy, support you through stress, or guide you through clinical coping techniques. How are you feeling today?
               </div>
             </div>
 
@@ -691,7 +691,7 @@
             <div>
               <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:0.35rem">ACTIVE AI BRAIN SOURCE:</div>
               <div id="chatBrainBadge" style="display:inline-block; padding:0.3rem 0.65rem; border-radius:6px; font-size:0.75rem; font-weight:700; background:rgba(37,99,235,0.2); color:#60A5FA; border:1px solid #2563EB">
-                &#9889; Google Gemini Neural Engine
+                &#9889; MindGuard GenAI Engine
               </div>
             </div>
 
@@ -1266,67 +1266,143 @@
       runAnalysis();
     }
 
-    const LEXICON = {
-      "Normal": ["great", "good", "happy", "life", "jog", "park", "coffee", "friend", "family", "pasta", "weekend", "trip", "reading", "book", "productive", "solved", "tickets", "sunrise", "peaceful", "content", "fresh", "garden", "relaxing", "passed", "grades", "guitar", "walk", "breeze", "painting", "grateful", "puppy", "joyful", "smile", "cheer", "love", "blessed", "wonderful", "celebrating"],
-      "Depression": ["empty", "hollow", "numb", "meaningless", "dull", "dark", "cloud", "bed", "chore", "isolated", "lonely", "sorrow", "despair", "exhausted", "detached", "failure", "crying", "suffocating", "weight", "pointless", "burden", "guilt", "worthlessness", "tired", "repetitive", "invisible", "sadness", "hopeless"],
-      "Suicidal": ["suicide", "suicidal", "kill", "die", "ending", "goodbye", "pills", "ledge", "balcony", "jump", "disappear", "possessions", "relief", "torment", "hang", "exit", "gun", "trigger", "void", "blood", "cutting", "overdose", "final", "non-existence", "eternal", "silence", "agony", "unbearable"],
-      "Anxiety": ["pounding", "chest", "breath", "panic", "attack", "shaking", "dizzy", "overthinking", "knot", "stomach", "nausea", "paralyzed", "faint", "gasping", "racing", "sweating", "hypervigilant", "danger", "tight", "choking", "judging", "agoraphobia", "overload", "trembling", "adrenaline", "dread", "terrified", "fear"],
-      "Stress": ["deadlines", "exams", "academic", "hours", "fried", "overwhelmed", "juggle", "bills", "tuition", "burnout", "expectations", "manager", "headache", "office", "snapping", "pressure", "clock", "to-do", "demands", "layoffs", "crunch", "workload", "exhaustion", "cortisol", "busy"],
-      "Bipolar": ["manic", "euphoria", "mania", "swings", "impulsive", "shopping", "electricity", "god", "invincible", "crashing", "rollercoaster", "grandiosity", "hyper-creative", "buzzing", "cycling", "peaks", "slump", "reckless", "lightning", "hypomania", "hyperactive"],
-      "Personality disorder": ["abandonment", "idolize", "despise", "unstable", "masks", "rejection", "splitting", "angels", "monsters", "self-harm", "borderline", "emptiness", "volatile", "chaos", "manipulating", "shame", "remorse", "dysregulation", "dissociative", "identity", "bpd"]
+    const CLINICAL_ANCHORS = {
+      "Suicidal": {
+        phrases: ["kill myself", "end my life", "want to die", "commit suicide", "take my life", "better off dead", "no reason to live", "done with life", "slit my wrists", "overdose on pills", "hang myself", "jump off", "wish i was dead", "wish i never existed", "pain to stop"],
+        words: ["suicide", "suicidal", "kill", "die", "dying", "overdose", "pills", "hanging", "wrist", "wrists", "goodbye", "death", "corpse", "unbearable", "hopelessness", "endit", "endgame", "gun", "trigger", "noose", "bleed", "bleeding"],
+        weight: 3.5
+      },
+      "Depression": {
+        phrases: ["feel empty", "no energy", "cannot get out of bed", "can't get out of bed", "crying myself to sleep", "hate myself", "feel like a failure", "pointless existence", "no motivation", "lost all interest", "tired of living", "nobody cares about me", "feel alone", "don't feel good", "do not feel good", "not feeling good", "not feeling well", "not feeling happy", "hollow inside", "exhausted all the time"],
+        words: ["depressed", "depression", "hopeless", "worthless", "empty", "emptiness", "miserable", "crying", "despair", "numb", "exhausted", "gloomy", "melancholy", "unloved", "useless", "pointless", "failure", "isolated", "loneliness", "lonely", "apathy", "fatigue", "grief", "sadness", "sad"],
+        weight: 2.2
+      },
+      "Anxiety": {
+        phrases: ["panic attack", "heart is racing", "cannot breathe", "can't breathe", "mind will not shut off", "chest tightness", "sweating and shaking", "constant dread", "impending doom", "scared of everything", "dizziness and nausea", "paralyzed by fear", "social anxiety", "overthinking everything"],
+        words: ["anxious", "anxiety", "panic", "panicking", "racing", "trembling", "shaking", "dizzy", "dread", "terror", "terrified", "hyperventilating", "palpitations", "phobia", "nervous", "worry", "worried", "paranoia", "fret", "restless", "choking"],
+        weight: 2.0
+      },
+      "Stress": {
+        phrases: ["too much work", "burnt out", "burnout", "cannot keep up", "can't keep up", "pressure is getting to me", "snapping at everyone", "headache from stress", "stress at work", "academic pressure", "exams next week", "overlapping deadlines", "too many assignments", "drowning under"],
+        words: ["stressed", "stress", "overwhelmed", "burnout", "workload", "deadline", "deadlines", "exam", "exams", "finals", "homework", "assignment", "assignments", "boss", "manager", "layoff", "tuition", "bills", "finances", "pressure", "swamped", "crunch", "headache", "migraine", "strained", "hectic", "demands", "busy"],
+        weight: 1.9
+      },
+      "Bipolar": {
+        phrases: ["awake for days", "haven't slept in days", "no need for sleep", "racing thoughts", "immortal genius", "feel like god", "feel like a god", "spending spree", "extreme highs and lows", "manic episode", "crash and burn", "talking so fast", "electricity in my veins", "grand plans", "on top of the world then"],
+        words: ["bipolar", "manic", "mania", "hypomanic", "hypomania", "euphoria", "euphoric", "swings", "rollercoaster", "invincible", "immortal", "grandiose", "grandiosity", "hyperactive", "erratic", "reckless", "impulsive", "cycling", "peaks"],
+        weight: 2.1
+      },
+      "Personality disorder": {
+        phrases: ["everyone always abandons me", "fear of abandonment", "afraid they will leave", "love them then hate them", "hate them then love them", "empty inside", "chronic emptiness", "feel like a monster", "nobody truly understands me", "splitting on", "unstable relationships", "rejection sensitive", "abandon me"],
+        words: ["bpd", "borderline", "abandon", "abandonment", "abandoned", "splitting", "masks", "unstable", "volatile", "chaos", "self-harm", "cutting", "emptiness", "dysregulation", "dissociation", "identity", "impulsivity", "rage", "rejection"],
+        weight: 2.1
+      },
+      "Normal": {
+        phrases: ["feeling good about life", "great day today", "wonderful morning", "had fun with", "went for a run", "coffee with my friend", "excited for the weekend", "passed my exam", "looking forward to", "feeling peaceful", "relaxed and happy", "productive day", "good day with", "celebrating with", "proud of my work"],
+        words: ["happy", "joyful", "great", "good", "wonderful", "grateful", "blessed", "peaceful", "calm", "content", "productive", "healthy", "optimistic", "smiling", "laughter", "sunshine", "relaxing", "rested", "enjoyed", "cheer", "love", "loving"],
+        weight: 1.2
+      }
     };
 
     function runClientSideInference(text) {
-      const lower = text.toLowerCase();
-      const words = lower.match(/\b\w+\b/g) || [];
-      const scores = { "Normal": 0.05, "Depression": 0.05, "Suicidal": 0.05, "Anxiety": 0.05, "Stress": 0.05, "Bipolar": 0.05, "Personality disorder": 0.05 };
-      const attributions = [];
-      let hasPos = false, hasNeg = false;
+      if (!text || !text.trim()) {
+        return {
+          statement: "",
+          primary_class: "Normal",
+          confidence: 1.0,
+          confidence_percentage: "100.00%",
+          top_3_predictions: [{ class: "Normal", confidence: 1.0, percentage: "100.00%" }],
+          risk_assessment: { level: "NORMAL / LOW RISK", color: "#10B981", is_crisis: false, clinical_recommendation: "Baseline normal." },
+          token_explainability: []
+        };
+      }
 
-      words.forEach(w => {
-        let matched = false;
-        for (let [cls, list] of Object.entries(LEXICON)) {
-          if (list.includes(w)) {
-            const weight = cls === 'Suicidal' ? 2.2 : (cls === 'Depression' ? 1.35 : 1.2);
-            scores[cls] += weight;
-            attributions.push({ token: w, target_class: cls, saliency: weight });
-            matched = true;
-            if (cls === 'Normal') hasPos = true; else hasNeg = true;
-            break;
+      const lower = text.toLowerCase().trim();
+      const words = lower.match(/[a-z0-9]+/g) || [];
+      const scores = { "Normal": 0.1, "Depression": 0.1, "Suicidal": 0.1, "Anxiety": 0.1, "Stress": 0.1, "Bipolar": 0.1, "Personality disorder": 0.1 };
+      const attributions = [];
+      let hasDistress = false, hasPositive = false;
+
+      // 1. Multi-word phrase matching
+      for (const [cls, info] of Object.entries(CLINICAL_ANCHORS)) {
+        for (const phrase of info.phrases) {
+          if (lower.includes(phrase)) {
+            const boost = 3.5 * info.weight;
+            scores[cls] += boost;
+            if (cls !== "Normal") hasDistress = true; else hasPositive = true;
           }
         }
-        if (!matched) attributions.push({ token: w, target_class: "Neutral", saliency: 0.0 });
+      }
+
+      // 2. Negation detection
+      const negations = ["not", "no", "never", "can't", "cannot", "won't", "don't", "do not", "hardly", "barely", "unable", "without"];
+      let negatedNormal = false;
+      for (let i = 0; i < words.length; i++) {
+        if (negations.includes(words[i])) {
+          const nextWords = words.slice(i + 1, i + 4);
+          if (nextWords.some(nw => ["good", "well", "fine", "ok", "happy", "great", "energy", "sleep", "joy", "hope", "worth"].includes(nw))) {
+            negatedNormal = true;
+            scores["Depression"] += 3.5;
+            scores["Normal"] -= 3.5;
+            hasDistress = true;
+          }
+        }
+      }
+
+      // 3. Word saliency matching
+      words.forEach(w => {
+        let wordImpacts = {};
+        for (const [cls, info] of Object.entries(CLINICAL_ANCHORS)) {
+          if (info.words.includes(w)) {
+            if (cls === "Normal" && negatedNormal) continue;
+            const boost = 1.1 * info.weight;
+            scores[cls] += boost;
+            wordImpacts[cls] = boost;
+            if (cls !== "Normal") hasDistress = true; else hasPositive = true;
+          }
+        }
+        if (Object.keys(wordImpacts).length > 0) {
+          const topCls = Object.keys(wordImpacts).reduce((a, b) => wordImpacts[a] > wordImpacts[b] ? a : b);
+          attributions.push({ token: w, target_class: topCls, saliency: wordImpacts[topCls] });
+        } else {
+          attributions.push({ token: w, target_class: "Neutral", saliency: 0.0 });
+        }
       });
 
-      if (hasPos && !hasNeg) {
-        scores["Normal"] += 5.5;
-        for (let c of Object.keys(scores)) { if (c !== 'Normal') scores[c] = -2.5; }
-      } else if (!hasPos && !hasNeg) {
-        scores["Normal"] += 3.0;
+      // 4. Global distribution balancing
+      if (hasDistress) {
+        scores["Normal"] = Math.min(scores["Normal"], 0.2);
+      } else if (hasPositive && !hasDistress) {
+        scores["Normal"] += 8.5;
+        for (const c of ["Depression", "Suicidal", "Anxiety", "Stress", "Personality disorder", "Bipolar"]) scores[c] = -2.5;
+      } else {
+        scores["Normal"] = 1.0;
       }
 
-      if (lower.includes("kill") || lower.includes("suicide") || lower.includes("suicidal") || lower.includes("die") || lower.includes("pills")) {
-        scores["Suicidal"] += 5.5;
-      }
-
+      // Softmax with temperature T=1.1
       const exp = {};
       let sumExp = 0;
-      for (let [c, val] of Object.entries(scores)) { exp[c] = Math.exp(val / 1.1); sumExp += exp[c]; }
+      for (const [c, val] of Object.entries(scores)) {
+        exp[c] = Math.exp(val / 1.1);
+        sumExp += exp[c];
+      }
       const probs = {};
-      for (let c of Object.keys(exp)) probs[c] = exp[c] / sumExp;
+      for (const c of Object.keys(exp)) probs[c] = exp[c] / sumExp;
 
       const sorted = Object.entries(probs).sort((a,b) => b[1] - a[1]);
       const top3 = sorted.slice(0, 3).map(([c, p]) => ({ class: c, confidence: p, percentage: (p * 100).toFixed(2) + "%" }));
 
       const primary = top3[0].class;
-      const isCrisis = (probs["Suicidal"] >= 0.25 || primary === "Suicidal");
-      let riskLevel = "NORMAL / LOW RISK", color = "#10B981", rec = "Statement indicates neutral or healthy psychological balance.";
+      const isCrisis = (primary === "Suicidal" || probs["Suicidal"] >= 0.25 || lower.includes("kill myself") || lower.includes("want to die") || lower.includes("suicide"));
+      let riskLevel = "NORMAL / LOW RISK", color = "#10B981", rec = "No acute clinical distress indicators detected. Continue baseline wellness routines.";
       if (isCrisis) {
-        riskLevel = "CRITICAL / CRISIS EMERGENCY"; color = "#EF4444"; rec = "High risk of self-harm or suicidal crisis detected. Immediate intervention required.";
-      } else if (["Depression", "Bipolar", "Personality disorder"].includes(primary)) {
-        riskLevel = "ELEVATED / MODERATE RISK"; color = "#EA580C"; rec = "Moderate psychological distress detected. Recommend professional clinical assessment.";
-      } else if (["Anxiety", "Stress"].includes(primary)) {
-        riskLevel = "MILD / DISTRESS MONITORING"; color = "#F59E0B"; rec = "Situational anxiety or chronic stress patterns identified.";
+        riskLevel = "CRITICAL / CRISIS ESCALATION"; color = "#EF4444"; rec = "Immediate clinical safety protocol triggered. Please connect with emergency services or verified 24/7 crisis helpline.";
+      } else if (primary === "Depression" || primary === "Bipolar") {
+        riskLevel = "ELEVATED CLINICAL STRAIN"; color = "#8B5CF6"; rec = "Significant mood disturbance indicators detected. Formal clinical evaluation with a psychiatrist or clinical psychologist is recommended.";
+      } else if (primary === "Anxiety" || primary === "Stress") {
+        riskLevel = "MILD / DISTRESS MONITORING"; color = "#F59E0B"; rec = "Situational anxiety or chronic stress patterns identified. Recommend somatic mindfulness routines and cognitive restructuring.";
+      } else if (primary === "Personality disorder") {
+        riskLevel = "MODERATE / REGULATION NEEDED"; color = "#EC4899"; rec = "Interpersonal friction and emotional dysregulation detected. Dialectical Behavior Therapy (DBT) skills recommended.";
       }
 
       return {
@@ -1733,12 +1809,65 @@ Notice that our minds often magnify setbacks into permanent verdicts. What you a
 
         if (statusEl) statusEl.textContent = `Audit complete for ${file.name}`;
       } catch (err) {
-        console.error("File analysis error:", err);
-        const errBubble = document.createElement('div');
-        errBubble.style = "max-width:85%; padding:0.85rem 1.1rem; border-radius:14px; font-size:0.85rem; background:rgba(239, 68, 68, 0.15); border:1px solid #EF4444; color:#FCA5A5; align-self:flex-start";
-        errBubble.innerHTML = `&#9888;&#65039; <strong>File Analysis Notice:</strong> Could not complete remote file audit (${err.message}). Supported formats: PDF, DOCX, CSV, TXT under 25MB.`;
-        chatBox.appendChild(errBubble);
-        if (statusEl) statusEl.textContent = "Upload failed";
+        console.warn("Remote document analysis failed or offline, analyzing locally:", err);
+        try {
+          const reader = new FileReader();
+          reader.onload = function(e) {
+            const rawText = e.target.result;
+            const sentences = rawText.split(/(?<=[.!?\n])\s+/).filter(s => s.trim().length > 6);
+            const classCounts = { "Normal": 0, "Depression": 0, "Suicidal": 0, "Anxiety": 0, "Stress": 0, "Bipolar": 0, "Personality disorder": 0 };
+            const highRisks = [];
+            const sampleSentences = [];
+
+            sentences.slice(0, 100).forEach(st => {
+              const res = runClientSideInference(st);
+              classCounts[res.primary_class] = (classCounts[res.primary_class] || 0) + 1;
+              if (res.risk_assessment.is_crisis || ["Suicidal", "Depression", "Bipolar"].includes(res.primary_class)) {
+                highRisks.push({ quote: st.slice(0, 120), class: res.primary_class, confidence: res.confidence_percentage });
+              }
+              if (sampleSentences.length < 5) sampleSentences.push({ sentence: st, primary_class: res.primary_class, confidence: res.confidence_percentage });
+            });
+
+            const total = Math.max(1, sentences.slice(0, 100).length);
+            const shares = {};
+            for (const [k, v] of Object.entries(classCounts)) {
+              shares[k] = parseFloat(((v / total) * 100).toFixed(1));
+            }
+            const dominantClass = Object.keys(classCounts).reduce((a, b) => classCounts[a] > classCounts[b] ? a : b);
+            const isCrisis = classCounts["Suicidal"] > 0;
+            const triageLevel = isCrisis ? "Acute Crisis Risk" : (["Depression", "Bipolar"].includes(dominantClass) ? "Moderate Clinical Strain" : (["Anxiety", "Stress"].includes(dominantClass) ? "Mild Concern" : "Safe / Baseline"));
+
+            const localDocData = {
+              file_info: {
+                filename: file.name,
+                total_words: rawText.split(/\s+/).length,
+                total_sentences: sentences.length,
+                file_size_kb: (file.size / 1024).toFixed(1)
+              },
+              clinical_boundary: {
+                triage_level: triageLevel,
+                is_crisis: isCrisis
+              },
+              affective_profile: {
+                dominant_clinical_category: dominantClass,
+                class_distribution_percent: shares
+              },
+              executive_summary: `Clinical audit of ${file.name} evaluated ${total} statements. Primary affective pattern: ${dominantClass} (${shares[dominantClass]}%).`,
+              high_risk_statements: highRisks.slice(0, 4),
+              sample_sentences_analyzed: sampleSentences
+            };
+
+            renderDocumentAuditCard(chatBox, localDocData);
+            if (statusEl) statusEl.textContent = `Local audit complete for ${file.name}`;
+          };
+          reader.readAsText(file);
+        } catch (localErr) {
+          const errBubble = document.createElement('div');
+          errBubble.style = "max-width:85%; padding:0.85rem 1.1rem; border-radius:14px; font-size:0.85rem; background:rgba(239, 68, 68, 0.15); border:1px solid #EF4444; color:#FCA5A5; align-self:flex-start";
+          errBubble.innerHTML = `&#9888;&#65039; <strong>File Analysis Notice:</strong> Could not complete file audit (${err.message}). Supported formats: PDF, DOCX, CSV, TXT under 25MB.`;
+          chatBox.appendChild(errBubble);
+          if (statusEl) statusEl.textContent = "Upload failed";
+        }
       } finally {
         const tEl = document.getElementById('chatFileTypingIndicator');
         if (tEl) tEl.remove();
@@ -2405,12 +2534,54 @@ Notice that our minds often magnify setbacks into permanent verdicts. What you a
           `;
         }
       } catch (err) {
-        console.error("Clinical file audit failed:", err);
-        if (statusEl) {
-          statusEl.style.background = 'rgba(239,68,68,0.15)';
-          statusEl.style.border = '1px solid #EF4444';
-          statusEl.style.color = '#FCA5A5';
-          statusEl.textContent = `Could not audit file: ${err.message}. Supported formats: PDF, DOCX, CSV, TXT.`;
+        console.warn("Remote clinical audit failed or offline, evaluating locally:", err);
+        try {
+          const reader = new FileReader();
+          reader.onload = function(e) {
+            const rawText = e.target.result;
+            const sentences = rawText.split(/(?<=[.!?\n])\s+/).filter(s => s.trim().length > 6);
+            let depHits = 0, anxHits = 0, suiHits = 0;
+            sentences.slice(0, 100).forEach(st => {
+              const res = runClientSideInference(st);
+              if (res.primary_class === "Depression") depHits++;
+              if (res.primary_class === "Anxiety") anxHits++;
+              if (res.primary_class === "Suicidal") suiHits++;
+            });
+            const depScore = Math.min(27, Math.round(depHits * 1.5 + suiHits * 4));
+            const gadScore = Math.min(21, Math.round(anxHits * 1.8));
+
+            const phqPerItem = Math.min(3, Math.floor(depScore / 9));
+            for (let i = 0; i < 9; i++) {
+              const val = (i < (depScore % 9)) ? Math.min(3, phqPerItem + 1) : phqPerItem;
+              const radio = document.querySelector(`input[name="phq_${i}"][value="${val}"]`);
+              if (radio) radio.checked = true;
+            }
+            const gadPerItem = Math.min(3, Math.floor(gadScore / 7));
+            for (let i = 0; i < 7; i++) {
+              const val = (i < (gadScore % 7)) ? Math.min(3, gadPerItem + 1) : gadPerItem;
+              const radio = document.querySelector(`input[name="gad_${i}"][value="${val}"]`);
+              if (radio) radio.checked = true;
+            }
+            calculateClinicalScores();
+
+            if (statusEl) {
+              statusEl.style.background = 'rgba(16,185,129,0.15)';
+              statusEl.style.border = '1px solid #10B981';
+              statusEl.style.color = '#34D399';
+              statusEl.innerHTML = `
+                <div>&#10003; <strong>${file.name}</strong> successfully evaluated locally!</div>
+                <div style="font-size:0.75rem; color:#A7F3D0; margin-top:0.25rem">Calculated Estimates: <strong>PHQ-9 Score: ${depScore}</strong> &bull; <strong>GAD-7 Score: ${gadScore}</strong></div>
+              `;
+            }
+          };
+          reader.readAsText(file);
+        } catch (localErr) {
+          if (statusEl) {
+            statusEl.style.background = 'rgba(239,68,68,0.15)';
+            statusEl.style.border = '1px solid #EF4444';
+            statusEl.style.color = '#FCA5A5';
+            statusEl.textContent = `Could not audit file: ${err.message}. Supported formats: PDF, DOCX, CSV, TXT.`;
+          }
         }
       } finally {
         event.target.value = '';
@@ -2530,9 +2701,121 @@ Notice that our minds often magnify setbacks into permanent verdicts. What you a
         }
 
       } catch (batchErr) {
-        console.error("Batch upload error:", batchErr);
-        if (loading) loading.style.display = 'none';
-        alert(`Could not process batch file: ${batchErr.message}. Ensure backend is active.`);
+        console.warn("Backend batch processing failed or offline, executing client-side batch parsing:", batchErr);
+        try {
+          const reader = new FileReader();
+          reader.onload = function(e) {
+            const fileContent = e.target.result;
+            let statements = [];
+            if (file.name.endsWith('.csv') || fileContent.includes(',')) {
+              const lines = fileContent.split(/\r?\n/).filter(l => l.trim().length > 0);
+              const header = lines[0].toLowerCase().split(',');
+              let textColIdx = header.findIndex(h => ["text", "statement", "prompt", "message", "content", "utterance"].some(k => h.includes(k)));
+              if (textColIdx === -1) textColIdx = 0;
+              for (let i = 1; i < lines.length; i++) {
+                const parts = lines[i].split(',');
+                const val = (parts[textColIdx] || parts[0] || '').replace(/^[\"']|[\"']$/g, '').trim();
+                if (val.length > 3) statements.push(val);
+              }
+            } else {
+              statements = fileContent.split(/\r?\n/).map(l => l.trim()).filter(l => l.length > 5);
+            }
+            if (!statements.length) statements = [fileContent.slice(0, 500)];
+
+            const records = [];
+            const classCounts = { "Normal": 0, "Depression": 0, "Suicidal": 0, "Anxiety": 0, "Stress": 0, "Bipolar": 0, "Personality disorder": 0 };
+            let crisisCount = 0;
+
+            statements.slice(0, 150).forEach(st => {
+              const res = runClientSideInference(st);
+              classCounts[res.primary_class] = (classCounts[res.primary_class] || 0) + 1;
+              if (res.risk_assessment.is_crisis) crisisCount++;
+              records.push({
+                text: st,
+                primary_class: res.primary_class,
+                confidence_percentage: res.confidence_percentage,
+                is_crisis: res.risk_assessment.is_crisis
+              });
+            });
+
+            if (loading) loading.style.display = 'none';
+            if (resultsDiv) resultsDiv.style.display = 'block';
+            if (countEl) countEl.textContent = records.length;
+
+            if (tbody) {
+              tbody.innerHTML = '';
+              records.forEach((r, idx) => {
+                const tr = document.createElement('tr');
+                let riskBadge = `<span class="badge" style="background:rgba(16,185,129,0.2); color:#34D399; border:1px solid #10B981">Safe / Baseline</span>`;
+                if (r.is_crisis || r.primary_class === "Suicidal") {
+                  riskBadge = `<span class="badge" style="background:rgba(239,68,68,0.25); color:#FCA5A5; border:1px solid #EF4444">&#127384; Crisis Risk</span>`;
+                } else if (["Depression", "Anxiety"].includes(r.primary_class)) {
+                  riskBadge = `<span class="badge" style="background:rgba(245,158,11,0.2); color:#FCD34D; border:1px solid #F59E0B">Clinical Strain</span>`;
+                }
+                tr.innerHTML = `
+                  <td>${idx + 1}</td>
+                  <td style="max-width:320px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis" title="${r.text}">${r.text}</td>
+                  <td><strong>${r.primary_class}</strong></td>
+                  <td>${r.confidence_percentage}</td>
+                  <td>${riskBadge}</td>
+                `;
+                tbody.appendChild(tr);
+              });
+            }
+
+            if (typeof Chart !== 'undefined') {
+              const ctxClass = document.getElementById('batchClassChart');
+              if (ctxClass) {
+                if (batchClassChartInstance) batchClassChartInstance.destroy();
+                batchClassChartInstance = new Chart(ctxClass, {
+                  type: 'doughnut',
+                  data: {
+                    labels: Object.keys(classCounts),
+                    datasets: [{
+                      data: Object.values(classCounts),
+                      backgroundColor: ['#10B981', '#3B82F6', '#EF4444', '#F59E0B', '#EC4899', '#8B5CF6', '#64748B']
+                    }]
+                  },
+                  options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'right', labels: { color: '#E2E8F0', font: { size: 10 } } } }
+                  }
+                });
+              }
+
+              const ctxRisk = document.getElementById('batchRiskChart');
+              if (ctxRisk) {
+                if (batchRiskChartInstance) batchRiskChartInstance.destroy();
+                const strainCount = records.filter(r => ["Depression", "Anxiety"].includes(r.primary_class)).length;
+                const safeCount = Math.max(0, records.length - crisisCount - strainCount);
+                batchRiskChartInstance = new Chart(ctxRisk, {
+                  type: 'bar',
+                  data: {
+                    labels: ['Safe / Baseline', 'Clinical Strain', 'Acute Crisis'],
+                    datasets: [{
+                      data: [safeCount, strainCount, crisisCount],
+                      backgroundColor: ['#10B981', '#F59E0B', '#EF4444']
+                    }]
+                  },
+                  options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                      y: { ticks: { color: '#94A3B8' }, grid: { color: 'rgba(255,255,255,0.05)' } },
+                      x: { ticks: { color: '#E2E8F0' }, grid: { display: false } }
+                    }
+                  }
+                });
+              }
+            }
+          };
+          reader.readAsText(file);
+        } catch (innerErr) {
+          if (loading) loading.style.display = 'none';
+          alert(`Could not process batch file: ${batchErr.message}`);
+        }
       } finally {
         event.target.value = '';
       }

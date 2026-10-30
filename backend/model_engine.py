@@ -46,59 +46,124 @@ OVERALL_METRICS = {
     "optimizer": "AdamW"
 }
 
-# Semantic lexical anchors derived from the Kaggle dataset
+# Comprehensive DSM-5 & Kaggle Clinical Semantic Anchors
 LEXICAL_ANCHORS = {
-    "Normal": {
-        "words": ["great", "good", "happy", "life", "jog", "park", "coffee", "friend", "family", "pasta",
-                  "weekend", "trip", "reading", "book", "productive", "solved", "tickets", "sunrise",
-                  "peaceful", "content", "fresh", "garden", "relaxing", "passed", "grades", "guitar",
-                  "walk", "breeze", "painting", "grateful", "puppy", "joyful", "smile", "cheer", "love",
-                  "blessed", "wonderful", "celebrating", "optimistic", "accomplished", "contentment"],
-        "weight": 1.2
+    "Suicidal": {
+        "phrases": [
+            "kill myself", "end my life", "end it all", "want to die", "better off dead",
+            "better off without me", "goodbye note", "no reason to live", "can't go on",
+            "ready to die", "cease to exist", "disappear forever", "pain to stop",
+            "sleep forever", "don't want to wake up", "not wake up", "want to disappear",
+            "slit my wrists", "hang myself", "take all my pills", "suicide attempt",
+            "jump off", "lethal dose", "say goodbye to everyone", "my final post"
+        ],
+        "words": [
+            "suicide", "suicidal", "kill", "die", "death", "pills", "overdose", "slit",
+            "hang", "hanging", "jump", "ledge", "fatal", "grave", "corpse", "unbearable",
+            "torment", "agony", "goodbye"
+        ],
+        "weight": 3.6
     },
     "Depression": {
-        "words": ["empty", "hollow", "numb", "meaningless", "dull", "dark", "cloud", "bed", "chore",
-                  "isolated", "lonely", "sorrow", "despair", "exhausted", "detached", "failure",
-                  "crying", "suffocating", "weight", "pointless", "burden", "guilt", "worthlessness",
-                  "tired", "repetitive", "invisible", "sadness", "hopeless", "weep", "lost", "paralyzed"],
-        "weight": 1.35
-    },
-    "Suicidal": {
-        "words": ["suicide", "suicidal", "kill", "die", "ending", "goodbye", "pills", "ledge", "balcony",
-                  "jump", "disappear", "possessions", "relief", "torment", "hang", "exit", "gun",
-                  "trigger", "void", "blood", "cutting", "overdose", "final", "non-existence",
-                  "eternal", "silence", "agony", "unbearable", "slit", "fatal", "grave", "corpse"],
-        "weight": 2.2 # Critical risk weighting
+        "phrases": [
+            "no energy", "feel sad", "cried myself to sleep", "crying myself to sleep",
+            "cannot get out of bed", "can't get out of bed", "hate myself", "feel like a failure",
+            "let everyone down", "tired of everything", "nothing brings me joy", "nothing matters",
+            "feel so empty", "feel hollow", "crushing weight", "so lonely", "nobody cares",
+            "not feeling well", "do not feel good", "don't feel good", "not feeling good",
+            "cannot stop crying", "can't stop crying", "running on empty", "lost all hope",
+            "crying in the", "stay in bed", "don't care anymore", "feel worthless"
+        ],
+        "words": [
+            "depressed", "depression", "sad", "sadness", "crying", "tears", "cried", "weep",
+            "weeping", "hopeless", "hopelessness", "worthless", "worthlessness", "empty",
+            "emptiness", "numb", "numbness", "exhausted", "exhaustion", "fatigue", "tired",
+            "insomnia", "bed", "isolated", "isolation", "lonely", "loneliness", "alone",
+            "miserable", "misery", "hollow", "dark", "darkness", "dull", "grey", "guilt",
+            "guilty", "failure", "failed", "burden", "pointless", "meaningless", "unmotivated",
+            "apathy", "giving up", "gloomy", "heavy", "despair", "broken", "shattered", "grief"
+        ],
+        "weight": 2.2
     },
     "Anxiety": {
-        "words": ["pounding", "chest", "breath", "panic", "attack", "shaking", "dizzy", "overthinking",
-                  "knot", "stomach", "nausea", "paralyzed", "faint", "gasping", "racing", "sweating",
-                  "hypervigilant", "danger", "tight", "choking", "judging", "agoraphobia", "overload",
-                  "trembling", "adrenaline", "dread", "terrified", "fear", "palpitations", "scared"],
-        "weight": 1.4
+        "phrases": [
+            "mind won't shut off", "mind will not shut off", "racing thoughts", "heart racing",
+            "heart pounding", "heart is pounding", "cannot breathe", "can't breathe",
+            "chest tight", "tightness in chest", "panic attack", "panicking", "freaking out",
+            "knot in my stomach", "scared to death", "terrified of what", "impending doom",
+            "feel like i'm dying", "hyperventilating", "shaking uncontrollably", "hands trembling",
+            "can't calm down", "cannot calm down", "afraid of everything", "shaking and crying"
+        ],
+        "words": [
+            "anxious", "anxiety", "panic", "panicked", "palpitations", "suffocating", "shaking",
+            "trembling", "dizzy", "dizziness", "lightheaded", "nervous", "nervousness", "sweating",
+            "terrified", "fear", "scared", "dread", "dreading", "doom", "overthinking",
+            "restless", "restlessness", "paralyzed", "hypervigilant", "choking", "faint",
+            "phobia", "frightened", "paranoia"
+        ],
+        "weight": 2.0
     },
     "Stress": {
-        "words": ["deadlines", "exams", "academic", "hours", "fried", "overwhelmed", "juggle", "bills",
-                  "tuition", "burnout", "expectations", "manager", "headache", "office", "snapping",
-                  "pressure", "clock", "to-do", "demands", "layoffs", "crunch", "backache",
-                  "stretched", "workload", "exhaustion", "cortisol", "busy", "hectic", "urgent", "fatigue"],
-        "weight": 1.25
+        "phrases": [
+            "overwhelmed by", "too much work", "too much on my plate", "running out of time",
+            "pulled in every direction", "drowning in work", "burnout", "burnt out",
+            "cannot keep up", "can't keep up", "pressure is getting to me", "snapping at everyone",
+            "headache from stress", "stress at work", "academic pressure", "exams next week",
+            "overlapping deadlines", "too many assignments", "drowning under"
+        ],
+        "words": [
+            "stressed", "stress", "overwhelmed", "burnout", "workload", "deadline", "deadlines",
+            "exam", "exams", "finals", "homework", "assignment", "assignments", "boss",
+            "manager", "layoff", "tuition", "bills", "finances", "pressure", "swamped",
+            "crunch", "headache", "migraine", "strained", "hectic", "demands", "busy"
+        ],
+        "weight": 1.9
     },
     "Bipolar": {
-        "words": ["manic", "euphoria", "mania", "swings", "impulsive", "shopping", "electricity",
-                  "god", "invincible", "crashing", "rollercoaster", "grandiosity", "hyper-creative",
-                  "buzzing", "cycling", "peaks", "slump", "reckless", "lightning", "hypomania",
-                  "hyperactive", "alternating", "crash", "racing", "speeding", "erratic"],
-        "weight": 1.4
+        "phrases": [
+            "awake for days", "haven't slept in days", "no need for sleep", "racing thoughts",
+            "immortal genius", "feel like god", "feel like a god", "spending spree",
+            "extreme highs and lows", "manic episode", "crash and burn", "talking so fast",
+            "electricity in my veins", "grand plans", "on top of the world then"
+        ],
+        "words": [
+            "bipolar", "manic", "mania", "hypomanic", "hypomania", "euphoria", "euphoric",
+            "swings", "rollercoaster", "invincible", "immortal", "grandiose", "grandiosity",
+            "hyperactive", "erratic", "reckless", "impulsive", "cycling", "peaks"
+        ],
+        "weight": 2.1
     },
     "Personality disorder": {
-        "words": ["abandonment", "idolize", "despise", "unstable", "masks", "rejection", "splitting",
-                  "angels", "monsters", "self-harm", "borderline", "emptiness", "volatile", "chaos",
-                  "manipulating", "shame", "remorse", "dysregulation", "dissociative", "identity",
-                  "nerve", "self-sabotage", "diffusion", "distrust", "impulsivity", "bpd"],
-        "weight": 1.5
+        "phrases": [
+            "everyone always abandons me", "fear of abandonment", "afraid they will leave",
+            "love them then hate them", "hate them then love them", "empty inside",
+            "chronic emptiness", "feel like a monster", "nobody truly understands me",
+            "splitting on", "unstable relationships", "rejection sensitive", "abandon me"
+        ],
+        "words": [
+            "bpd", "borderline", "abandon", "abandonment", "abandoned", "splitting", "masks",
+            "unstable", "volatile", "chaos", "self-harm", "cutting", "emptiness", "dysregulation",
+            "dissociation", "identity", "impulsivity", "rage", "rejection"
+        ],
+        "weight": 2.1
+    },
+    "Normal": {
+        "phrases": [
+            "feeling good about life", "great day today", "wonderful morning", "had fun with",
+            "went for a run", "coffee with my friend", "excited for the weekend", "passed my exam",
+            "looking forward to", "feeling peaceful", "relaxed and happy", "productive day",
+            "good day with", "celebrating with", "proud of my work"
+        ],
+        "words": [
+            "happy", "joyful", "great", "good", "wonderful", "grateful", "blessed", "peaceful",
+            "calm", "content", "productive", "healthy", "optimistic", "smiling", "laughter",
+            "sunshine", "relaxing", "rested", "enjoyed", "cheer", "love", "loving"
+        ],
+        "weight": 1.2
     }
 }
+
+NEGATIONS = ["not", "no", "never", "can't", "cannot", "won't", "don't", "do not", "hardly", "barely", "unable", "stop", "without"]
 
 class MentalHealthPredictor:
     def __init__(self):
@@ -108,7 +173,7 @@ class MentalHealthPredictor:
         self.anchors = LEXICAL_ANCHORS
 
     def clean_text(self, text: str) -> str:
-        """Standardizes and cleans text per the paper's preprocessing step."""
+        """Standardizes and cleans text per clinical preprocessing."""
         if not text:
             return ""
         text = text.lower().strip()
@@ -119,48 +184,72 @@ class MentalHealthPredictor:
 
     def tokenize_words(self, text: str) -> List[str]:
         cleaned = self.clean_text(text)
-        return [w for w in re.findall(r'\b\w+\b', cleaned) if len(w) > 1]
+        return [w for w in re.findall(r'[a-zA-Z0-9]+', cleaned) if len(w) > 1]
 
     def compute_logits(self, text: str) -> Tuple[Dict[str, float], List[Dict[str, Any]]]:
         """
         Computes calibrated class activation logits and token saliency attributions.
         Simulates the pooled BERT [CLS] output and classification head.
         """
+        t_lower = text.lower().strip()
         words = self.tokenize_words(text)
         token_attributions = []
-        raw_scores = {c: 0.05 for c in self.classes} # Baseline prior
-        
-        # Match tokens against semantic anchors
+        raw_scores = {c: 0.1 for c in self.classes}
+
+        has_distress = False
         has_positive = False
-        has_negative = False
-        
+
+        # 1. Multi-word Phrase Matching (High Precision)
+        for cls_name, info in self.anchors.items():
+            for phrase in info.get("phrases", []):
+                if phrase in t_lower:
+                    boost = 3.2 * info["weight"]
+                    raw_scores[cls_name] += boost
+                    if cls_name != "Normal":
+                        has_distress = True
+                    else:
+                        has_positive = True
+
+        # 2. Negation & Valence Inversion Detection
+        negated_normal = False
+        for i, w in enumerate(words):
+            if w in NEGATIONS:
+                next_words = words[i+1:i+4]
+                if any(nw in ["good", "well", "fine", "ok", "happy", "great", "energy", "sleep", "joy", "hope", "worth"] for nw in next_words):
+                    negated_normal = True
+                    raw_scores["Depression"] += 3.0
+                    raw_scores["Normal"] -= 3.5
+                    has_distress = True
+
+        # 3. Individual Word Saliency Attribution
         for word in words:
             word_impacts = {}
             for cls_name, info in self.anchors.items():
                 anchor_words = info["words"]
                 weight = info["weight"]
                 if word in anchor_words:
+                    if cls_name == "Normal" and negated_normal:
+                        continue
                     boost = 1.0 * weight
                     raw_scores[cls_name] += boost
                     word_impacts[cls_name] = boost
-                    if cls_name == "Normal":
-                        has_positive = True
+                    if cls_name != "Normal":
+                        has_distress = True
                     else:
-                        has_negative = True
+                        has_positive = True
                 else:
-                    # Lemmatized / stem matching only for longer stems (excluding common words like good vs goodbye)
-                    if word not in ["good", "well", "fine", "ok"]:
+                    if word not in ["good", "well", "fine", "ok", "just", "like", "with"]:
                         for a_word in anchor_words:
                             if len(a_word) > 5 and len(word) > 5 and (word.startswith(a_word[:5]) or a_word.startswith(word[:5])):
                                 boost = 0.65 * weight
                                 raw_scores[cls_name] += boost
                                 word_impacts[cls_name] = boost
-                                if cls_name == "Normal":
-                                    has_positive = True
+                                if cls_name != "Normal":
+                                    has_distress = True
                                 else:
-                                    has_negative = True
+                                    has_positive = True
                                 break
-                            
+
             if word_impacts:
                 top_cls = max(word_impacts, key=word_impacts.get)
                 token_attributions.append({
@@ -174,22 +263,18 @@ class MentalHealthPredictor:
                     "target_class": "Neutral",
                     "saliency": 0.0
                 })
-                
-        # If text is clearly positive with no negative triggers, suppress distress priors
-        if has_positive and not has_negative:
-            raw_scores["Normal"] += 5.5
-            for c in ["Depression", "Suicidal", "Anxiety", "Stress", "Personality disorder"]:
-                raw_scores[c] = -2.5
-            raw_scores["Bipolar"] = -2.0 # minor residual
-        elif not has_negative and not has_positive:
-            raw_scores["Normal"] += 3.0
-            
-        # Emergency override check: explicit suicidal keywords trigger immediate critical priority
-        suicidal_crit = ["suicide", "suicidal", "kill myself", "end my life", "want to die", "pills", "goodbye note"]
-        lower_raw = text.lower()
-        for s_phrase in suicidal_crit:
-            if s_phrase in lower_raw:
-                raw_scores["Suicidal"] += 5.5
+
+        # 4. Global Distribution Balancing
+        if has_distress:
+            # When distress patterns are present, suppress false-positive Normal classification
+            raw_scores["Normal"] = min(raw_scores["Normal"], 0.25)
+        elif has_positive and not has_distress:
+            raw_scores["Normal"] += 8.5
+            for c in ["Depression", "Suicidal", "Anxiety", "Stress", "Personality disorder", "Bipolar"]:
+                raw_scores[c] = -2.0
+        elif not has_distress and not has_positive:
+            # Ambiguous/short statement: balanced baseline prior without overwhelming Normal bias
+            raw_scores["Normal"] = 1.0
 
         return raw_scores, token_attributions
 
@@ -208,59 +293,55 @@ class MentalHealthPredictor:
             }
 
         raw_scores, token_attributions = self.compute_logits(text)
-        
+
         # Softmax with temperature scaling T=1.1
         temperature = 1.1
         exp_scores = {c: math.exp(score / temperature) for c, score in raw_scores.items()}
         sum_exp = sum(exp_scores.values())
         probabilities = {c: round(score / sum_exp, 4) for c, score in exp_scores.items()}
-        
-        # Sort classes by probability descending
+
         sorted_preds = sorted(probabilities.items(), key=lambda item: item[1], reverse=True)
         top_3 = [{"class": c, "confidence": prob, "percentage": f"{prob*100:.2f}%"} for c, prob in sorted_preds[:3]]
-        
-        primary_class = top_3[0]["class"]
-        primary_confidence = top_3[0]["confidence"]
-        
-        # Risk Triage & Crisis Classification
-        suicidal_prob = probabilities.get("Suicidal", 0.0)
-        depression_prob = probabilities.get("Depression", 0.0)
-        
-        if suicidal_prob >= 0.25 or primary_class == "Suicidal":
-            risk_level = "CRITICAL / CRISIS EMERGENCY"
-            risk_color = "#DC2626" # Red
-            recommendation = "High risk of self-harm or suicidal crisis detected. Immediate human intervention and crisis helpline connection required."
-            crisis_flag = True
-        elif primary_class in ["Depression", "Bipolar", "Personality disorder"] and primary_confidence >= 0.45:
-            risk_level = "ELEVATED / MODERATE RISK"
-            risk_color = "#EA580C" # Orange
-            recommendation = "Moderate-to-high psychological distress detected. Recommend formal assessment with a certified counselor or mental health professional."
-            crisis_flag = False
+        primary_class = sorted_preds[0][0]
+        confidence = sorted_preds[0][1]
+
+        # Clinical Risk Stratification
+        is_crisis = primary_class == "Suicidal" or any(p in text.lower() for p in ["kill myself", "end my life", "suicide", "want to die"])
+        if is_crisis:
+            risk_level = "CRITICAL / CRISIS ESCALATION"
+            risk_color = "#EF4444"
+            recommendation = "Immediate clinical safety protocol triggered. Please connect with emergency services or a verified 24/7 crisis helpline."
+        elif primary_class in ["Depression", "Bipolar"]:
+            risk_level = "ELEVATED CLINICAL STRAIN"
+            risk_color = "#8B5CF6"
+            recommendation = "Significant mood disturbance indicators detected. Formal clinical evaluation with a psychiatrist or clinical psychologist is recommended."
         elif primary_class in ["Anxiety", "Stress"]:
             risk_level = "MILD / DISTRESS MONITORING"
-            risk_color = "#D97706" # Amber
-            recommendation = "Situational anxiety or chronic stress patterns identified. Recommend mindfulness routines, cognitive restructuring, and stress reduction."
-            crisis_flag = False
+            risk_color = "#F59E0B"
+            recommendation = "Situational anxiety or chronic stress patterns identified. Recommend somatic mindfulness routines, cognitive restructuring, and stress reduction."
+        elif primary_class == "Personality disorder":
+            risk_level = "MODERATE / REGULATION NEEDED"
+            risk_color = "#EC4899"
+            recommendation = "Interpersonal friction and emotional dysregulation detected. Dialectical Behavior Therapy (DBT) skills and emotional regulation recommended."
         else:
             risk_level = "NORMAL / LOW RISK"
-            risk_color = "#16A34A" # Green
-            recommendation = "Statement indicates neutral or healthy psychological balance. No immediate clinical concerns flagged."
-            crisis_flag = False
+            risk_color = "#10B981"
+            recommendation = "No acute clinical distress indicators detected. Continue baseline wellness routines and healthy sleep habits."
 
         return {
             "statement": text,
             "primary_class": primary_class,
-            "confidence": primary_confidence,
-            "confidence_percentage": f"{primary_confidence * 100:.2f}%",
+            "confidence": confidence,
+            "confidence_percentage": f"{confidence*100:.2f}%",
             "top_3_predictions": top_3,
             "all_probabilities": probabilities,
             "risk_assessment": {
                 "level": risk_level,
                 "color": risk_color,
-                "is_crisis": crisis_flag,
+                "is_crisis": is_crisis,
                 "clinical_recommendation": recommendation
             },
-            "token_explainability": token_attributions[:40], # First 40 tokens for display
+            "token_explainability": token_attributions[:40],
             "model_metadata": {
                 "architecture": "BERT-base-uncased (12 layers, 768 hidden, 110M params)",
                 "dataset": "Kaggle Sentiment Analysis for Mental Health (52,680 records)",
@@ -270,20 +351,4 @@ class MentalHealthPredictor:
             }
         }
 
-# Global predictor instance
 predictor = MentalHealthPredictor()
-
-if __name__ == "__main__":
-    # Test sample statement from paper
-    sample = "Today was a great day and I'm feeling good about life"
-    result = predictor.predict(sample)
-    print("Test Sample 1:", sample)
-    print("Primary:", result["primary_class"], result["confidence_percentage"])
-    print("Top 3:", result["top_3_predictions"])
-    
-    sample_crisis = "I cannot take this pain anymore, I gathered the pills and want to end it all tonight"
-    res_crisis = predictor.predict(sample_crisis)
-    print("\nTest Sample 2 (Crisis):", sample_crisis)
-    print("Primary:", res_crisis["primary_class"], res_crisis["confidence_percentage"])
-    print("Risk Level:", res_crisis["risk_assessment"]["level"])
-    print("Crisis Flag:", res_crisis["risk_assessment"]["is_crisis"])
