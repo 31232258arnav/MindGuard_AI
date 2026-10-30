@@ -8,6 +8,7 @@ import os
 import sys
 import json
 import time
+import asyncio
 
 # Add project root to sys.path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
@@ -300,8 +301,15 @@ def generate_dynamic_cbt_fallback(user_msg: str, analysis: dict, psychometrics: 
         )
 
 
-def generate_neural_mindbot_reply(messages: List[ChatMessage], analysis: dict, psychometrics: dict, custom_key: Optional[str] = None, user_name: str = "Friend") -> tuple:
-    """Connects to live OpenRouter LLM Brain with fallback to dynamic situation-aware CBT engine."""
+def _call_openrouter_sync(url, headers, payload):
+    res = requests.post(url, headers=headers, json=payload, timeout=3.5)
+    if res.status_code == 200:
+        return res.json()["choices"][0]["message"]["content"]
+    raise RuntimeError(f"OpenRouter non-200: {res.status_code}")
+
+
+async def generate_neural_mindbot_reply(messages: List[ChatMessage], analysis: dict, psychometrics: dict, custom_key: Optional[str] = None, user_name: str = "Friend") -> tuple:
+    """Connects to live OpenRouter LLM Brain with strict 3.5s async timeout and instant CBT fallback."""
     api_key = custom_key or os.environ.get("OPENROUTER_API_KEY", "")
     latest_msg = messages[-1].content
     
@@ -327,7 +335,6 @@ def generate_neural_mindbot_reply(messages: List[ChatMessage], analysis: dict, p
     )
     
     formatted_messages = [{"role": "system", "content": system_prompt}]
-    # Keep only the last 3 turns with truncated length for rapid sub-5s LLM generation
     for m in messages[-3:]:
         formatted_messages.append({"role": m.role, "content": m.content[:350]})
         
@@ -335,24 +342,24 @@ def generate_neural_mindbot_reply(messages: List[ChatMessage], analysis: dict, p
         "model": "openrouter/free",
         "messages": formatted_messages,
         "temperature": 0.7,
-        "max_tokens": 400
+        "max_tokens": 350
     }
     
     try:
-        res = requests.post(url, headers=headers, json=payload, timeout=9)
-        if res.status_code == 200:
-            content = res.json()["choices"][0]["message"]["content"]
-            if content and content.strip():
-                return content.strip(), "OpenRouter Neural Brain (Live LLM)"
+        content = await asyncio.wait_for(
+            asyncio.to_thread(_call_openrouter_sync, url, headers, payload),
+            timeout=3.5
+        )
+        if content and content.strip():
+            return content.strip(), "OpenRouter Neural Brain (Live LLM)"
     except Exception:
         pass
         
-    # Instant high-quality dynamic CBT fallback if OpenRouter is slow or busy
-    return generate_dynamic_cbt_fallback(latest_msg, analysis, psychometrics, user_name), "Dynamic CBT Intelligence Engine (Fast Fallback)"
+    return generate_dynamic_cbt_fallback(latest_msg, analysis, psychometrics, user_name), "Dynamic CBT Intelligence Engine (Ultra-Fast)"
 
 
 @app.post("/api/chat")
-def conversational_screening(req: ChatSessionRequest):
+async def conversational_screening(req: ChatSessionRequest):
     """
     Conversational mental-health screening agent with live AI Brain & calculating power.
     Maintains dialogue context, computes cognitive distortions, and delivers real-life soothing.
@@ -369,7 +376,7 @@ def conversational_screening(req: ChatSessionRequest):
     psychometrics = calculate_psychometrics(latest_msg, req.messages)
     
     # Generate authentic AI Brain response
-    bot_response, brain_source = generate_neural_mindbot_reply(
+    bot_response, brain_source = await generate_neural_mindbot_reply(
         req.messages, 
         analysis, 
         psychometrics, 
