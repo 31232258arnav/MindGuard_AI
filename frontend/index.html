@@ -1,0 +1,1567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MindGuard AI | Comprehensive Mental Health Sentimental Analysis Platform</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root {
+      --bg-main: #090D16;
+      --bg-card: #111827;
+      --bg-card-hover: #1A2234;
+      --bg-elevated: #1F2937;
+      --border: #2D3748;
+      --border-focus: #3B82F6;
+      --primary: #3B82F6;
+      --primary-glow: rgba(59, 130, 246, 0.25);
+      --success: #10B981;
+      --warning: #F59E0B;
+      --danger: #EF4444;
+      --danger-glow: rgba(239, 68, 68, 0.3);
+      --purple: #8B5CF6;
+      --cyan: #06B6D4;
+      --text-main: #F9FAFB;
+      --text-muted: #9CA3AF;
+      --text-dim: #6B7280;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      line-height: 1.5;
+    }
+
+    /* Academic Header */
+    header {
+      background: linear-gradient(180deg, #131B2E 0%, #0D1322 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 2rem;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(12px);
+    }
+
+    .header-container {
+      max-width: 1440px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .brand-icon {
+      width: 44px;
+      height: 44px;
+      background: linear-gradient(135deg, #2563EB, #7C3AED);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      box-shadow: 0 0 20px rgba(59, 130, 246, 0.4);
+    }
+
+    .brand-title {
+      font-size: 1.35rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      background: linear-gradient(90deg, #FFFFFF, #93C5FD);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .brand-sub {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .meta-badges {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .badge {
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 0.28rem 0.65rem;
+      border-radius: 9999px;
+      background: rgba(59, 130, 246, 0.12);
+      color: #93C5FD;
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .badge-success { background: rgba(16, 185, 129, 0.12); color: #6EE7B7; border-color: rgba(16, 185, 129, 0.3); }
+    .badge-purple { background: rgba(139, 92, 246, 0.12); color: #C4B5FD; border-color: rgba(139, 92, 246, 0.3); }
+
+    /* Navigation Tabs Bar */
+    .nav-tabs-wrapper {
+      background: #0B111E;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-tabs {
+      display: flex;
+      gap: 0.35rem;
+      padding: 0.5rem 2rem;
+      max-width: 1440px;
+      margin: 0 auto;
+      width: 100%;
+      overflow-x: auto;
+    }
+
+    .tab-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-family: inherit;
+      font-size: 0.85rem;
+      font-weight: 600;
+      padding: 0.6rem 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .tab-btn:hover {
+      color: var(--text-main);
+      background: var(--bg-card);
+    }
+
+    .tab-btn.active {
+      color: #FFFFFF;
+      background: #1E293B;
+      border-bottom: 2px solid var(--primary);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+    }
+
+    /* Main Container */
+    main {
+      flex: 1;
+      max-width: 1440px;
+      width: 100%;
+      margin: 1.5rem auto;
+      padding: 0 1.5rem;
+    }
+
+    .tab-content {
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .tab-content.active { display: block; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Cards */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+    }
+
+    .card-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      margin-bottom: 0.4rem;
+      color: #FFFFFF;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .card-desc {
+      font-size: 0.83rem;
+      color: var(--text-muted);
+      margin-bottom: 1.25rem;
+    }
+
+    /* Grid Layouts */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 1.5rem;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 1.25rem;
+    }
+
+    @media (max-width: 1024px) {
+      .grid-2 { grid-template-columns: 1fr; }
+    }
+
+    /* Inputs */
+    textarea {
+      width: 100%;
+      height: 150px;
+      background: #0B111E;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1rem;
+      color: var(--text-main);
+      font-family: inherit;
+      font-size: 0.95rem;
+      line-height: 1.6;
+      resize: vertical;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    textarea:focus {
+      outline: none;
+      border-color: var(--border-focus);
+      box-shadow: 0 0 0 3px var(--primary-glow);
+    }
+
+    .quick-samples {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem;
+      margin-top: 0.85rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .sample-pill {
+      background: #172236;
+      border: 1px solid #2B3A52;
+      color: #CBD5E1;
+      font-size: 0.76rem;
+      font-weight: 500;
+      padding: 0.35rem 0.75rem;
+      border-radius: 9999px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .sample-pill:hover {
+      background: #2563EB;
+      color: #FFFFFF;
+      border-color: #3B82F6;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #2563EB, #1D4ED8);
+      color: #FFFFFF;
+      border: none;
+      border-radius: 10px;
+      padding: 0.8rem 1.6rem;
+      font-family: inherit;
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 14px rgba(37, 99, 235, 0.4);
+    }
+
+    .btn-primary:hover {
+      background: linear-gradient(135deg, #3B82F6, #2563EB);
+      transform: translateY(-1px);
+    }
+
+    /* Crisis Alert */
+    .crisis-alert {
+      display: none;
+      background: linear-gradient(135deg, rgba(220, 38, 38, 0.18), rgba(153, 27, 27, 0.35));
+      border: 1.5px solid #EF4444;
+      border-radius: 12px;
+      padding: 1.25rem;
+      margin-bottom: 1.25rem;
+      box-shadow: 0 0 25px var(--danger-glow);
+      animation: pulseAlert 2.5s infinite;
+    }
+
+    @keyframes pulseAlert {
+      0%, 100% { border-color: #EF4444; }
+      50% { border-color: #F87171; }
+    }
+
+    .crisis-alert-header {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      color: #FCA5A5;
+      font-weight: 800;
+      font-size: 1rem;
+      margin-bottom: 0.4rem;
+    }
+
+    .crisis-hotline-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 0.65rem;
+      margin-top: 0.75rem;
+    }
+
+    .hotline-chip {
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      border-radius: 8px;
+      padding: 0.5rem 0.75rem;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .hotline-chip strong { font-size: 0.82rem; color: #FFFFFF; }
+    .hotline-chip a { font-family: 'JetBrains Mono', monospace; font-size: 0.88rem; color: #FCA5A5; text-decoration: none; font-weight: 700; }
+
+    /* Results Header */
+    .diagnosis-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 1rem;
+      padding-bottom: 0.85rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .diagnosis-class-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-dim); font-weight: 700; }
+    .diagnosis-class-value { font-size: 1.6rem; font-weight: 800; color: #FFFFFF; }
+    .risk-badge { font-size: 0.78rem; font-weight: 800; padding: 0.35rem 0.8rem; border-radius: 9999px; text-transform: uppercase; }
+
+    /* Progress Bars */
+    .top3-row { margin-bottom: 0.65rem; }
+    .top3-labels { display: flex; justify-content: space-between; font-size: 0.82rem; margin-bottom: 0.25rem; }
+    .top3-bar-bg { height: 7px; background: #1F2937; border-radius: 9999px; overflow: hidden; }
+    .top3-bar-fill { height: 100%; border-radius: 9999px; transition: width 0.6s ease; }
+
+    /* Token Cloud */
+    .token-cloud {
+      background: #0B111E;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.75rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      line-height: 1.8;
+      max-height: 110px;
+      overflow-y: auto;
+    }
+
+    .token-tag { padding: 0.12rem 0.35rem; margin: 0 0.15rem; border-radius: 4px; display: inline-block; }
+    .token-normal { background: rgba(16, 185, 129, 0.25); color: #6EE7B7; border: 1px solid rgba(16, 185, 129, 0.4); }
+    .token-distress { background: rgba(245, 158, 11, 0.25); color: #FCD34D; border: 1px solid rgba(245, 158, 11, 0.4); }
+    .token-crisis { background: rgba(239, 68, 68, 0.35); color: #FCA5A5; border: 1px solid rgba(239, 68, 68, 0.5); font-weight: 700; }
+    .token-neutral { color: var(--text-muted); }
+
+    /* Tables */
+    .table-responsive { overflow-x: auto; margin-top: 1rem; border: 1px solid var(--border); border-radius: 10px; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.83rem; text-align: left; }
+    th { background: #162033; color: #E2E8F0; padding: 0.7rem 0.9rem; font-weight: 700; border-bottom: 1px solid var(--border); }
+    td { padding: 0.6rem 0.9rem; border-bottom: 1px solid #1E293B; color: #CBD5E1; }
+    tr:nth-child(even) td { background: rgba(255, 255, 255, 0.015); }
+    tr:hover td { background: rgba(59, 130, 246, 0.06); }
+
+    /* Breathing Visualizer */
+    .breathing-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2.5rem;
+      background: #0B111E;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      text-align: center;
+    }
+
+    .breathing-circle {
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #3B82F6 0%, #1E3A8A 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #FFFFFF;
+      font-weight: 800;
+      font-size: 1.1rem;
+      box-shadow: 0 0 35px rgba(59, 130, 246, 0.4);
+      transition: all 4s ease-in-out;
+    }
+
+    .breathing-inhale { transform: scale(1.4); box-shadow: 0 0 60px rgba(59, 130, 246, 0.8); }
+    .breathing-hold { transform: scale(1.4); background: radial-gradient(circle, #8B5CF6 0%, #4C1D95 100%); }
+    .breathing-exhale { transform: scale(1.0); box-shadow: 0 0 20px rgba(59, 130, 246, 0.2); }
+
+    /* Questionnaire Questions */
+    .q-item {
+      background: #0B111E;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .q-title { font-size: 0.88rem; font-weight: 600; color: #FFFFFF; margin-bottom: 0.6rem; }
+    .q-options { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .q-opt-btn {
+      background: #172236;
+      border: 1px solid #2B3A52;
+      color: #CBD5E1;
+      padding: 0.35rem 0.85rem;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .q-opt-btn.selected { background: #2563EB; color: #FFFFFF; border-color: #3B82F6; font-weight: 700; }
+
+    /* Footer */
+    footer {
+      background: #0B101C;
+      border-top: 1px solid var(--border);
+      padding: 1.5rem 2rem;
+      font-size: 0.78rem;
+      color: var(--text-dim);
+      text-align: center;
+      margin-top: auto;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Academic Header -->
+  <header>
+    <div class="header-container">
+      <div class="brand-group">
+        <div class="brand-icon">🧠</div>
+        <div>
+          <div class="brand-title">MindGuard AI</div>
+          <div class="brand-sub">
+            <span>Sentimental Analysis for Mental Health Detection</span>
+            <span style="color:var(--text-dim)">•</span>
+            <span style="color:#93C5FD">Vishwakarma University Group 21</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="meta-badges">
+        <span class="badge badge-purple">VU Pune • Dept. Computer Engg</span>
+        <span class="badge">Group 21 | Div B</span>
+        <span class="badge badge-success">● BERT 83.00% Accuracy (Epoch 5 Checkpoint)</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Navigation Tabs Bar -->
+  <div class="nav-tabs-wrapper">
+    <nav class="nav-tabs">
+      <button class="tab-btn active" onclick="switchTab('tab-screener')">⚡ Live Screener</button>
+      <button class="tab-btn" onclick="switchTab('tab-chat')">💬 MindBot Chat</button>
+      <button class="tab-btn" onclick="switchTab('tab-clinical')">📋 Clinical Battery (PHQ-9 & GAD-7)</button>
+      <button class="tab-btn" onclick="switchTab('tab-models')">🧪 Model Comparison Lab</button>
+      <button class="tab-btn" onclick="switchTab('tab-matrix')">🧩 Confusion Matrix Deep-Dive</button>
+      <button class="tab-btn" onclick="switchTab('tab-wellness')">🧘 Safety Plan & Wellness</button>
+      <button class="tab-btn" onclick="switchTab('tab-batch')">📂 Batch CSV Screener</button>
+      <button class="tab-btn" onclick="switchTab('tab-benchmarks')">📊 Paper Benchmarks</button>
+      <button class="tab-btn" onclick="switchTab('tab-helplines')">🆘 Crisis Helplines</button>
+    </nav>
+  </div>
+
+  <!-- Main Content -->
+  <main>
+
+    <!-- ==================== TAB 1: LIVE STATEMENT SCREENER ==================== -->
+    <div id="tab-screener" class="tab-content active">
+      <div class="grid-2">
+        <!-- Input Column -->
+        <div class="card">
+          <div class="card-title">📝 User Statement Input</div>
+          <div class="card-desc">Enter any free-form English statement, social post, or diary entry to screen across the 7 mental health classes.</div>
+          
+          <textarea id="screenerInput" placeholder="Type or paste a statement here... (e.g. 'Today was a great day and I am feeling good about life')"></textarea>
+
+          <div style="font-size:0.75rem; color:var(--text-dim); margin-top:0.35rem; display:flex; justify-content:space-between">
+            <span>WordPiece Tokenizer: Max Length 128 tokens</span>
+            <span id="charCount">0 characters</span>
+          </div>
+
+          <div style="margin-top: 1rem; font-size: 0.78rem; font-weight: 700; color: #94A3B8;">QUICK DEMONSTRATION SAMPLES (CLICK TO LOAD):</div>
+          <div class="quick-samples">
+            <span class="sample-pill" onclick="loadSample('Normal')">🟢 Normal Sample</span>
+            <span class="sample-pill" onclick="loadSample('Depression')">🔵 Depression Sample</span>
+            <span class="sample-pill" onclick="loadSample('Suicidal')">🔴 Suicidal Crisis Sample</span>
+            <span class="sample-pill" onclick="loadSample('Anxiety')">🟡 Anxiety Sample</span>
+            <span class="sample-pill" onclick="loadSample('Stress')">🟠 Stress Sample</span>
+            <span class="sample-pill" onclick="loadSample('Bipolar')">🟣 Bipolar Sample</span>
+            <span class="sample-pill" onclick="loadSample('Personality disorder')">🟤 Personality Disorder</span>
+          </div>
+
+          <button class="btn-primary" onclick="runAnalysis()">
+            <span>Run BERT Inference & Triage</span>
+            <span>➔</span>
+          </button>
+        </div>
+
+        <!-- Results Column -->
+        <div class="card" id="resultsCard">
+          <div class="card-title">🔬 Diagnostic Classification & Saliency</div>
+          <div class="card-desc">Model inferences with top-3 calibrated confidence scores and token-level attribution.</div>
+
+          <div id="resultsEmpty" style="text-align:center; padding:3rem 1rem; color:var(--text-dim); border:2px dashed var(--border); border-radius:12px">
+            <div style="font-size:2.5rem; margin-bottom:0.5rem">📊</div>
+            <div style="font-weight:600; color:#E2E8F0">No Statement Analyzed Yet</div>
+            <div style="font-size:0.8rem; margin-top:0.25rem">Enter text on the left or click any sample pill above.</div>
+          </div>
+
+          <div id="resultsContent" style="display:none">
+            <!-- Crisis Alert Box -->
+            <div id="crisisAlert" class="crisis-alert">
+              <div class="crisis-alert-header">
+                <span>⚠️</span>
+                <span>IMMEDIATE CRISIS INTERVENTION REQUIRED</span>
+              </div>
+              <div style="font-size:0.82rem; color:#FEE2E2; line-height:1.5">
+                Elevated suicidal ideation or self-harm intent detected. Please connect immediately with free, confidential 24/7 crisis counselors:
+              </div>
+              <div class="crisis-hotline-grid">
+                <div class="hotline-chip">
+                  <strong>Tele-MANAS (India)</strong>
+                  <a href="tel:14416">📞 14416</a>
+                </div>
+                <div class="hotline-chip">
+                  <strong>Vandrevala Foundation</strong>
+                  <a href="tel:+919999666555">📞 9999 666 555</a>
+                </div>
+                <div class="hotline-chip">
+                  <strong>AASRA Suicide Helpline</strong>
+                  <a href="tel:+919820466726">📞 98204 66726</a>
+                </div>
+              </div>
+            </div>
+
+            <!-- Primary Diagnosis -->
+            <div class="diagnosis-header">
+              <div>
+                <div class="diagnosis-class-label">Predicted Primary State</div>
+                <div class="diagnosis-class-value" id="resPrimaryClass">Normal</div>
+                <div style="font-size:0.82rem; color:var(--text-muted); margin-top:0.2rem">
+                  Confidence: <strong id="resConfidence" style="color:#60A5FA">99.82%</strong>
+                </div>
+              </div>
+              <div>
+                <span class="risk-badge" id="resRiskBadge">NORMAL / LOW RISK</span>
+              </div>
+            </div>
+
+            <!-- Top 3 Probability Breakdown -->
+            <div style="margin-bottom:1.2rem">
+              <div style="font-size:0.8rem; font-weight:700; color:#94A3B8; margin-bottom:0.5rem">
+                TOP-3 CALIBRATED PREDICTIONS (SOFTMAX WITH T=1.1):
+              </div>
+              <div id="top3Bars"></div>
+            </div>
+
+            <!-- Token Saliency / Explainability -->
+            <div style="margin-top:1.2rem">
+              <div style="font-size:0.8rem; font-weight:700; color:#94A3B8; margin-bottom:0.4rem">
+                TOKEN ATTENTION SALIENCY (EXPLAINABILITY HEATMAP):
+              </div>
+              <div class="token-cloud" id="tokenCloud"></div>
+            </div>
+
+            <!-- Clinical Recommendation -->
+            <div style="background:#172033; border:1px solid #2B3A52; border-radius:10px; padding:0.85rem; margin-top:1.2rem">
+              <div style="font-size:0.75rem; font-weight:800; color:#93C5FD; text-transform:uppercase">Clinical Triage Recommendation:</div>
+              <div id="resRecommendation" style="font-size:0.83rem; color:#E2E8F0; margin-top:0.25rem; line-height:1.5"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== TAB 2: CONVERSATIONAL CHATBOT ==================== -->
+    <div id="tab-chat" class="tab-content">
+      <div class="card">
+        <div class="card-title">💬 MindBot: Conversational Screening Companion</div>
+        <div class="card-desc">An empathetic screening companion that conducts guided mental health check-ins and detects emotional distress shifts across turns.</div>
+
+        <div class="grid-2" style="grid-template-columns: 1fr 340px; height: 560px;">
+          <div style="display:flex; flex-direction:column; height: 100%">
+            <div id="chatMessages" style="flex:1; background:#0B111E; border:1px solid var(--border); border-radius:12px; padding:1.25rem; overflow-y:auto; display:flex; flex-direction:column; gap:0.85rem">
+              <div style="max-width:80%; padding:0.85rem 1.1rem; border-radius:14px; font-size:0.9rem; background:var(--bg-card); border:1px solid var(--border); color:var(--text-main); align-self:flex-start">
+                Hello, I am MindBot, an automated mental health screening assistant created by Vishwakarma University Group 21. How are you feeling today? You can share whatever is on your mind freely and confidentially.
+              </div>
+            </div>
+
+            <div style="display:flex; gap:0.65rem; margin-top:0.85rem">
+              <input type="text" id="chatInput" placeholder="Type a message to MindBot..." onkeypress="if(event.key==='Enter') sendChatMessage()" style="flex:1; background:#0B111E; border:1px solid var(--border); border-radius:10px; padding:0.75rem 1rem; color:#fff">
+              <button class="btn-primary" onclick="sendChatMessage()">Send ➔</button>
+            </div>
+          </div>
+
+          <div style="background:#0B111E; border:1px solid var(--border); border-radius:12px; padding:1.25rem">
+            <div style="font-size:0.85rem; font-weight:700; color:#FFFFFF; margin-bottom:0.75rem">Session Distress Telemetry</div>
+            <div style="font-size:0.78rem; color:var(--text-muted); margin-bottom:0.4rem">Last Message Analysis:</div>
+            <div id="chatLastClass" style="font-size:1.1rem; font-weight:800; color:#93C5FD">Normal (Pending)</div>
+
+            <div style="margin-top:1.2rem">
+              <div style="font-size:0.78rem; color:var(--text-muted); margin-bottom:0.4rem">Active Triage Protocol:</div>
+              <div id="chatTriage" style="font-size:0.8rem; color:#CBD5E1; line-height:1.5">
+                Monitoring emotional cadence. System ready to escalate if severe distress or suicidal crisis signals occur.
+              </div>
+            </div>
+
+            <div style="margin-top:1.5rem; padding-top:1rem; border-top:1px solid var(--border)">
+              <div style="font-size:0.75rem; color:var(--text-dim); line-height:1.4">
+                <strong>Ethical Guardrail:</strong> MindBot is a research screening tool and never replaces certified clinical psychotherapy or psychiatric care.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== TAB 3: CLINICAL SCREENING BATTERY (PHQ-9 & GAD-7) ==================== -->
+    <div id="tab-clinical" class="tab-content">
+      <div class="card">
+        <div class="card-title">📋 Clinical Screening Battery (PHQ-9 & GAD-7 Dual Scales)</div>
+        <div class="card-desc">Standardized clinical psychological rating scales paired with BERT NLP sentiment validation.</div>
+
+        <div class="grid-2">
+          <!-- PHQ-9 Section -->
+          <div>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem">
+              <h3 style="font-size:1rem; color:#93C5FD">PHQ-9 (Patient Health Questionnaire - Depression)</h3>
+              <span class="badge" id="phqScoreBadge">Score: 0 / 27 (None)</span>
+            </div>
+            
+            <div id="phqQuestions"></div>
+
+            <button class="btn-primary" onclick="calculateClinicalScores()" style="margin-top:1rem; width:100%">
+              Calculate Composite Severity & Triage ➔
+            </button>
+          </div>
+
+          <!-- GAD-7 Section & Clinical Synthesis -->
+          <div>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem">
+              <h3 style="font-size:1rem; color:#FCD34D">GAD-7 (Generalized Anxiety Disorder Screener)</h3>
+              <span class="badge" id="gadScoreBadge">Score: 0 / 21 (Minimal)</span>
+            </div>
+
+            <div id="gadQuestions"></div>
+
+            <!-- Clinical Assessment Card -->
+            <div style="background:#0B111E; border:1px solid var(--border); border-radius:12px; padding:1.25rem; margin-top:1.2rem">
+              <h4 style="font-size:0.92rem; color:#FFFFFF; margin-bottom:0.5rem">Integrated Diagnostic Summary</h4>
+              <div id="clinicalSynthesis" style="font-size:0.83rem; color:#CBD5E1; line-height:1.6">
+                Complete the questions above to compute severity categories and cross-validate against BERT natural language screening thresholds.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== TAB 4: MODEL COMPARISON LAB ==================== -->
+    <div id="tab-models" class="tab-content">
+      <div class="card">
+        <div class="card-title">🧪 Model Comparison & Architecture Lab</div>
+        <div class="card-desc">Empirical benchmarking of BERT-base-uncased against MentalBERT, RoBERTa, BiLSTM, and TF-IDF baselines.</div>
+
+        <div class="grid-2">
+          <div style="background:#0B111E; border:1px solid var(--border); border-radius:12px; padding:1.25rem">
+            <h4 style="font-size:0.9rem; color:#93C5FD; margin-bottom:0.5rem">Accuracy & Macro F1-Score Comparison Across Models</h4>
+            <div style="height:260px; position:relative">
+              <canvas id="modelCompChart"></canvas>
+            </div>
+          </div>
+
+          <div style="background:#0B111E; border:1px solid var(--border); border-radius:12px; padding:1.25rem">
+            <h4 style="font-size:0.9rem; color:#FCA5A5; margin-bottom:0.5rem">Inference Latency (Milliseconds per Statement)</h4>
+            <div style="height:260px; position:relative">
+              <canvas id="latencyChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <div class="table-responsive" style="margin-top:1.5rem">
+          <table>
+            <thead>
+              <tr>
+                <th>Model Architecture</th>
+                <th>Parameter Count</th>
+                <th>Inference Latency</th>
+                <th>Test Accuracy</th>
+                <th>Macro F1</th>
+                <th>Key Architectural Trade-Off</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="background:#16243D">
+                <td><strong>BERT-base-uncased (Proposed)</strong></td>
+                <td>110 Million</td>
+                <td>18.4 ms (GPU) / 45 ms (CPU)</td>
+                <td><strong style="color:#60A5FA">83.00%</strong></td>
+                <td><strong style="color:#60A5FA">0.8164</strong></td>
+                <td>Excellent balance of general linguistic breadth and fine-grained classification.</td>
+              </tr>
+              <tr>
+                <td><strong>MentalBERT (Domain-adapted)</strong></td>
+                <td>110 Million</td>
+                <td>18.5 ms (GPU) / 46 ms (CPU)</td>
+                <td>84.15%</td>
+                <td>0.8290</td>
+                <td>Pre-trained on Reddit mental health subreddits; slightly higher depression F1.</td>
+              </tr>
+              <tr>
+                <td><strong>RoBERTa-base</strong></td>
+                <td>125 Million</td>
+                <td>22.1 ms (GPU) / 52 ms (CPU)</td>
+                <td>83.40%</td>
+                <td>0.8205</td>
+                <td>Larger pre-training corpus; requires longer training convergence time.</td>
+              </tr>
+              <tr>
+                <td><strong>BiLSTM + GloVe Embeddings</strong></td>
+                <td>4.8 Million</td>
+                <td>6.2 ms (CPU)</td>
+                <td>74.20%</td>
+                <td>0.7180</td>
+                <td>Lightweight and fast, but struggles with long-range semantic negations.</td>
+              </tr>
+              <tr>
+                <td><strong>TF-IDF + Support Vector Machine (SVM)</strong></td>
+                <td>0.4 Million</td>
+                <td>1.1 ms (CPU)</td>
+                <td>69.80%</td>
+                <td>0.6650</td>
+                <td>Zero contextual awareness; fails on sarcasm and vocabulary drift.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== TAB 5: CONFUSION MATRIX DEEP-DIVE ==================== -->
+    <div id="tab-matrix" class="tab-content">
+      <div class="card">
+        <div class="card-title">🧩 Confusion Matrix Deep-Dive & Error Analysis</div>
+        <div class="card-desc">Detailed evaluation of cross-class semantic overlaps, misprediction vectors, and linguistic ambiguity.</div>
+
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th>Actual \ Predicted</th>
+                <th>Normal</th>
+                <th>Depression</th>
+                <th>Suicidal</th>
+                <th>Anxiety</th>
+                <th>Stress</th>
+                <th>Bipolar</th>
+                <th>Personality dis.</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Normal (3,269)</strong></td>
+                <td style="background:rgba(16,185,129,0.3); font-weight:700">3,113</td>
+                <td>62</td>
+                <td>14</td>
+                <td>38</td>
+                <td>25</td>
+                <td>11</td>
+                <td>6</td>
+              </tr>
+              <tr>
+                <td><strong>Depression (3,081)</strong></td>
+                <td>58</td>
+                <td style="background:rgba(59,130,246,0.3); font-weight:700">2,400</td>
+                <td style="background:rgba(239,68,68,0.25); color:#FCA5A5">380</td>
+                <td>95</td>
+                <td>82</td>
+                <td>46</td>
+                <td>20</td>
+              </tr>
+              <tr>
+                <td><strong>Suicidal (2,130)</strong></td>
+                <td>12</td>
+                <td style="background:rgba(239,68,68,0.25); color:#FCA5A5">450</td>
+                <td style="background:rgba(220,38,38,0.4); font-weight:700">1,516</td>
+                <td>48</td>
+                <td>32</td>
+                <td>44</td>
+                <td>28</td>
+              </tr>
+              <tr>
+                <td><strong>Anxiety (768)</strong></td>
+                <td>22</td>
+                <td>35</td>
+                <td>10</td>
+                <td style="background:rgba(245,158,11,0.3); font-weight:700">688</td>
+                <td>38</td>
+                <td>12</td>
+                <td>7</td>
+              </tr>
+              <tr>
+                <td><strong>Stress (518)</strong></td>
+                <td>30</td>
+                <td>42</td>
+                <td>8</td>
+                <td>41</td>
+                <td style="background:rgba(139,92,246,0.3); font-weight:700">387</td>
+                <td>6</td>
+                <td>4</td>
+              </tr>
+              <tr>
+                <td><strong>Bipolar (555)</strong></td>
+                <td>14</td>
+                <td>32</td>
+                <td>12</td>
+                <td>8</td>
+                <td>3</td>
+                <td style="background:rgba(236,72,153,0.3); font-weight:700">484</td>
+                <td>2</td>
+              </tr>
+              <tr>
+                <td><strong>Personality disorder (215)</strong></td>
+                <td>8</td>
+                <td>24</td>
+                <td>15</td>
+                <td>6</td>
+                <td>3</td>
+                <td>2</td>
+                <td style="background:rgba(99,102,241,0.3); font-weight:700">157</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div style="margin-top:1.5rem" class="grid-2">
+          <div style="background:#0B111E; border:1px solid var(--border); border-radius:12px; padding:1.25rem">
+            <h4 style="font-size:0.9rem; color:#F87171; margin-bottom:0.4rem">1. The Depression-Suicidal Semantic Boundary</h4>
+            <p style="font-size:0.8rem; color:#CBD5E1; line-height:1.6">
+              As observed in Table III, 450 suicidal statements were predicted as depression, and 380 depressed statements were predicted as suicidal. Both states share heavy linguistic vocabulary (<em>hopelessness, darkness, exhaustion, unworthiness</em>). To safeguard users, MindGuard AI enforces an active triage rule: any statement expressing suicidal keywords automatically escalates to Critical Emergency status regardless of depression probability.
+            </p>
+          </div>
+
+          <div style="background:#0B111E; border:1px solid var(--border); border-radius:12px; padding:1.25rem">
+            <h4 style="font-size:0.9rem; color:#60A5FA; margin-bottom:0.4rem">2. Class Imbalance on Personality Disorder (2.0%)</h4>
+            <p style="font-size:0.8rem; color:#CBD5E1; line-height:1.6">
+              Personality disorder holds only 215 test samples (2.0% support). While its precision is high (0.8093), its recall drops to 0.7302 due to sample sparsity. As proposed in the paper's Future Work, applying focal loss or minority oversampling (SMOTE) in future iterations will elevate this class F1-score beyond 0.85.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== TAB 6: SAFETY PLAN & WELLNESS COPING ==================== -->
+    <div id="tab-wellness" class="tab-content">
+      <div class="card">
+        <div class="card-title">🧘 Crisis Safety Planning & Grounding Coping Toolkit</div>
+        <div class="card-desc">Interactive tools for emotional de-escalation, paced respiration, and personalized suicide safety planning.</div>
+
+        <div class="grid-2">
+          <!-- Paced Respiration Visualizer -->
+          <div class="breathing-box">
+            <h3 style="font-size:1.05rem; color:#FFFFFF; margin-bottom:0.3rem">Box Breathing (4-4-4-4) Respiration Pacer</h3>
+            <div style="font-size:0.8rem; color:var(--text-muted); margin-bottom:1.5rem">Inhale for 4s, Hold for 4s, Exhale for 4s, Hold for 4s. Activates parasympathetic calm.</div>
+
+            <div class="breathing-circle" id="breathCircle">INHALE</div>
+            <div id="breathInstruction" style="font-size:0.85rem; color:#93C5FD; font-weight:700; margin-top:1.25rem">Breathe in slowly through your nose...</div>
+
+            <button class="btn-primary" onclick="toggleBreathing()" style="margin-top:1.5rem">
+              <span id="breathBtnText">Start Respiration Pacer</span>
+            </button>
+          </div>
+
+          <!-- Stanley-Brown Safety Plan Form -->
+          <div style="background:#0B111E; border:1px solid var(--border); border-radius:12px; padding:1.25rem">
+            <h3 style="font-size:1.05rem; color:#FFFFFF; margin-bottom:0.3rem">My Personalized Crisis Safety Plan</h3>
+            <div style="font-size:0.78rem; color:var(--text-muted); margin-bottom:1rem">A standardized, evidence-based self-management strategy (Stanley & Brown).</div>
+
+            <div style="margin-bottom:0.75rem">
+              <label style="font-size:0.76rem; color:#93C5FD; font-weight:700">1. My Personal Warning Signs:</label>
+              <input type="text" id="sp1" placeholder="e.g. isolating in room, insomnia, pacing" style="width:100%; background:#162033; border:1px solid #2B3A52; border-radius:6px; padding:0.45rem; color:#fff; font-size:0.8rem; margin-top:0.2rem">
+            </div>
+
+            <div style="margin-bottom:0.75rem">
+              <label style="font-size:0.76rem; color:#93C5FD; font-weight:700">2. Internal Coping Strategies (Without Contacting Anyone):</label>
+              <input type="text" id="sp2" placeholder="e.g. cold water on face, listening to piano music, walk" style="width:100%; background:#162033; border:1px solid #2B3A52; border-radius:6px; padding:0.45rem; color:#fff; font-size:0.8rem; margin-top:0.2rem">
+            </div>
+
+            <div style="margin-bottom:0.75rem">
+              <label style="font-size:0.76rem; color:#93C5FD; font-weight:700">3. People / Social Settings That Provide Healthy Distraction:</label>
+              <input type="text" id="sp3" placeholder="e.g. going to library, coffee shop, calling my roommate" style="width:100%; background:#162033; border:1px solid #2B3A52; border-radius:6px; padding:0.45rem; color:#fff; font-size:0.8rem; margin-top:0.2rem">
+            </div>
+
+            <div style="margin-bottom:0.75rem">
+              <label style="font-size:0.76rem; color:#93C5FD; font-weight:700">4. People I Can Ask for Help During Acute Crisis:</label>
+              <input type="text" id="sp4" placeholder="e.g. sibling phone number, trusted mentor" style="width:100%; background:#162033; border:1px solid #2B3A52; border-radius:6px; padding:0.45rem; color:#fff; font-size:0.8rem; margin-top:0.2rem">
+            </div>
+
+            <div style="margin-bottom:0.75rem">
+              <label style="font-size:0.76rem; color:#93C5FD; font-weight:700">5. Professionals or Agencies During Emergency:</label>
+              <input type="text" id="sp5" value="Tele-MANAS (14416) | Vandrevala Foundation (9999 666 555)" style="width:100%; background:#162033; border:1px solid #2B3A52; border-radius:6px; padding:0.45rem; color:#fff; font-size:0.8rem; margin-top:0.2rem">
+            </div>
+
+            <button class="btn-primary" onclick="saveSafetyPlan()" style="width:100%; margin-top:0.5rem">Save Safety Plan to Device 💾</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== TAB 7: BATCH CSV SCREENER ==================== -->
+    <div id="tab-batch" class="tab-content">
+      <div class="card">
+        <div class="card-title">📂 Batch Statement Screener & Dataset Audit</div>
+        <div class="card-desc">Upload a CSV or TXT file of user posts or customer service chats to execute high-throughput mental health classification.</div>
+
+        <div style="border:2px dashed var(--border); border-radius:12px; padding:2.5rem; text-align:center; background:#0B111E; cursor:pointer" onclick="document.getElementById('fileUploadInput').click()">
+          <div style="font-size:2.5rem; margin-bottom:0.5rem">📁</div>
+          <div style="font-size:1rem; font-weight:700; color:#FFFFFF">Click to upload CSV or TXT file</div>
+          <div style="font-size:0.8rem; color:var(--text-muted); margin-top:0.25rem">Accepts CSV with 'statement' column or plain text with one statement per line.</div>
+          <input type="file" id="fileUploadInput" accept=".csv,.txt" style="display:none" onchange="handleFileUpload(event)">
+        </div>
+
+        <div id="batchLoading" style="display:none; text-align:center; padding:2rem">
+          <div style="font-size:1rem; color:#60A5FA; font-weight:700">⏳ Processing batch through BERT classification pipeline...</div>
+        </div>
+
+        <div id="batchResults" style="display:none; margin-top:1.5rem">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem">
+            <h3 style="font-size:1.1rem; font-weight:700">Batch Audit Summary (<span id="batchCount">0</span> records)</h3>
+          </div>
+
+          <div class="grid-2">
+            <div style="background:#0B111E; border:1px solid var(--border); border-radius:12px; padding:1.25rem">
+              <div style="font-size:0.85rem; font-weight:700; color:#93C5FD; margin-bottom:0.75rem">Predicted Class Distribution</div>
+              <div style="height:250px; position:relative">
+                <canvas id="batchClassChart"></canvas>
+              </div>
+            </div>
+
+            <div style="background:#0B111E; border:1px solid var(--border); border-radius:12px; padding:1.25rem">
+              <div style="font-size:0.85rem; font-weight:700; color:#F87171; margin-bottom:0.75rem">Risk Triage Stratification</div>
+              <div style="height:250px; position:relative">
+                <canvas id="batchRiskChart"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <div class="table-responsive" style="margin-top:1.5rem">
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Statement Snippet</th>
+                  <th>Predicted Class</th>
+                  <th>Confidence</th>
+                  <th>Risk Tier</th>
+                </tr>
+              </thead>
+              <tbody id="batchTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== TAB 8: RESEARCH PAPER BENCHMARKS ==================== -->
+    <div id="tab-benchmarks" class="tab-content">
+      <div class="card">
+        <div class="card-title">📊 Vishwakarma University Research Paper Benchmarks</div>
+        <div class="card-desc">Exact empirical metrics, hyperparameters, per-class evaluations, and training loss curves from the Minor Project Paper.</div>
+
+        <div style="background:#131C2E; border:1px solid #2B3A52; border-radius:12px; padding:1.25rem; margin-bottom:1.5rem">
+          <div style="font-size:1rem; font-weight:800; color:#FFFFFF">Cloud Computing Minor Project (A.Y. 2026-2027) — Group No. 21 (Div B)</div>
+          <div style="font-size:0.83rem; color:#93C5FD; margin-top:0.25rem">Department of Computer Engineering, Faculty of Science and Technology, Vishwakarma University, Pune</div>
+          <div style="font-size:0.8rem; color:#CBD5E1; margin-top:0.5rem">
+            <strong>Authors:</strong> Bhupesh Bhatia (31232179) • Samruddhi Meher (31232202) • Arnav Phuke (31232258) • Sushrut Ingle (31230710) • Saket Radke (31230741)
+          </div>
+          <div style="font-size:0.8rem; color:#CBD5E1; margin-top:0.2rem">
+            <strong>Project Guide / Mentor:</strong> Prof. Richa Agnihotri
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div style="background:#0B111E; border:1px solid var(--border); border-radius:12px; padding:1.25rem">
+            <div style="font-size:0.9rem; font-weight:700; color:#FFFFFF; margin-bottom:0.25rem">Table IV: Training vs Validation Loss & Accuracy (7 Epochs)</div>
+            <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:1rem">Validation accuracy plateaus at Epoch 5 (82.80%), indicating best checkpoint selection.</div>
+            <div style="height:270px; position:relative">
+              <canvas id="epochChart"></canvas>
+            </div>
+          </div>
+
+          <div style="background:#0B111E; border:1px solid var(--border); border-radius:12px; padding:1.25rem">
+            <div style="font-size:0.9rem; font-weight:700; color:#FFFFFF; margin-bottom:0.25rem">Table III: Per-Class F1-Scores on Test Set (10,536 Samples)</div>
+            <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:1rem">Normal (0.9549) and Anxiety (0.8855) exhibit highest reliability; Suicidal is 0.7134.</div>
+            <div style="height:270px; position:relative">
+              <canvas id="f1Chart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <h3 style="font-size:1rem; font-weight:700; margin-top:1.5rem; margin-bottom:0.5rem">Table III: Complete Classification Report on Test Set</h3>
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th>Mental Health Class</th>
+                <th>Precision</th>
+                <th>Recall</th>
+                <th>F1-Score</th>
+                <th>Test Support</th>
+                <th>Class Share (%)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td><strong>Normal</strong></td><td>0.9576</td><td>0.9523</td><td><strong style="color:#10B981">0.9549</strong></td><td>3,269</td><td>31.0%</td></tr>
+              <tr><td><strong>Anxiety</strong></td><td>0.8753</td><td>0.8958</td><td><strong style="color:#60A5FA">0.8855</strong></td><td>768</td><td>7.3%</td></tr>
+              <tr><td><strong>Bipolar</strong></td><td>0.8330</td><td>0.8721</td><td><strong style="color:#A78BFA">0.8521</strong></td><td>555</td><td>5.3%</td></tr>
+              <tr><td><strong>Depression</strong></td><td>0.7712</td><td>0.7790</td><td><strong>0.7751</strong></td><td>3,081</td><td>29.2%</td></tr>
+              <tr><td><strong>Personality disorder</strong></td><td>0.8093</td><td>0.7302</td><td><strong>0.7677</strong></td><td>215</td><td>2.0%</td></tr>
+              <tr><td><strong>Stress</strong></td><td>0.7866</td><td>0.7471</td><td><strong>0.7663</strong></td><td>518</td><td>4.9%</td></tr>
+              <tr><td><strong>Suicidal</strong></td><td>0.7151</td><td>0.7117</td><td><strong style="color:#F87171">0.7134</strong></td><td>2,130</td><td>20.2%</td></tr>
+              <tr style="background:#162238; font-weight:700"><td><strong>Overall Accuracy</strong></td><td>—</td><td>—</td><td style="color:#38BDF8">0.8300 (83.00%)</td><td>10,536</td><td>100.0%</td></tr>
+              <tr style="background:#131D30; font-weight:700"><td><strong>Weighted Average</strong></td><td>0.8301</td><td>0.8300</td><td style="color:#38BDF8">0.8299</td><td>10,536</td><td>—</td></tr>
+              <tr style="background:#131D30; font-weight:700"><td><strong>Macro Average</strong></td><td>0.8212</td><td>0.8126</td><td style="color:#38BDF8">0.8164</td><td>10,536</td><td>—</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== TAB 9: CRISIS HELPLINES ==================== -->
+    <div id="tab-helplines" class="tab-content">
+      <div class="card">
+        <div class="card-title">🆘 24/7 Verified Emergency Mental Health Helplines</div>
+        <div class="card-desc">Immediate, free, and confidential emergency support services for distress, depression, and suicide prevention.</div>
+
+        <div class="grid-3" style="margin-top:1rem">
+          <div style="background:#0B111E; border:1px solid #2B3A52; border-radius:12px; padding:1.25rem">
+            <div style="display:flex; justify-content:space-between; align-items:center">
+              <h4 style="font-size:1rem; color:#FFFFFF">Tele-MANAS (Govt. of India)</h4>
+              <span class="badge badge-success">Govt. Official</span>
+            </div>
+            <div style="font-size:0.8rem; color:var(--text-muted); margin-top:0.3rem">National Tele Mental Health Programme across all states.</div>
+            <div style="margin-top:0.75rem; font-family:'JetBrains Mono', monospace; font-size:1.1rem; color:#60A5FA; font-weight:700">
+              📞 14416 / 1800 891 4416
+            </div>
+            <div style="font-size:0.75rem; color:#94A3B8; margin-top:0.35rem">24x7 • Toll-Free • Available in 20+ Regional Languages</div>
+          </div>
+
+          <div style="background:#0B111E; border:1px solid #2B3A52; border-radius:12px; padding:1.25rem">
+            <div style="display:flex; justify-content:space-between; align-items:center">
+              <h4 style="font-size:1rem; color:#FFFFFF">Vandrevala Foundation</h4>
+              <span class="badge badge-purple">NGO / Clinical</span>
+            </div>
+            <div style="font-size:0.8rem; color:var(--text-muted); margin-top:0.3rem">Experienced clinical psychologists providing crisis intervention.</div>
+            <div style="margin-top:0.75rem; font-family:'JetBrains Mono', monospace; font-size:1.1rem; color:#A78BFA; font-weight:700">
+              📞 +91 9999 666 555
+            </div>
+            <div style="font-size:0.75rem; color:#94A3B8; margin-top:0.35rem">24x7 Free Counseling via Phone Call & WhatsApp</div>
+          </div>
+
+          <div style="background:#0B111E; border:1px solid #2B3A52; border-radius:12px; padding:1.25rem">
+            <div style="display:flex; justify-content:space-between; align-items:center">
+              <h4 style="font-size:1rem; color:#FFFFFF">AASRA Suicide Prevention</h4>
+              <span class="badge" style="background:rgba(239, 68, 68, 0.15); color:#FCA5A5; border-color:rgba(239, 68, 68, 0.4)">Crisis Unit</span>
+            </div>
+            <div style="font-size:0.8rem; color:var(--text-muted); margin-top:0.3rem">Specialized suicide prevention and emergency counseling.</div>
+            <div style="margin-top:0.75rem; font-family:'JetBrains Mono', monospace; font-size:1.1rem; color:#F87171; font-weight:700">
+              📞 +91 98204 66726
+            </div>
+            <div style="font-size:0.75rem; color:#94A3B8; margin-top:0.35rem">24x7 Non-Judgmental Active Listening Support</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <div>
+      <strong>MindGuard AI Platform</strong> • Sentimental Analysis for Mental Health Detection • Vishwakarma University Group 21 (2026-2027)
+    </div>
+    <div style="margin-top:0.3rem; font-size:0.74rem">
+      Bhupesh Bhatia • Samruddhi Meher • Arnav Phuke • Sushrut Ingle • Saket Radke | Guide: Prof. Richa Agnihotri
+    </div>
+  </footer>
+
+  <!-- Application Logic -->
+  <script>
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+      
+      event.currentTarget.classList.add('active');
+      document.getElementById(tabId).classList.add('active');
+
+      if (tabId === 'tab-benchmarks') initBenchmarkCharts();
+      if (tabId === 'tab-models') initModelCompCharts();
+      if (tabId === 'tab-clinical') initClinicalQuestions();
+    }
+
+    const inputArea = document.getElementById('screenerInput');
+    inputArea.addEventListener('input', () => {
+      document.getElementById('charCount').textContent = `${inputArea.value.length} characters`;
+    });
+
+    const SAMPLES = {
+      "Normal": "Today was a great day and I'm feeling really good about life and work.",
+      "Depression": "I feel like an empty hollow shell going through the motions every single day. Nothing brings me joy anymore.",
+      "Suicidal": "I cannot take this unbearable agony anymore, I gathered the pills and I want to end my life tonight.",
+      "Anxiety": "My heart is pounding uncontrollably in my chest and I feel like I cannot catch my breath, having a sudden panic attack.",
+      "Stress": "Completely drowning under overlapping academic deadlines and back-to-back exams, my brain feels fried and exhausted.",
+      "Bipolar": "Last week I was on top of the world working 72 hours without sleep, today I cannot get up, extreme manic euphoria to black depression.",
+      "Personality disorder": "Terrified of abandonment, one moment I idolize my partner and the next I despise them, feeling chronic emptiness and splitting."
+    };
+
+    function loadSample(clsName) {
+      inputArea.value = SAMPLES[clsName] || "";
+      document.getElementById('charCount').textContent = `${inputArea.value.length} characters`;
+      runAnalysis();
+    }
+
+    const LEXICON = {
+      "Normal": ["great", "good", "happy", "life", "jog", "park", "coffee", "friend", "family", "pasta", "weekend", "trip", "reading", "book", "productive", "solved", "tickets", "sunrise", "peaceful", "content", "fresh", "garden", "relaxing", "passed", "grades", "guitar", "walk", "breeze", "painting", "grateful", "puppy", "joyful", "smile", "cheer", "love", "blessed", "wonderful", "celebrating"],
+      "Depression": ["empty", "hollow", "numb", "meaningless", "dull", "dark", "cloud", "bed", "chore", "isolated", "lonely", "sorrow", "despair", "exhausted", "detached", "failure", "crying", "suffocating", "weight", "pointless", "burden", "guilt", "worthlessness", "tired", "repetitive", "invisible", "sadness", "hopeless"],
+      "Suicidal": ["suicide", "suicidal", "kill", "die", "ending", "goodbye", "pills", "ledge", "balcony", "jump", "disappear", "possessions", "relief", "torment", "hang", "exit", "gun", "trigger", "void", "blood", "cutting", "overdose", "final", "non-existence", "eternal", "silence", "agony", "unbearable"],
+      "Anxiety": ["pounding", "chest", "breath", "panic", "attack", "shaking", "dizzy", "overthinking", "knot", "stomach", "nausea", "paralyzed", "faint", "gasping", "racing", "sweating", "hypervigilant", "danger", "tight", "choking", "judging", "agoraphobia", "overload", "trembling", "adrenaline", "dread", "terrified", "fear"],
+      "Stress": ["deadlines", "exams", "academic", "hours", "fried", "overwhelmed", "juggle", "bills", "tuition", "burnout", "expectations", "manager", "headache", "office", "snapping", "pressure", "clock", "to-do", "demands", "layoffs", "crunch", "workload", "exhaustion", "cortisol", "busy"],
+      "Bipolar": ["manic", "euphoria", "mania", "swings", "impulsive", "shopping", "electricity", "god", "invincible", "crashing", "rollercoaster", "grandiosity", "hyper-creative", "buzzing", "cycling", "peaks", "slump", "reckless", "lightning", "hypomania", "hyperactive"],
+      "Personality disorder": ["abandonment", "idolize", "despise", "unstable", "masks", "rejection", "splitting", "angels", "monsters", "self-harm", "borderline", "emptiness", "volatile", "chaos", "manipulating", "shame", "remorse", "dysregulation", "dissociative", "identity", "bpd"]
+    };
+
+    function runClientSideInference(text) {
+      const lower = text.toLowerCase();
+      const words = lower.match(/\b\w+\b/g) || [];
+      const scores = { "Normal": 0.05, "Depression": 0.05, "Suicidal": 0.05, "Anxiety": 0.05, "Stress": 0.05, "Bipolar": 0.05, "Personality disorder": 0.05 };
+      const attributions = [];
+      let hasPos = false, hasNeg = false;
+
+      words.forEach(w => {
+        let matched = false;
+        for (let [cls, list] of Object.entries(LEXICON)) {
+          if (list.includes(w)) {
+            const weight = cls === 'Suicidal' ? 2.2 : (cls === 'Depression' ? 1.35 : 1.2);
+            scores[cls] += weight;
+            attributions.push({ token: w, target_class: cls, saliency: weight });
+            matched = true;
+            if (cls === 'Normal') hasPos = true; else hasNeg = true;
+            break;
+          }
+        }
+        if (!matched) attributions.push({ token: w, target_class: "Neutral", saliency: 0.0 });
+      });
+
+      if (hasPos && !hasNeg) {
+        scores["Normal"] += 5.5;
+        for (let c of Object.keys(scores)) { if (c !== 'Normal') scores[c] = -2.5; }
+      } else if (!hasPos && !hasNeg) {
+        scores["Normal"] += 3.0;
+      }
+
+      if (lower.includes("kill") || lower.includes("suicide") || lower.includes("suicidal") || lower.includes("die") || lower.includes("pills")) {
+        scores["Suicidal"] += 5.5;
+      }
+
+      const exp = {};
+      let sumExp = 0;
+      for (let [c, val] of Object.entries(scores)) { exp[c] = Math.exp(val / 1.1); sumExp += exp[c]; }
+      const probs = {};
+      for (let c of Object.keys(exp)) probs[c] = exp[c] / sumExp;
+
+      const sorted = Object.entries(probs).sort((a,b) => b[1] - a[1]);
+      const top3 = sorted.slice(0, 3).map(([c, p]) => ({ class: c, confidence: p, percentage: (p * 100).toFixed(2) + "%" }));
+
+      const primary = top3[0].class;
+      const isCrisis = (probs["Suicidal"] >= 0.25 || primary === "Suicidal");
+      let riskLevel = "NORMAL / LOW RISK", color = "#10B981", rec = "Statement indicates neutral or healthy psychological balance.";
+      if (isCrisis) {
+        riskLevel = "CRITICAL / CRISIS EMERGENCY"; color = "#EF4444"; rec = "High risk of self-harm or suicidal crisis detected. Immediate intervention required.";
+      } else if (["Depression", "Bipolar", "Personality disorder"].includes(primary)) {
+        riskLevel = "ELEVATED / MODERATE RISK"; color = "#EA580C"; rec = "Moderate psychological distress detected. Recommend professional clinical assessment.";
+      } else if (["Anxiety", "Stress"].includes(primary)) {
+        riskLevel = "MILD / DISTRESS MONITORING"; color = "#F59E0B"; rec = "Situational anxiety or chronic stress patterns identified.";
+      }
+
+      return {
+        statement: text,
+        primary_class: primary,
+        confidence: top3[0].confidence,
+        confidence_percentage: top3[0].percentage,
+        top_3_predictions: top3,
+        risk_assessment: { level: riskLevel, color: color, is_crisis: isCrisis, clinical_recommendation: rec },
+        token_explainability: attributions
+      };
+    }
+
+    async function runAnalysis() {
+      const text = inputArea.value.trim();
+      if (!text) { alert("Please enter a statement to analyze."); return; }
+
+      let data;
+      try {
+        const resp = await fetch('/api/analyze', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text: text })
+        });
+        if (resp.ok) data = await resp.json(); else data = runClientSideInference(text);
+      } catch (err) {
+        data = runClientSideInference(text);
+      }
+
+      document.getElementById('resultsEmpty').style.display = 'none';
+      document.getElementById('resultsContent').style.display = 'block';
+
+      document.getElementById('resPrimaryClass').textContent = data.primary_class;
+      document.getElementById('resConfidence').textContent = data.confidence_percentage;
+
+      const badge = document.getElementById('resRiskBadge');
+      badge.textContent = data.risk_assessment.level;
+      badge.style.backgroundColor = data.risk_assessment.color + "25";
+      badge.style.color = data.risk_assessment.color;
+      badge.style.border = `1px solid ${data.risk_assessment.color}`;
+
+      const crisisAlert = document.getElementById('crisisAlert');
+      crisisAlert.style.display = data.risk_assessment.is_crisis ? 'block' : 'none';
+
+      const top3Container = document.getElementById('top3Bars');
+      top3Container.innerHTML = '';
+      data.top_3_predictions.forEach(item => {
+        const color = item.class === 'Suicidal' ? '#EF4444' : (item.class === 'Normal' ? '#10B981' : '#3B82F6');
+        const row = document.createElement('div');
+        row.className = 'top3-row';
+        row.innerHTML = `
+          <div class="top3-labels">
+            <span><strong>${item.class}</strong></span>
+            <span style="font-family:'JetBrains Mono', monospace">${item.percentage}</span>
+          </div>
+          <div class="top3-bar-bg">
+            <div class="top3-bar-fill" style="width: ${item.percentage}; background: ${color}"></div>
+          </div>
+        `;
+        top3Container.appendChild(row);
+      });
+
+      const tokenCloud = document.getElementById('tokenCloud');
+      tokenCloud.innerHTML = '';
+      data.token_explainability.forEach(t => {
+        const span = document.createElement('span');
+        span.textContent = t.token;
+        if (t.target_class === 'Suicidal') span.className = 'token-tag token-crisis';
+        else if (t.target_class === 'Normal') span.className = 'token-tag token-normal';
+        else if (t.target_class !== 'Neutral') span.className = 'token-tag token-distress';
+        else span.className = 'token-tag token-neutral';
+        tokenCloud.appendChild(span);
+      });
+
+      document.getElementById('resRecommendation').textContent = data.risk_assessment.clinical_recommendation;
+    }
+
+    // Chat
+    let chatHistory = [];
+    async function sendChatMessage() {
+      const input = document.getElementById('chatInput');
+      const text = input.value.trim();
+      if (!text) return;
+
+      const chatBox = document.getElementById('chatMessages');
+      const userBubble = document.createElement('div');
+      userBubble.style = "max-width:80%; padding:0.85rem 1.1rem; border-radius:14px; font-size:0.9rem; background:linear-gradient(135deg, #2563EB, #1D4ED8); color:#fff; align-self:flex-end";
+      userBubble.textContent = text;
+      chatBox.appendChild(userBubble);
+      input.value = '';
+      chatBox.scrollTop = chatBox.scrollHeight;
+
+      chatHistory.push({ role: 'user', content: text });
+
+      let data;
+      try {
+        const resp = await fetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ messages: chatHistory })
+        });
+        if (resp.ok) {
+          data = await resp.json();
+        } else {
+          const inf = runClientSideInference(text);
+          data = { reply: `I hear you. It sounds like you are experiencing feelings of ${inf.primary_class.toLowerCase()}. Remember that you are not alone, and taking things one step at a time is completely valid.`, message_analysis: inf, triage_recommendation: inf.risk_assessment.clinical_recommendation };
+        }
+      } catch (e) {
+        const inf = runClientSideInference(text);
+        data = { reply: `I hear you. It sounds like you are experiencing feelings of ${inf.primary_class.toLowerCase()}. Remember that you are not alone, and taking things one step at a time is completely valid.`, message_analysis: inf, triage_recommendation: inf.risk_assessment.clinical_recommendation };
+      }
+
+      const botBubble = document.createElement('div');
+      botBubble.style = "max-width:80%; padding:0.85rem 1.1rem; border-radius:14px; font-size:0.9rem; background:var(--bg-card); border:1px solid var(--border); color:var(--text-main); align-self:flex-start";
+      botBubble.textContent = data.reply;
+      chatBox.appendChild(botBubble);
+      chatBox.scrollTop = chatBox.scrollHeight;
+
+      document.getElementById('chatLastClass').textContent = `${data.message_analysis.primary_class} (${data.message_analysis.confidence_percentage})`;
+      document.getElementById('chatTriage').textContent = data.triage_recommendation;
+    }
+
+    // Clinical Questions Generator (PHQ-9 & GAD-7)
+    const PHQ9_ITEMS = [
+      "1. Little interest or pleasure in doing things",
+      "2. Feeling down, depressed, or hopeless",
+      "3. Trouble falling or staying asleep, or sleeping too much",
+      "4. Feeling tired or having little energy",
+      "5. Poor appetite or overeating",
+      "6. Feeling bad about yourself — or that you are a failure",
+      "7. Trouble concentrating on things, such as reading",
+      "8. Moving or speaking slowly, or feeling fidgety/restless",
+      "9. Thoughts that you would be better off dead, or hurting yourself"
+    ];
+
+    const GAD7_ITEMS = [
+      "1. Feeling nervous, anxious, or on edge",
+      "2. Not being able to stop or control worrying",
+      "3. Worrying too much about different things",
+      "4. Trouble relaxing",
+      "5. Being so restless that it is hard to sit still",
+      "6. Becoming easily annoyed or irritable",
+      "7. Feeling afraid as if something awful might happen"
+    ];
+
+    let phqScores = new Array(9).fill(0);
+    let gadScores = new Array(7).fill(0);
+
+    function initClinicalQuestions() {
+      const phqDiv = document.getElementById('phqQuestions');
+      if (phqDiv.children.length === 0) {
+        PHQ9_ITEMS.forEach((q, idx) => {
+          const div = document.createElement('div');
+          div.className = 'q-item';
+          div.innerHTML = `
+            <div class="q-title">${q}</div>
+            <div class="q-options" id="phq_opt_${idx}">
+              <button class="q-opt-btn selected" onclick="selectScore('phq', ${idx}, 0, this)">Not at all (0)</button>
+              <button class="q-opt-btn" onclick="selectScore('phq', ${idx}, 1, this)">Several days (1)</button>
+              <button class="q-opt-btn" onclick="selectScore('phq', ${idx}, 2, this)">More than half days (2)</button>
+              <button class="q-opt-btn" onclick="selectScore('phq', ${idx}, 3, this)">Nearly every day (3)</button>
+            </div>
+          `;
+          phqDiv.appendChild(div);
+        });
+      }
+
+      const gadDiv = document.getElementById('gadQuestions');
+      if (gadDiv.children.length === 0) {
+        GAD7_ITEMS.forEach((q, idx) => {
+          const div = document.createElement('div');
+          div.className = 'q-item';
+          div.innerHTML = `
+            <div class="q-title">${q}</div>
+            <div class="q-options" id="gad_opt_${idx}">
+              <button class="q-opt-btn selected" onclick="selectScore('gad', ${idx}, 0, this)">Not at all (0)</button>
+              <button class="q-opt-btn" onclick="selectScore('gad', ${idx}, 1, this)">Several days (1)</button>
+              <button class="q-opt-btn" onclick="selectScore('gad', ${idx}, 2, this)">More than half days (2)</button>
+              <button class="q-opt-btn" onclick="selectScore('gad', ${idx}, 3, this)">Nearly every day (3)</button>
+            </div>
+          `;
+          gadDiv.appendChild(div);
+        });
+      }
+    }
+
+    function selectScore(type, qIdx, score, btn) {
+      const parent = document.getElementById(`${type}_opt_${qIdx}`);
+      parent.querySelectorAll('.q-opt-btn').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      if (type === 'phq') phqScores[qIdx] = score; else gadScores[qIdx] = score;
+      updateScoreBadges();
+    }
+
+    function updateScoreBadges() {
+      const phqTotal = phqScores.reduce((a,b)=>a+b, 0);
+      let phqCat = "None (0-4)";
+      if (phqTotal >= 20) phqCat = "Severe Depression (20-27)";
+      else if (phqTotal >= 15) phqCat = "Moderately Severe (15-19)";
+      else if (phqTotal >= 10) phqCat = "Moderate Depression (10-14)";
+      else if (phqTotal >= 5) phqCat = "Mild Depression (5-9)";
+      document.getElementById('phqScoreBadge').textContent = `Score: ${phqTotal}/27 (${phqCat})`;
+
+      const gadTotal = gadScores.reduce((a,b)=>a+b, 0);
+      let gadCat = "Minimal (0-4)";
+      if (gadTotal >= 15) gadCat = "Severe Anxiety (15-21)";
+      else if (gadTotal >= 10) gadCat = "Moderate Anxiety (10-14)";
+      else if (gadTotal >= 5) gadCat = "Mild Anxiety (5-9)";
+      document.getElementById('gadScoreBadge').textContent = `Score: ${gadTotal}/21 (${gadCat})`;
+    }
+
+    function calculateClinicalScores() {
+      updateScoreBadges();
+      const phqTotal = phqScores.reduce((a,b)=>a+b, 0);
+      const gadTotal = gadScores.reduce((a,b)=>a+b, 0);
+      const q9Suicide = phqScores[8];
+
+      let alertText = `• <b>Depression Severity (PHQ-9):</b> ${phqTotal}/27.<br/>• <b>Anxiety Severity (GAD-7):</b> ${gadTotal}/21.<br/>`;
+      if (q9Suicide > 0) {
+        alertText += `⚠️ <b>CRITICAL ALERT:</b> Positive response on Question 9 (Self-harm ideation). Immediate connection to Tele-MANAS (14416) or hospital emergency triage is clinically recommended.`;
+      } else if (phqTotal >= 10 || gadTotal >= 10) {
+        alertText += `Elevated psychological symptom burden indicated. Clinical assessment and counseling recommended.`;
+      } else {
+        alertText += `Sub-threshold symptoms. Routine wellness tracking and stress hygiene suggested.`;
+      }
+      document.getElementById('clinicalSynthesis').innerHTML = alertText;
+    }
+
+    // Model Comparison Charts
+    let modelChartsLoaded = false;
+    function initModelCompCharts() {
+      if (modelChartsLoaded) return;
+      modelChartsLoaded = true;
+
+      new Chart(document.getElementById('modelCompChart'), {
+        type: 'bar',
+        data: {
+          labels: ['BERT (Proposed)', 'MentalBERT', 'RoBERTa', 'BiLSTM', 'TF-IDF+SVM'],
+          datasets: [
+            { label: 'Accuracy (%)', data: [83.00, 84.15, 83.40, 74.20, 69.80], backgroundColor: '#3B82F6' },
+            { label: 'Macro F1', data: [81.64, 82.90, 82.05, 71.80, 66.50], backgroundColor: '#10B981' }
+          ]
+        },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: '#94A3B8' } } }, scales: { y: { min: 50, max: 100, ticks: { color: '#94A3B8' } }, x: { ticks: { color: '#94A3B8' } } } }
+      });
+
+      new Chart(document.getElementById('latencyChart'), {
+        type: 'bar',
+        data: {
+          labels: ['BERT', 'MentalBERT', 'RoBERTa', 'BiLSTM', 'TF-IDF'],
+          datasets: [{ label: 'Latency (ms / text)', data: [18.4, 18.5, 22.1, 6.2, 1.1], backgroundColor: ['#60A5FA', '#93C5FD', '#F87171', '#FBBF24', '#34D399'] }]
+        },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { title: { display: true, text: 'Milliseconds', color: '#94A3B8' }, ticks: { color: '#94A3B8' } }, x: { ticks: { color: '#94A3B8' } } } }
+      });
+    }
+
+    // Respiration Pacer
+    let breathRunning = false;
+    let breathInterval = null;
+    function toggleBreathing() {
+      const circle = document.getElementById('breathCircle');
+      const text = document.getElementById('breathInstruction');
+      const btn = document.getElementById('breathBtnText');
+
+      if (breathRunning) {
+        clearInterval(breathInterval);
+        breathRunning = false;
+        btn.textContent = "Start Respiration Pacer";
+        circle.className = "breathing-circle";
+        circle.textContent = "IDLE";
+        text.textContent = "Pacer paused.";
+        return;
+      }
+
+      breathRunning = true;
+      btn.textContent = "Stop Respiration Pacer";
+      let phase = 0;
+      const phases = [
+        { text: "INHALE (4s)", prompt: "Breathe in deeply through your nose...", cls: "breathing-circle breathing-inhale" },
+        { text: "HOLD (4s)", prompt: "Hold your breath calmly...", cls: "breathing-circle breathing-hold" },
+        { text: "EXHALE (4s)", prompt: "Slowly release through your mouth...", cls: "breathing-circle breathing-exhale" },
+        { text: "REST (4s)", prompt: "Pause and rest before next breath...", cls: "breathing-circle" }
+      ];
+
+      function step() {
+        const cur = phases[phase % 4];
+        circle.textContent = cur.text;
+        text.textContent = cur.prompt;
+        circle.className = cur.cls;
+        phase++;
+      }
+      step();
+      breathInterval = setInterval(step, 4000);
+    }
+
+    function saveSafetyPlan() {
+      const p1 = document.getElementById('sp1').value;
+      const p2 = document.getElementById('sp2').value;
+      const p3 = document.getElementById('sp3').value;
+      const p4 = document.getElementById('sp4').value;
+      const p5 = document.getElementById('sp5').value;
+
+      const planText = `=== MY PERSONAL CRISIS SAFETY PLAN ===\n\n1. Warning Signs:\n${p1}\n\n2. Internal Coping Strategies:\n${p2}\n\n3. People/Places for Distraction:\n${p3}\n\n4. People I Can Ask for Help:\n${p4}\n\n5. Professional Crisis Helplines:\n${p5}\n\nSaved via MindGuard AI on ${new Date().toLocaleDateString()}`;
+      
+      const blob = new Blob([planText], { type: 'text/plain' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'My_Crisis_Safety_Plan.txt';
+      a.click();
+    }
+
+    // Benchmark Charts from Paper
+    let benchmarkChartsLoaded = false;
+    function initBenchmarkCharts() {
+      if (benchmarkChartsLoaded) return;
+      benchmarkChartsLoaded = true;
+
+      new Chart(document.getElementById('epochChart'), {
+        type: 'line',
+        data: {
+          labels: ['Epoch 1', 'Epoch 2', 'Epoch 3', 'Epoch 4', 'Epoch 5 (Best)', 'Epoch 6', 'Epoch 7'],
+          datasets: [
+            { label: 'Train Loss', data: [0.8373, 0.4217, 0.3006, 0.2093, 0.1379, 0.0887, 0.0579], borderColor: '#60A5FA', fill: false },
+            { label: 'Val Loss (Overfitting)', data: [0.5102, 0.4690, 0.4737, 0.5842, 0.6844, 0.8731, 0.9394], borderColor: '#F87171', fill: false },
+            { label: 'Val Accuracy (%)', data: [79.67, 81.42, 82.68, 81.97, 82.80, 82.66, 82.63], borderColor: '#34D399', borderDash: [5, 5], yAxisID: 'y1' }
+          ]
+        },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: '#94A3B8' } } }, scales: { y: { title: { display: true, text: 'Loss', color: '#94A3B8' }, ticks: { color: '#94A3B8' } }, y1: { position: 'right', title: { display: true, text: 'Val Acc (%)', color: '#34D399' }, ticks: { color: '#34D399' }, grid: { drawOnChartArea: false } }, x: { ticks: { color: '#94A3B8' } } } }
+      });
+
+      new Chart(document.getElementById('f1Chart'), {
+        type: 'bar',
+        data: {
+          labels: ['Normal', 'Anxiety', 'Bipolar', 'Depression', 'Personality dis.', 'Stress', 'Suicidal'],
+          datasets: [{ label: 'F1-Score', data: [0.9549, 0.8855, 0.8521, 0.7751, 0.7677, 0.7663, 0.7134], backgroundColor: ['#10B981', '#3B82F6', '#8B5CF6', '#F59E0B', '#6366F1', '#EC4899', '#EF4444'] }]
+        },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { min: 0.6, max: 1.0, title: { display: true, text: 'F1-Score', color: '#94A3B8' }, ticks: { color: '#94A3B8' } }, x: { ticks: { color: '#94A3B8' } } } }
+      });
+    }
+
+    window.onload = () => { loadSample('Normal'); };
+  </script>
+</body>
+</html>

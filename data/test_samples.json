@@ -1,0 +1,44 @@
+{
+  "Normal": [
+    "Today was a great day and I'm feeling really good about life and work.",
+    "Just finished my evening jog in the park, feeling refreshed and ready for tomorrow.",
+    "Had coffee with an old friend from college and we caught up on so many memories.",
+    "Cooked a nice homemade pasta dinner with family and watched a comedy movie."
+  ],
+  "Depression": [
+    "I feel like an empty hollow shell going through the motions every single day.",
+    "Nothing brings me joy anymore, even things I used to love feel meaningless and dull.",
+    "Struggling to get out of bed in the morning, everything feels like an impossible chore.",
+    "I have this heavy dark cloud over me that never seems to clear away."
+  ],
+  "Suicidal": [
+    "I cannot take this unbearable agony anymore, I just want all of this pain to permanently stop.",
+    "Writing this as a goodbye, I feel my family would be so much better off without me.",
+    "Thinking about ending it all tonight, I have already gathered the pills and written the note.",
+    "Every breath feels like torture, I don't see any reason to wake up tomorrow morning."
+  ],
+  "Anxiety": [
+    "My heart is pounding uncontrollably in my chest and I feel like I cannot catch my breath.",
+    "I am terrified that something horrible and catastrophic is about to happen any second.",
+    "Having a sudden panic attack in the crowded subway, hands are shaking and dizzy.",
+    "I can't stop overthinking every single tiny social interaction I had today."
+  ],
+  "Stress": [
+    "Completely drowning under overlapping academic deadlines and back-to-back exams.",
+    "Working 14 hours a day with zero rest, my brain feels fried and overwhelmed.",
+    "Struggling to juggle two jobs, college tuition payments, and mounting utility bills.",
+    "Burnout has set in hard, too many responsibilities on my shoulders without any help."
+  ],
+  "Bipolar": [
+    "Last week I was on top of the world working 72 hours without sleep, today I cannot get up.",
+    "Extreme swings between uncontrollable manic euphoria and devastating black depression.",
+    "During my manic episode I spent my entire month's salary on impulsive online shopping.",
+    "My thoughts were racing so fast that words couldn't keep up with the electricity in my brain."
+  ],
+  "Personality disorder": [
+    "Terrified of abandonment, one moment I idolize my partner and the next I despise them.",
+    "Chronic unstable sense of self, I don't even know who I truly am beneath the masks.",
+    "Intense fear of rejection makes me lash out aggressively at the people who care about me.",
+    "Splitting behavior: people are either absolute angels or evil monsters in my eyes, no in-between."
+  ]
+}
