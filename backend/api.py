@@ -32,7 +32,7 @@ from backend.langchain_brain import (
     generate_intelligent_clinical_fallback,
     CRISIS_HELPLINES
 )
-from backend.file_analyzer import analyze_document_mental_health
+from backend.file_analyzer import analyze_document_mental_health, sanitize_pii, generate_soap_note
 
 app = FastAPI(
     title="MindGuard AI - Mental Health Sentimental Analysis Platform",
@@ -135,7 +135,8 @@ def analyze_statement(req: StatementRequest):
     if not req.text or not req.text.strip():
         raise HTTPException(status_code=400, detail="Empty text input provided.")
     
-    result = predictor.predict(req.text)
+    clean_text = sanitize_pii(req.text)
+    result = predictor.predict(clean_text)
     
     # Attach crisis resources if elevated risk or suicidal ideation detected
     if result["risk_assessment"]["is_crisis"]:
@@ -222,6 +223,8 @@ async def conversational_screening(req: ChatSessionRequest):
     if not req.messages:
         raise HTTPException(status_code=400, detail="No messages in chat session.")
     
+    for m in req.messages:
+        m.content = sanitize_pii(m.content)
     latest_msg = req.messages[-1].content
     analysis = predictor.predict(latest_msg)
     
@@ -340,3 +343,25 @@ def get_benchmarks():
 @app.get("/api/helplines")
 def get_helplines():
     return {"status": "success", "helplines": CRISIS_HELPLINES}
+
+
+@app.post("/api/soap-note")
+def generate_soap_endpoint(req: StatementRequest):
+    """Generates a formal hospital-grade clinical SOAP Note from text."""
+    clean_text = sanitize_pii(req.text)
+    pred = predictor.predict(clean_text)
+    p_class = pred["primary_class"]
+    is_crisis = p_class == "Suicidal" or pred.get("risk_assessment", {}).get("is_crisis", False)
+    
+    distortions = [{"type": "Contextual Stress", "quote": clean_text[:40], "reframe": "Reframe"}]
+    soap = generate_soap_note(
+        filename="Clinical_Intake_Session.txt",
+        total_words=len(clean_text.split()),
+        dominant_class=p_class,
+        triage_level="Acute Crisis Risk" if is_crisis else "Moderate Clinical Strain" if p_class in ["Depression", "Anxiety"] else "Safe / Baseline",
+        class_shares={p_class: 100.0},
+        high_risks=[{"quote": clean_text[:120], "class": p_class, "confidence": pred["confidence_percentage"]}] if is_crisis or p_class != "Normal" else [],
+        distortions=distortions,
+        is_crisis=is_crisis
+    )
+    return {"status": "success", "soap_note": soap}

@@ -61,6 +61,82 @@
       }
     }
 
+  
+    // Interactive 4-7-8 Breathing Pacer Controller
+    let pacerInterval = null;
+    let pacerStep = 0;
+
+    function toggleBreathingPacer() {
+      const widget = document.getElementById('breathingPacerWidget');
+      if (!widget) return;
+
+      if (widget.style.display === 'none' || !widget.style.display) {
+        widget.style.display = 'block';
+        startBreathingCycle();
+      } else {
+        widget.style.display = 'none';
+        if (pacerInterval) clearInterval(pacerInterval);
+      }
+    }
+
+    function startBreathingCycle() {
+      const circle = document.getElementById('breathingCircle');
+      const text = document.getElementById('breathingInstruction');
+      if (!circle || !text) return;
+
+      if (pacerInterval) clearInterval(pacerInterval);
+
+      function step() {
+        if (pacerStep === 0) {
+          // Inhale (4s)
+          circle.style.transform = 'scale(1.35)';
+          circle.style.borderColor = '#10B981';
+          circle.style.boxShadow = '0 0 35px rgba(16,185,129,0.5)';
+          circle.textContent = 'Inhale (4s)';
+          text.textContent = 'Breathe in slowly through your nose... expanding your lungs.';
+          pacerStep = 1;
+          setTimeout(step, 4000);
+        } else if (pacerStep === 1) {
+          // Hold (7s)
+          circle.style.borderColor = '#3B82F6';
+          circle.style.boxShadow = '0 0 35px rgba(59,130,246,0.5)';
+          circle.textContent = 'Hold (7s)';
+          text.textContent = 'Gently hold your breath... resting in stillness.';
+          pacerStep = 2;
+          setTimeout(step, 7000);
+        } else {
+          // Exhale (8s)
+          circle.style.transform = 'scale(1.0)';
+          circle.style.borderColor = '#8B5CF6';
+          circle.style.boxShadow = '0 0 20px rgba(139,92,246,0.3)';
+          circle.textContent = 'Exhale (8s)';
+          text.textContent = 'Slowly release through your mouth... letting go of all tension.';
+          pacerStep = 0;
+          setTimeout(step, 8000);
+        }
+      }
+      pacerStep = 0;
+      step();
+    }
+
+    // Download SOAP Note as TXT file
+    function downloadSoapNote(encodedSoap) {
+      if (!encodedSoap) {
+        alert("SOAP Note data is currently empty.");
+        return;
+      }
+      const text = decodeURIComponent(encodedSoap);
+      const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = "MindGuard_Clinical_SOAP_Note.txt";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
   </script>
   <style>
     :root {
@@ -1422,7 +1498,7 @@
     // MINDBOT: NEURAL AI BRAIN & CALCULATING POWER
     // ==========================================
     let chatHistory = [];
-    const LIVE_BACKEND_TUNNEL = "https://paths-clearance-relatives-bosnia.trycloudflare.com";
+    const LIVE_BACKEND_TUNNEL = "https://reduction-tion-breaking-maintain.trycloudflare.com";
 
     function toggleChatSettings() {
       const p = document.getElementById('chatSettingsPanel');
@@ -1935,6 +2011,26 @@
         </div>
 
         ${riskHtml}
+
+        <!-- Longitudinal Affective Trajectory Heatmap -->
+        ${data.affective_trajectory && data.affective_trajectory.length > 0 ? `
+          <div>
+            <div style="font-size:0.8rem; font-weight:700; color:#93C5FD; margin-bottom:0.35rem">&#128200; Longitudinal Affective Trajectory (Document Progression):</div>
+            <div style="display:flex; gap:0.35rem; align-items:flex-end; height:45px; background:rgba(15,23,42,0.6); padding:0.4rem 0.5rem; border-radius:8px; border:1px solid rgba(255,255,255,0.05)">
+              ${data.affective_trajectory.map(t => `
+                <div title="Window ${t.segment_index}: ${t.dominant_class} (Valence: ${t.valence_score})" style="flex:1; height:${Math.max(20, Math.min(100, Math.abs(t.valence_score) * 100))}%; background:${t.valence_score < -0.3 ? '#EF4444' : t.valence_score > 0.2 ? '#10B981' : '#38BDF8'}; border-radius:3px; transition:height 0.3s"></div>
+              `).join('')}
+            </div>
+          </div>
+        ` : ''}
+
+        <!-- Clinical SOAP Note Action -->
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem; background:rgba(30,41,59,0.4); padding:0.6rem 0.75rem; border-radius:8px">
+          <span style="font-size:0.78rem; color:#CBD5E1">&#128203; Hospital-Grade Clinical Documentation:</span>
+          <button type="button" onclick="downloadSoapNote('${encodeURIComponent(data.soap_note || '')}')" style="background:rgba(59,130,246,0.25); border:1px solid #3B82F6; color:#93C5FD; border-radius:6px; padding:0.35rem 0.85rem; font-size:0.78rem; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:0.35rem">
+            &#128190; Download Clinical SOAP Note (.txt)
+          </button>
+        </div>
 
         <div style="font-size:0.75rem; color:var(--text-muted); border-top:1px solid rgba(255,255,255,0.08); padding-top:0.45rem">
           &#128737;&#65039; <strong>Clinical Boundary:</strong> ${cb.scope_statement || 'Screening Aid Protocol (Non-Diagnostic)'}. Recommendation: ${cb.mandatory_action || 'N/A'}.
