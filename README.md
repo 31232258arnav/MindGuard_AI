@@ -2,6 +2,14 @@
 
 A full-scale, production-ready BERT-based text classification and early mental-health screening platform based on the research paper and presentation poster from **Vishwakarma University, Pune (Department of Computer Engineering, Clinical AI Consortium, A.Y. 2026-2027)**.
 
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/31232258arnav/MindGuard_AI)
+&nbsp;&nbsp;
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/31232258arnav/MindGuard_AI)
+
+- **24/7 Live Web Application (GitHub Pages):** [https://31232258arnav.github.io/MindGuard_AI/](https://31232258arnav.github.io/MindGuard_AI/)
+- **Permanent Cloud Backend Service:** [https://render.com/deploy?repo=https://github.com/31232258arnav/MindGuard_AI](https://render.com/deploy?repo=https://github.com/31232258arnav/MindGuard_AI)
+
+
 ---
 
 ## Academic Project Details

@@ -1231,7 +1231,15 @@
 
   <!-- Application Logic -->
   <script>
+    const CLOUD_BACKEND_URL = "https://mindguard-ai-backend.onrender.com";
     const LIVE_BACKEND_TUNNEL = "https://hollow-persian-pittsburgh-reality.trycloudflare.com";
+
+    async function getActiveBackendUrl() {
+      if (!window.location.hostname.includes("github.io")) {
+        return "";
+      }
+      return LIVE_BACKEND_TUNNEL;
+    }
 
     function switchTab(tabId) {
       document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
@@ -1687,7 +1695,7 @@ Notice that our minds often magnify setbacks into permanent verdicts. What you a
           "Guide me through a calming breathing exercise right now.",
           "What is one small step I can take to feel better?"
         ],
-        ai_brain_source: "MindGuard Real-Time Psychometric Neural Synthesizer"
+        ai_brain_source: "MindGuard GenAI Engine"
       };
     }
 
@@ -2030,6 +2038,41 @@ Notice that our minds often magnify setbacks into permanent verdicts. What you a
         } catch (fetchErr) {
           clearTimeout(timeoutId);
           console.warn("Backend fetch timed out/failed, engaging instant clinical synthesizer:", fetchErr);
+        }
+
+        // Direct Browser-to-GenAI fallback if custom key is provided and backend is offline
+        if ((!data || (!data.dialogue_response && !data.reply)) && customKey) {
+          try {
+            const directResp = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+              method: 'POST',
+              headers: {
+                'Authorization': `Bearer ${customKey}`,
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                model: 'google/gemini-2.5-flash',
+                messages: [
+                  { role: 'system', content: "You are MindGuard GenAI, an advanced clinical GenAI assistant strictly dedicated to mental health and emotional well-being. Universally refer to yourself as MindGuard GenAI. Never disclose underlying models. If the user asks an off-topic question, politely redirect to emotional health." },
+                  ...chatHistory.slice(-4)
+                ],
+                max_tokens: 500
+              })
+            });
+            if (directResp.ok) {
+              const resJson = await directResp.json();
+              const replyText = resJson.choices[0].message.content;
+              data = {
+                dialogue_response: replyText,
+                reply: replyText,
+                ai_brain_source: "MindGuard GenAI Engine",
+                message_analysis: inf,
+                psychometrics: psych,
+                clinical_boundary: { triage_level: "Evaluated (Direct Cloud GenAI)", helplines: [] }
+              };
+            }
+          } catch (directErr) {
+            console.warn("Direct GenAI call error:", directErr);
+          }
         }
 
         // Guaranteed structured clinical data fallback (never null, never generic string)
