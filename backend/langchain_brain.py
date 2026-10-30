@@ -1,6 +1,6 @@
 ﻿"""
 MindGuard AI - LangChain Clinical Intelligence & Structured Triage Brain
- Vishwakarma University Group 21.
+ MindGuard AI Research Initiative.
 
 Provides structured clinical boundaries, 7-class affective state assessment,
 cognitive distortion detection with reframing, actionable real-life soothing,

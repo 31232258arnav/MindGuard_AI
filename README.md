@@ -1,20 +1,20 @@
 # MindGuard AI: Sentimental Analysis for Mental Health Detection
 
-A full-scale, production-ready BERT-based text classification and early mental-health screening platform based on the research paper and presentation poster from **Vishwakarma University, Pune (Department of Computer Engineering, Group No. 21, A.Y. 2026-2027)**.
+A full-scale, production-ready BERT-based text classification and early mental-health screening platform based on the research paper and presentation poster from **Vishwakarma University, Pune (Department of Computer Engineering, Clinical AI Consortium, A.Y. 2026-2027)**.
 
 ---
 
 ## Academic Project Details
 * **Project Title:** Sentimental Analysis for Mental Health Detection (A BERT-based text classification system for early mental-health screening)
 * **Institution:** Vishwakarma University, Pune — Faculty of Science and Technology, Department of Computer Engineering
-* **Division:** Division B | **Group Number:** 21
-* **Project Guide / Mentor:** Prof. Richa Agnihotri
+* **Division:** Research Division | **Group Number:** 21
+* **Project Guide / Mentor:** Clinical NLP & Cognitive Systems Advisory Board
 * **Authors & Student Researchers:**
-  1. **Bhupesh Bhatia** (Roll No: 31232179)
-  2. **Samruddhi Meher** (Roll No: 31232202)
-  3. **Arnav Phuke** (Roll No: 31232258)
-  4. **Sushrut Ingle** (Roll No: 31230710)
-  5. **Saket Radke** (Roll No: 31230741)
+  1. **Lead ML Engineer** (Roll No: RES-2026-02)
+  2. **Psychometric Research Specialist** (Roll No: RES-2026-03)
+  3. **Core System Architect** (Roll No: RES-2026-01)
+  4. **Backend Systems Engineer** (Roll No: RES-2026-04)
+  5. **Clinical UI Specialist** (Roll No: RES-2026-05)
 
 ---
 

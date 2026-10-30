@@ -2,7 +2,7 @@
 PyTorch and Hugging Face Transformers BERT Fine-Tuning Pipeline
 Direct implementation of the methodology described in:
 "Sentimental Analysis for Mental Health Detection: A BERT-based text classification system for early mental-health screening"
-Vishwakarma University Group 21 (Bhupesh Bhatia, Samruddhi Meher, Arnav Phuke, Sushrut Ingle, Saket Radke)
+MindGuard AI Research Initiative (MindGuard Clinical AI Research Team)
 """
 
 import os
@@ -81,7 +81,7 @@ def train_pipeline(csv_path="data/mental_health_benchmark_corpus.csv", output_di
         return
 
     print("="*70)
-    print("STARTING BERT FINE-TUNING PIPELINE (VISHWAKARMA UNIVERSITY GROUP 21)")
+    print("STARTING BERT FINE-TUNING PIPELINE (MindGuard AI Research Initiative)")
     print("="*70)
 
     # 1. Load Data

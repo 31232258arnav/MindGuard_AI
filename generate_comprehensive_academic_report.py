@@ -45,7 +45,7 @@ class AcademicNumberedCanvas(canvas.Canvas):
         self.setFont('Helvetica', 7.5)
         self.setFillColor(colors.HexColor('#64748b'))
         self.drawString(205, page_h - 36, "|  Dept. of Computer Engineering  |  Cloud Computing Minor Project (2026-2027)")
-        self.drawRightString(page_w - 54, page_h - 36, "GROUP NO. 21")
+        self.drawRightString(page_w - 54, page_h - 36, "Clinical AI Consortium")
 
         # Top Header Rule
         self.setStrokeColor(colors.HexColor('#cbd5e1'))
@@ -288,7 +288,7 @@ def build_academic_pdf(output_path):
     # =========================================================================
     story.append(Spacer(1, 10))
     story.append(Paragraph("VISHWAKARMA UNIVERSITY, PUNE", styles['CoverInstHeader']))
-    story.append(Paragraph("FACULTY OF SCIENCE AND TECHNOLOGY &bull; DEPARTMENT OF COMPUTER ENGINEERING<br/>A.Y. 2026-2027 &bull; DIVISION B &bull; GROUP NO. 21", styles['CoverDeptHeader']))
+    story.append(Paragraph("FACULTY OF SCIENCE AND TECHNOLOGY &bull; DEPARTMENT OF COMPUTER ENGINEERING<br/>A.Y. 2026-2027 &bull; Research Division &bull; Clinical AI Consortium", styles['CoverDeptHeader']))
     story.append(HRFlowable(width="100%", thickness=1.5, color=colors.HexColor('#1e3a8a'), spaceBefore=0, spaceAfter=14))
 
     story.append(Paragraph("CLOUD COMPUTING MINOR PROJECT REPORT &bull; TECHNICAL MONOGRAPH", styles['CoverProjectBadge']))
@@ -298,20 +298,20 @@ def build_academic_pdf(output_path):
     # Metadata & Group Table
     meta_data = [
         [
-            Paragraph("<b>STUDENT INVESTIGATORS (GROUP 21)</b>", styles['CoverMetaLabel']),
+            Paragraph("<b>STUDENT INVESTIGATORS (Clinical AI Consortium)</b>", styles['CoverMetaLabel']),
             Paragraph("<b>PROJECT MENTOR & INSTITUTIONAL AFFILIATION</b>", styles['CoverMetaLabel'])
         ],
         [
             Paragraph(
-                "&bull; <b>Bhupesh Bhatia</b> &mdash; Roll No: 31232179 (Div B)<br/>"
-                "&bull; <b>Samruddhi Meher</b> &mdash; Roll No: 31232202 (Div B)<br/>"
-                "&bull; <b>Arnav Phuke</b> &mdash; Roll No: 31232258 (Div B)<br/>"
-                "&bull; <b>Sushrut Ingle</b> &mdash; Roll No: 31230710 (Div B)<br/>"
-                "&bull; <b>Saket Radke</b> &mdash; Roll No: 31230741 (Div B)",
+                "&bull; <b>Lead ML Engineer</b> &mdash; Roll No: RES-2026-02 (Research Division)<br/>"
+                "&bull; <b>Psychometric Research Specialist</b> &mdash; Roll No: RES-2026-03 (Research Division)<br/>"
+                "&bull; <b>Core System Architect</b> &mdash; Roll No: RES-2026-01 (Research Division)<br/>"
+                "&bull; <b>Backend Systems Engineer</b> &mdash; Roll No: RES-2026-04 (Research Division)<br/>"
+                "&bull; <b>Clinical UI Specialist</b> &mdash; Roll No: RES-2026-05 (Research Division)",
                 styles['CoverMetaVal']
             ),
             Paragraph(
-                "<b>Prof. Richa Agnihotri</b><br/>"
+                "<b>Clinical NLP & Cognitive Systems Advisory Board</b><br/>"
                 "Assistant Professor & Project Guide<br/>"
                 "Department of Computer Engineering<br/>"
                 "Vishwakarma University, Pune, Maharashtra 411048<br/><br/>"
@@ -356,8 +356,8 @@ def build_academic_pdf(output_path):
     # Verification Block
     verif_data = [
         [
-            Paragraph("<b>GUIDE VERIFICATION & DIGITAL SIGN-OFF</b><br/>Certified that Group 21 has carried out the project work under my supervision and approved for submission in partial fulfillment of the degree requirements.", styles['TableTxt']),
-            Paragraph("<b>STATUS: VERIFIED & SEALED</b><br/>Date: October 2026<br/>Prof. Richa Agnihotri [Digital Sign-Off Approved]", styles['TableTxtBold'])
+            Paragraph("<b>GUIDE VERIFICATION & DIGITAL SIGN-OFF</b><br/>Certified that Clinical AI Consortium has carried out the project work under my supervision and approved for submission in partial fulfillment of the degree requirements.", styles['TableTxt']),
+            Paragraph("<b>STATUS: VERIFIED & SEALED</b><br/>Date: October 2026<br/>Clinical NLP & Cognitive Systems Advisory Board [Digital Sign-Off Approved]", styles['TableTxtBold'])
         ]
     ]
     t_verif = Table(verif_data, colWidths=[354, 150])
@@ -382,8 +382,8 @@ def build_academic_pdf(output_path):
     cert_text = (
         "This is to certify that the project entitled <b>\"Sentimental Analysis for Mental Health Detection: "
         "A BERT-based text classification system for early mental-health screening\"</b> submitted by "
-        "<b>Bhupesh Bhatia (31232179)</b>, <b>Samruddhi Meher (31232202)</b>, <b>Arnav Phuke (31232258)</b>, "
-        "<b>Sushrut Ingle (31230710)</b>, and <b>Saket Radke (31230741)</b> of Division B (Group No. 21) "
+        "<b>Lead ML Engineer (RES-2026-02)</b>, <b>Psychometric Research Specialist (RES-2026-03)</b>, <b>Core System Architect (RES-2026-01)</b>, "
+        "<b>Backend Systems Engineer (RES-2026-04)</b>, and <b>Clinical UI Specialist (RES-2026-05)</b> of Research Division (Clinical AI Consortium) "
         "is a bonafide record of work carried out under my guidance and supervision at Vishwakarma University, Pune, "
         "during the Academic Year 2026-2027 in partial fulfillment of the curriculum for Bachelor of Technology in "
         "Computer Engineering."
@@ -394,7 +394,7 @@ def build_academic_pdf(output_path):
     # Signature Block Table
     sig_data = [
         [
-            Paragraph("<b>Prof. Richa Agnihotri</b><br/>Project Guide / Mentor<br/>Dept. of Computer Engineering", styles['TableTxtCenter']),
+            Paragraph("<b>Clinical NLP & Cognitive Systems Advisory Board</b><br/>Project Guide / Mentor<br/>Dept. of Computer Engineering", styles['TableTxtCenter']),
             Paragraph("<b>Dr. Project Coordinator</b><br/>Minor Project Coordinator<br/>Dept. of Computer Engineering", styles['TableTxtCenter']),
             Paragraph("<b>Head of Department</b><br/>Dept. of Computer Engineering<br/>Vishwakarma University", styles['TableTxtCenter'])
         ]
@@ -487,7 +487,7 @@ def build_academic_pdf(output_path):
     )
     story.append(Paragraph(p1_3, styles['AcademicBodyJustified']))
 
-    story.append(Paragraph("1.4 Research Objectives & Deliverables (Group 21)", styles['SectionHeader']))
+    story.append(Paragraph("1.4 Research Objectives & Deliverables (Clinical AI Consortium)", styles['SectionHeader']))
     obj_data = [
         [Paragraph("<b>Objective 1: End-to-End Pipeline</b>", styles['TableTxtBold']), Paragraph("Construct a fully reproducible deep learning pipeline executing data cleaning, subword tokenization, transformer fine-tuning, and evaluation.", styles['TableTxt'])],
         [Paragraph("<b>Objective 2: 7-Class Classification</b>", styles['TableTxtBold']), Paragraph("Differentiate seven fine-grained affective states: Normal, Depression, Suicidal, Anxiety, Stress, Bipolar, and Personality Disorder.", styles['TableTxt'])],
@@ -800,7 +800,7 @@ def build_academic_pdf(output_path):
     story.append(Paragraph("5.1 Hyperparameter Matrix & Optimization Setup", styles['SectionHeader']))
     p5_1 = (
         "To fine-tune BERT-base-uncased without catastrophic forgetting of pre-trained linguistic knowledge, we adopted the exact "
-        "hyperparameter recommendations of Devlin et al. and the Group 21 minor project experimental protocol. AdamW was chosen as the "
+        "hyperparameter recommendations of Devlin et al. and the Clinical AI Consortium minor project experimental protocol. AdamW was chosen as the "
         "primary optimizer due to its mathematically rigorous treatment of weight decay. A linear learning rate warmup was scheduled "
         "for the first 10% of total training steps, followed by a monotonic linear decay to zero."
     )
@@ -887,7 +887,7 @@ def build_academic_pdf(output_path):
     story.append(Paragraph(p6_1, styles['AcademicBodyJustified']))
 
     # Table I: Per-Class Classification Report
-    story.append(Paragraph("Table I: Group 21 Official Per-Class Classification Report (Held-Out Test Set)", styles['SectionHeader']))
+    story.append(Paragraph("Table I: Clinical AI Consortium Official Per-Class Classification Report (Held-Out Test Set)", styles['SectionHeader']))
     c_data = [
         [
             Paragraph("<b>Target Mental Health Class</b>", styles['TableHdr']),
@@ -992,7 +992,7 @@ def build_academic_pdf(output_path):
         [Paragraph("TF-IDF + Linear SVM", styles['TableTxt']), Paragraph("76.10%", styles['TableTxtCenter']), Paragraph("0.7480", styles['TableTxtCenter']), Paragraph("0.7590", styles['TableTxtCenter']), Paragraph("~4.8 ms", styles['TableTxtCenter'])],
         [Paragraph("BiLSTM + GloVe Embeddings", styles['TableTxt']), Paragraph("78.50%", styles['TableTxtCenter']), Paragraph("0.7710", styles['TableTxtCenter']), Paragraph("0.7820", styles['TableTxtCenter']), Paragraph("~45.0 ms", styles['TableTxtCenter'])],
         [Paragraph("DistilBERT-base-uncased", styles['TableTxt']), Paragraph("81.40%", styles['TableTxtCenter']), Paragraph("0.8020", styles['TableTxtCenter']), Paragraph("0.8110", styles['TableTxtCenter']), Paragraph("~72.0 ms", styles['TableTxtCenter'])],
-        [Paragraph("<b>BERT-base-uncased (Group 21 Proposed)</b>", styles['TableTxtBold']), Paragraph("<b>83.00%</b>", styles['TableTxtBold']), Paragraph("<b>0.8164</b>", styles['TableTxtBold']), Paragraph("<b>0.8299</b>", styles['TableTxtBold']), Paragraph("<b>~142.0 ms</b>", styles['TableTxtBold'])],
+        [Paragraph("<b>BERT-base-uncased (Clinical AI Consortium Proposed)</b>", styles['TableTxtBold']), Paragraph("<b>83.00%</b>", styles['TableTxtBold']), Paragraph("<b>0.8164</b>", styles['TableTxtBold']), Paragraph("<b>0.8299</b>", styles['TableTxtBold']), Paragraph("<b>~142.0 ms</b>", styles['TableTxtBold'])],
         [Paragraph("RoBERTa-base", styles['TableTxt']), Paragraph("84.10%", styles['TableTxtCenter']), Paragraph("0.8280", styles['TableTxtCenter']), Paragraph("0.8390", styles['TableTxtCenter']), Paragraph("~148.0 ms", styles['TableTxtCenter'])],
         [Paragraph("MentalBERT (Domain Pre-trained)", styles['TableTxt']), Paragraph("85.60%", styles['TableTxtCenter']), Paragraph("0.8430", styles['TableTxtCenter']), Paragraph("0.8540", styles['TableTxtCenter']), Paragraph("~144.0 ms", styles['TableTxtCenter'])],
         [Paragraph("<b>MindGuard AI Calibrated Production Ensemble</b>", styles['TableTxtBold']), Paragraph("<b>87.85%</b>", styles['TableTxtBold']), Paragraph("<b>0.8670</b>", styles['TableTxtBold']), Paragraph("<b>0.8760</b>", styles['TableTxtBold']), Paragraph("<b>~150.0 ms</b>", styles['TableTxtBold'])],
@@ -1531,7 +1531,7 @@ def build_academic_pdf(output_path):
     story.append(Paragraph("Conclusion, Limitations & Academic Bibliography", styles['ChapterTitle']))
     story.append(HRFlowable(width="100%", thickness=1, color=colors.HexColor('#2563eb'), spaceBefore=2, spaceAfter=8))
 
-    story.append(Paragraph("14.1 Summary of Contributions (Group 21)", styles['SectionHeader']))
+    story.append(Paragraph("14.1 Summary of Contributions (Clinical AI Consortium)", styles['SectionHeader']))
     p14_1 = (
         "This project successfully designed, implemented, evaluated, and deployed <b>MindGuard AI</b>, a comprehensive deep learning "
         "platform for mental health screening. Fine-tuning BERT-base-uncased on ~52,680 statements across 7 classes achieved an official "
@@ -1562,7 +1562,7 @@ def build_academic_pdf(output_path):
         "[5] Spitzer, R. L., Kroenke, K., Williams, J. B., & Löwe, B. (2006). A brief measure for assessing generalized anxiety disorder: the GAD-7. <i>Archives of Internal Medicine</i>, 166(10), 1092–1097.",
         "[6] Loshchilov, I., & Hutter, F. (2019). Decoupled weight decay regularization. In <i>International Conference on Learning Representations (ICLR 2019)</i>.",
         "[7] World Health Organization. (2022). <i>World mental health report: Transforming mental health for all</i>. Geneva: World Health Organization.",
-        "[8] Bhatia, B., Meher, S., Phuke, A., Ingle, S., & Radke, S. (2026). Sentimental Analysis for Mental Health Detection. Minor Project Monograph, Dept. of Computer Engineering, Vishwakarma University, Pune. Mentor: Prof. Richa Agnihotri."
+        "[8] Bhatia, B., Meher, S., Phuke, A., Ingle, S., & Radke, S. (2026). Sentimental Analysis for Mental Health Detection. Minor Project Monograph, Dept. of Computer Engineering, Vishwakarma University, Pune. Mentor: Clinical NLP & Cognitive Systems Advisory Board."
     ]
     for ref in refs:
         story.append(Paragraph(ref, styles['AcademicBody']))

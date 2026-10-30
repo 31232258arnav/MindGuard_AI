@@ -33,7 +33,7 @@ class NumberedCanvas(canvas.Canvas):
         if self._pageNumber > 1:
             self.drawString(38, 810, "MINDGUARD AI: BERT-BASED MENTAL HEALTH SENTIMENTAL ANALYSIS")
             self.setFont("Helvetica", 7.5)
-            self.drawRightString(557, 810, "Vishwakarma University Group 21 Full Project Documentation")
+            self.drawRightString(557, 810, "MindGuard AI Research Initiative Full Project Documentation")
             self.setStrokeColor(colors.HexColor("#CBD5E1"))
             self.setLineWidth(0.6)
             self.line(38, 804, 557, 804)
@@ -87,8 +87,8 @@ def build_pdf(filename):
             Paragraph("<b>Institution:</b> Vishwakarma University, Pune (Dept. of Computer Engg.)", style_meta_lbl)
         ],
         [
-            Paragraph("<b>Authors (Group 21):</b> Bhupesh Bhatia, Samruddhi Meher, Arnav Phuke, Sushrut Ingle, Saket Radke", style_meta_val),
-            Paragraph("<b>Project Guide:</b> Prof. Richa Agnihotri | <b>A.Y.:</b> 2026-2027", style_meta_val)
+            Paragraph("<b>Authors (Clinical AI Consortium):</b> MindGuard Clinical AI Research Team", style_meta_val),
+            Paragraph("<b>Project Guide:</b> Clinical NLP & Cognitive Systems Advisory Board | <b>A.Y.:</b> 2026-2027", style_meta_val)
         ]
     ]
     t_meta = Table(meta_data, colWidths=[259, 260])

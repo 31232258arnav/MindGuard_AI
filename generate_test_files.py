@@ -42,7 +42,7 @@ print(f"[OK] Test CSV created: {csv_dest_dl}")
 # 2. Text Prompts Guide for MindBot Chat & Live Screener Testing
 txt_content = """================================================================================
 MINDGUARD AI: TEST PROMPTS & VERIFICATION SUITE
-Vishwakarma University, Pune | Minor Project Group 21
+Vishwakarma University, Pune | Clinical NLP Research Initiative
 ================================================================================
 
 Use these sample prompts to test both:

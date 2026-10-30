@@ -1,6 +1,6 @@
 ﻿"""
 MindGuard AI - Clinical Document & Multi-Format File Analyzer
- Vishwakarma University Group 21.
+ MindGuard AI Research Initiative.
 
 Accepts PDF, DOCX, CSV, and TXT files, extracts raw text, executes multi-level
 sentence-by-sentence 7-class mental health classification, extracts cognitive distortions,

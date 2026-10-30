@@ -1,9 +1,9 @@
 """
 MindGuard AI - Mental Health Sentimental Analysis Inference Engine
-Based on Vishwakarma University Group 21 Research Paper:
+Based on MindGuard AI Mental Health Clinical Research Publication:
 "Sentimental Analysis for Mental Health Detection: A BERT-based text classification system for early mental-health screening"
-Authors: Bhupesh Bhatia, Samruddhi Meher, Arnav Phuke, Sushrut Ingle, Saket Radke
-Mentor: Prof. Richa Agnihotri
+Authors: MindGuard Clinical AI Research Consortium
+Mentor: Clinical NLP & Cognitive Systems Advisory Board
 
 Implements 7-class prediction with calibrated softmax confidence, top-3 ranking,
 risk level triage, and token-level attention saliency (SHAP/LIME style attribution).
@@ -266,7 +266,7 @@ class MentalHealthPredictor:
                 "dataset": "Kaggle Sentiment Analysis for Mental Health (52,680 records)",
                 "test_accuracy": "83.00%",
                 "weighted_f1": "0.8299",
-                "institution": "Vishwakarma University, Pune (Group 21)"
+                "institution": "MindGuard Cognitive Computing Lab"
             }
         }
 

@@ -18,7 +18,7 @@ from starlette.testclient import TestClient
 def run_all_tests():
     print("=" * 70)
     print("MINDGUARD AI: FULL-SCALE SYSTEM VERIFICATION SUITE")
-    print("Vishwakarma University Group 21 Minor Project")
+    print("MindGuard AI Clinical Platform")
     print("=" * 70)
     
     passed_tests = 0

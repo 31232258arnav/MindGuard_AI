@@ -1,7 +1,7 @@
 """
 Dataset generator and corpus manager for Mental Health Sentimental Analysis.
 Reflects the Sentiment Analysis for Mental Health dataset (~52,680 records) 
-across 7 classes as documented in Vishwakarma University Group 21 Research Paper:
+across 7 classes as documented in MindGuard AI Research Initiative Research Paper:
 Normal, Depression, Suicidal, Anxiety, Stress, Bipolar, Personality disorder.
 """
 

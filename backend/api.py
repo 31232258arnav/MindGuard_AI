@@ -1,6 +1,6 @@
 ﻿"""
 MindGuard AI - FastAPI REST API Service & Clinical Intelligence Backend
-Vishwakarma University Group 21.
+MindGuard AI Research Initiative.
 
 Features:
 - Fast 7-class BERT-based mental health classification
@@ -36,7 +36,7 @@ from backend.file_analyzer import analyze_document_mental_health
 
 app = FastAPI(
     title="MindGuard AI - Mental Health Sentimental Analysis Platform",
-    description="A BERT-based 7-Class Mental Health Early Screening & Clinical Triage REST API. Vishwakarma University Group 21.",
+    description="A BERT-based 7-Class Mental Health Early Screening & Clinical Triage REST API. MindGuard AI Research Initiative.",
     version="2.0.0"
 )
 
@@ -70,15 +70,15 @@ PAPER_BENCHMARKS = {
     "institution": "Vishwakarma University, Pune",
     "department": "Department of Computer Engineering, Faculty of Science and Technology",
     "academic_year": "2026-2027",
-    "group_number": "Group No. 21 (Division B)",
+    "group_number": "Clinical AI Research Consortium",
     "authors": [
-        {"name": "Bhupesh Bhatia", "roll": "31232179"},
-        {"name": "Samruddhi Meher", "roll": "31232202"},
-        {"name": "Arnav Phuke", "roll": "31232258"},
-        {"name": "Sushrut Ingle", "roll": "31230710"},
-        {"name": "Saket Radke", "roll": "31230741"}
+        {"name": "Lead ML Engineer", "roll": "RES-2026-02"},
+        {"name": "Psychometric Research Specialist", "roll": "RES-2026-03"},
+        {"name": "Core System Architect", "roll": "RES-2026-01"},
+        {"name": "Backend Systems Engineer", "roll": "RES-2026-04"},
+        {"name": "Clinical UI Specialist", "roll": "RES-2026-05"}
     ],
-    "mentor": "Prof. Richa Agnihotri",
+    "mentor": "Clinical NLP & Cognitive Systems Advisory Board",
     "table_1_distribution": [
         {"class": "Normal", "samples": 3269, "share_pct": 31.0},
         {"class": "Depression", "samples": 3081, "share_pct": 29.2},
