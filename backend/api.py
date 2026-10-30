@@ -1,7 +1,13 @@
-"""
-MindGuard AI - FastAPI REST API Service
-Provides endpoints for text classification, conversational screening,
-batch CSV audits, paper metrics, and emergency crisis intervention.
+﻿"""
+MindGuard AI - FastAPI REST API Service & Clinical Intelligence Backend
+Vishwakarma University Group 21.
+
+Features:
+- Fast 7-class BERT-based mental health classification
+- LangChain Structured Clinical MindBot Brain with boundaries and real-life soothing
+- Multi-format file analysis (PDF, DOCX, CSV, TXT)
+- Crisis helplines directory and emergency triage guardrails
+- Full academic benchmarks and validation metrics
 """
 
 import os
@@ -9,25 +15,29 @@ import sys
 import json
 import time
 import asyncio
+from typing import List, Optional, Dict, Any
 
 # Add project root to sys.path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-from typing import List, Optional, Dict, Any
 from fastapi import FastAPI, HTTPException, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
-from fastapi.responses import JSONResponse, FileResponse
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 import pandas as pd
-import requests
 
 from backend.model_engine import predictor, CLASSES, CLASS_METRICS, OVERALL_METRICS
+from backend.langchain_brain import (
+    generate_langchain_clinical_response,
+    generate_intelligent_clinical_fallback,
+    CRISIS_HELPLINES
+)
+from backend.file_analyzer import analyze_document_mental_health
 
 app = FastAPI(
     title="MindGuard AI - Mental Health Sentimental Analysis Platform",
     description="A BERT-based 7-Class Mental Health Early Screening & Clinical Triage REST API. Vishwakarma University Group 21.",
-    version="1.0.0"
+    version="2.0.0"
 )
 
 # Enable CORS for cross-origin requests
@@ -52,46 +62,6 @@ class ChatSessionRequest(BaseModel):
     user_name: Optional[str] = "Friend"
     api_key: Optional[str] = None
     custom_model: Optional[str] = None
-
-# Crisis Directory
-CRISIS_HELPLINES = [
-    {
-        "name": "Tele-MANAS (Govt. of India)",
-        "number": "14416 / 1800 891 4416",
-        "coverage": "Pan-India (24x7, Toll-Free, 20+ Languages)",
-        "type": "National Comprehensive Mental Health Care Service"
-    },
-    {
-        "name": "Vandrevala Foundation Helpline",
-        "number": "+91 9999 666 555",
-        "coverage": "India (24x7 Free Crisis Counseling via Call/WhatsApp)",
-        "type": "Crisis Intervention & Suicide Prevention"
-    },
-    {
-        "name": "AASRA Suicide Prevention Helpline",
-        "number": "+91 98204 66726",
-        "coverage": "Mumbai & Pan-India (24x7)",
-        "type": "Emotional Support & Suicide Prevention"
-    },
-    {
-        "name": "KIRAN National Helpline (MSJE)",
-        "number": "1800-599-0019",
-        "coverage": "Govt. of India (24x7, 13 Languages)",
-        "type": "Mental Health Rehabilitation & Clinical Triage"
-    },
-    {
-        "name": "NIMHANS Psychosocial Helpline",
-        "number": "080-46110007",
-        "coverage": "Bengaluru & National Referral",
-        "type": "Premier Neuro-Psychiatric Guidance"
-    },
-    {
-        "name": "988 Suicide & Crisis Lifeline",
-        "number": "988 (Call or Text)",
-        "coverage": "United States & Canada (24x7)",
-        "type": "Immediate Free & Confidential Crisis Support"
-    }
-]
 
 # Benchmark data from Paper Tables
 PAPER_BENCHMARKS = {
@@ -149,7 +119,13 @@ def health_check():
     return {
         "status": "healthy",
         "service": "MindGuard AI Mental Health Classifier",
-        "version": "1.0.0",
+        "version": "2.0.0",
+        "features": [
+            "BERT 7-Class Prediction",
+            "LangChain Structured Clinical Brain",
+            "Multi-Format Document File Analyzer (PDF/DOCX/CSV/TXT)",
+            "Dynamic Real-Life Soothing & Curative Protocols"
+        ],
         "timestamp": time.time()
     }
 
@@ -173,46 +149,44 @@ def calculate_psychometrics(text: str, history: List[ChatMessage] = None) -> Dic
     """Computes cognitive distortions, emotional valence, and somatic arousal."""
     text_lower = text.lower()
     
-    # 1. Cognitive Distortions
+    # 1. Distortions
     distortions = []
-    if any(k in text_lower for k in ['fail', 'ruin', 'worst', 'never recover', 'end of world', 'disaster', 'mess up everything', 'ruined']):
-        distortions.append('Catastrophizing')
-    if any(k in text_lower for k in ['always', 'never', 'everyone', 'nobody', 'completely', 'total', 'all of them', 'nothing']):
-        distortions.append('All-or-Nothing Thinking')
-    if any(k in text_lower for k in ['they think', 'everyone thinks', 'judging me', 'they hate me', 'laughing at me', 'people think']):
-        distortions.append('Mind Reading')
-    if any(k in text_lower for k in ['i feel like a failure', 'feels hopeless', 'it feels impossible', 'feel worthless']):
-        distortions.append('Emotional Reasoning')
-    if any(k in text_lower for k in ['my fault', 'i caused this', 'i ruined it', 'because of me', 'blame myself']):
-        distortions.append('Personalization')
-    if any(k in text_lower for k in ['nothing ever', 'every single time', 'always like this', 'never works']):
-        distortions.append('Overgeneralization')
+    if any(k in text_lower for k in ["ruined", "disaster", "catastrophe", "worst", "end of my life", "hopeless"]):
+        distortions.append("Catastrophizing")
+    if any(k in text_lower for k in ["always", "never", "everyone", "nobody", "completely", "total failure"]):
+        distortions.append("All-or-Nothing Thinking")
+    if any(k in text_lower for k in ["they think", "they hate me", "everyone is judging", "they must believe"]):
+        distortions.append("Mind Reading")
+    if any(k in text_lower for k in ["my fault", "i caused this", "i ruined it", "because of me", "blame myself"]):
+        distortions.append("Personalization")
+    if any(k in text_lower for k in ["nothing ever", "every single time", "always like this", "never works"]):
+        distortions.append("Overgeneralization")
     if not distortions:
-        distortions.append('Contextual Distress (No Distortions)')
+        distortions.append("Contextual Distress (No Distortions)")
 
     # 2. Emotional Valence (-1.0 to +1.0)
-    neg_words = ['hate', 'terrible', 'sad', 'pain', 'hurts', 'crying', 'hopeless', 'anxious', 'scared', 'panic', 'fail', 'dying', 'tired', 'empty', 'alone', 'worthless']
-    pos_words = ['happy', 'good', 'great', 'better', 'peace', 'calm', 'hope', 'proud', 'love', 'relieved', 'grateful', 'fine', 'okay', 'excited']
+    neg_words = ["hate", "terrible", "sad", "pain", "hurts", "crying", "hopeless", "anxious", "scared", "panic", "fail", "dying", "tired", "empty", "alone", "worthless"]
+    pos_words = ["happy", "good", "great", "better", "peace", "calm", "hope", "proud", "love", "relieved", "grateful", "fine", "okay", "excited"]
     neg_count = sum(1 for w in neg_words if w in text_lower)
     pos_count = sum(1 for w in pos_words if w in text_lower)
     valence = round(max(-1.0, min(1.0, (pos_count - neg_count) * 0.25 - 0.2 if neg_count > 0 else (pos_count * 0.3))), 2)
 
     # 3. Somatic Arousal / Agitation (0% to 100%)
     arousal = 35
-    if any(k in text_lower for k in ['panic', 'racing', 'heart', 'shaking', 'sweat', 'cannot breathe', 'hyperventilate', 'chest', 'terror', 'freaking out']):
+    if any(k in text_lower for k in ["panic", "racing", "heart", "shaking", "sweat", "cannot breathe", "hyperventilate", "chest", "terror"]):
         arousal += 40
-    if '!' in text or '?' in text:
-        arousal += min(20, text.count('!') * 5 + text.count('?') * 3)
-    if any(k in text_lower for k in ['urgent', 'right now', 'immediately', 'screaming', 'collapsing', 'dying']):
+    if "!" in text or "?" in text:
+        arousal += min(20, text.count("!") * 5 + text.count("?") * 3)
+    if any(k in text_lower for k in ["urgent", "right now", "immediately", "screaming", "collapsing", "dying"]):
         arousal += 20
     arousal = min(100, arousal)
 
     # 4. Emotional Trajectory
     trajectory = "Baseline Initialized"
     if history and len(history) > 1:
-        user_msgs = [m.content for m in history if m.role == 'user']
+        user_msgs = [m.content for m in history if m.role == "user"]
         if len(user_msgs) > 1:
-            prev_v = calculate_psychometrics(user_msgs[-2])['valence_score']
+            prev_v = calculate_psychometrics(user_msgs[-2])["valence_score"]
             delta = round(valence - prev_v, 2)
             if delta > 0.15:
                 trajectory = f"Improving (+{delta})"
@@ -224,7 +198,7 @@ def calculate_psychometrics(text: str, history: List[ChatMessage] = None) -> Dic
     # 5. Tailored Soothing Prescription
     if arousal > 65:
         prescription = "4-7-8 Vagal Nerve Paced Breathing & Cold Water Facial Reset (Diver's Reflex)"
-    elif 'Catastrophizing' in distortions or 'Mind Reading' in distortions:
+    elif "Catastrophizing" in distortions or "Mind Reading" in distortions:
         prescription = "CBT Evidence-Testing Reframe (Objective Fact vs Emotion Log)"
     elif valence < -0.4:
         prescription = "Behavioral Micro-Step & Non-Judgmental Self-Compassion Anchor"
@@ -239,130 +213,11 @@ def calculate_psychometrics(text: str, history: List[ChatMessage] = None) -> Dic
         "prescribed_soothing": prescription
     }
 
-
-def generate_dynamic_cbt_fallback(user_msg: str, analysis: dict, psychometrics: dict, user_name: str = "Friend") -> str:
-    """Intelligent situation-aware clinical response synthesizer when offline or LLM fails."""
-    t_lower = user_msg.lower()
-    p_class = analysis.get("primary_class", "Normal")
-    
-    if any(k in t_lower for k in ['presentation', 'exam', 'viva', 'professor', 'grade', 'college', 'speech', 'interview', 'fail']):
-        return (
-            "I hear how agonizing that academic stress feels right now. When speaking in front of an audience or taking a crucial exam, "
-            "our nervous system can perceive social evaluation as an existential threat, flooding your body with adrenaline. "
-            "Please remember: stumbling in a presentation is a physiological hiccup, NOT a definition of your intellect or worth.\n\n"
-            "**Immediate Soothing & Real-Life Cure:**\n"
-            "1. **Physiological Sigh:** Take two quick inhales through your nose, then one long, slow exhale through your mouth. Do this 3 times to quickly lower heart rate.\n"
-            "2. **Cognitive Reframe:** Most peers are so focused on their own evaluations that they rarely judge others harshly. One difficult moment does not undo years of your hard work.\n\n"
-            "What is one small kindness you can offer yourself right now to unwind?"
-        )
-    elif any(k in t_lower for k in ['panic', 'cannot breathe', "can't breathe", 'heart racing', 'hyperventilate', 'shaking']):
-        return (
-            "I can sense the overwhelming intensity of that panic wave right now. Let's focus on grounding your nervous system together. "
-            "Panic feels terrifying, but it cannot harm you; it is a temporary surge of adrenaline that will peak and subside.\n\n"
-            "**Actionable Somatic Soothing (Right Now):**\n"
-            "1. **Cold Water Reset:** Splash cold water on your cheeks or hold an ice cube. This triggers the mammalian dive reflex and physically forces your heart rate down.\n"
-            "2. **5-4-3-2-1 Grounding:** Name out loud 5 things you can see, 4 things you can touch, 3 sounds you hear, 2 things you smell, and 1 taste.\n\n"
-            "You are safe in this physical space. Place one hand on your chest and feel the breath slowing down."
-        )
-    elif any(k in t_lower for k in ['alone', 'lonely', 'nobody', 'no friends', 'ignored', 'left out', 'isolated']):
-        return (
-            "Feeling unseen and isolated can be one of the heaviest emotional spaces to inhabit. It is completely natural to crave meaningful connection, "
-            "and when we feel alone, our minds often convince us that 'nobody cares'. That is the emotional fog speaking, not an absolute truth.\n\n"
-            "**Real-Life Soothing & Connection Anchor:**\n"
-            "1. **Sensory Comfort:** Wrap yourself in a warm blanket or hold a hot mug of tea. Physical warmth stimulates feelings of safety.\n"
-            "2. **Low-Stakes Connection:** You don't need a deep heart-to-heart immediately. Saying hello to a neighbor, commenting in a hobby forum, or walking around outside gently reduces isolation.\n\n"
-            "I am genuinely glad you are here talking with me today. What is something you normally enjoy doing when you have quiet time?"
-        )
-    elif p_class == "Suicidal" or analysis.get("risk_assessment", {}).get("is_crisis"):
-        return (
-            "I hear how exhausted and in unbearable pain you are feeling right now, and I want you to know with absolute certainty: your life has profound value. "
-            "You do not have to carry this crushing weight alone.\n\n"
-            "**Immediate Safety Action:**\n"
-            "Please connect with trained, compassionate professionals who are ready to support you 24/7 without judgment:\n"
-            "• **Tele-MANAS (Govt. of India):** Dial **14416** or **1800 891 4416** (Toll-Free, 20+ Languages)\n"
-            "• **Vandrevala Foundation:** Call or WhatsApp **+91 9999 666 555**\n"
-            "• **AASRA:** Call **+91 98204 66726**\n\n"
-            "Take a breath and stay safe with me. Can you reach out to one of these helplines or someone in your home right now?"
-        )
-    elif p_class == "Depression":
-        return (
-            "Thank you for sharing your truth with me. Depression can make even the simplest actions—getting out of bed, replying to a message, eating—feel like scaling a mountain. "
-            "Please be gentle with yourself. You are not lazy or broken; your brain's emotional batteries are depleted.\n\n"
-            "**Gentle Micro-Interventions:**\n"
-            "1. **Drop Demands:** Lower your expectations for today to the absolute baseline. If all you did was survive today, that is enough.\n"
-            "2. **Micro-Movement:** Try opening one window for fresh air or sipping a glass of water. Just one tiny physical action.\n\n"
-            "Have you been able to eat or rest today?"
-        )
-    else:
-        return (
-            f"I hear you, and thank you for reflecting with me. It takes real self-awareness to explore these thoughts. "
-            f"Notice how your emotional state is currently showing {p_class.lower()} tendencies with {psychometrics.get('arousal_index')} activation. "
-            "Remember that emotions are messengers, not permanent states. What is one supportive thing you can do for yourself in the next hour?"
-        )
-
-
-def _call_openrouter_sync(url, headers, payload):
-    res = requests.post(url, headers=headers, json=payload, timeout=3.5)
-    if res.status_code == 200:
-        return res.json()["choices"][0]["message"]["content"]
-    raise RuntimeError(f"OpenRouter non-200: {res.status_code}")
-
-
-async def generate_neural_mindbot_reply(messages: List[ChatMessage], analysis: dict, psychometrics: dict, custom_key: Optional[str] = None, user_name: str = "Friend") -> tuple:
-    """Connects to live OpenRouter LLM Brain with strict 3.5s async timeout and instant CBT fallback."""
-    api_key = custom_key or os.environ.get("OPENROUTER_API_KEY", "")
-    latest_msg = messages[-1].content
-    
-    if not api_key:
-        return generate_dynamic_cbt_fallback(latest_msg, analysis, psychometrics, user_name), "Dynamic CBT Intelligence Engine (Local)"
-        
-    url = "https://openrouter.ai/api/v1/chat/completions"
-    headers = {
-        "Authorization": f"Bearer {api_key}",
-        "Content-Type": "application/json",
-        "HTTP-Referer": "https://31232258arnav.github.io/MindGuard_AI/",
-        "X-Title": "MindGuard AI Mental Health Platform"
-    }
-    
-    system_prompt = (
-        "You are MindGuard AI, an expert, compassionate clinical psychologist and mental health counselor. "
-        "Provide authentic, highly empathetic active listening, situational validation, and "
-        "concrete, evidence-based soothing/grounding techniques (CBT reframing, vagal nerve breathing, sensory resets, self-compassion). "
-        f"Telemetry: State={analysis.get('primary_class')}, Valence={psychometrics.get('valence_score')}, "
-        f"Arousal={psychometrics.get('arousal_index')}, Distortions={', '.join(psychometrics.get('distortions_detected', []))}. "
-        "Keep responses warm, concise (2-3 short paragraphs), and actionable with clean bullet points. "
-        "If suicidal ideation is explicit, gently provide Tele-MANAS (14416) or Vandrevala (+91 9999 666 555)."
-    )
-    
-    formatted_messages = [{"role": "system", "content": system_prompt}]
-    for m in messages[-3:]:
-        formatted_messages.append({"role": m.role, "content": m.content[:350]})
-        
-    payload = {
-        "model": "openrouter/free",
-        "messages": formatted_messages,
-        "temperature": 0.7,
-        "max_tokens": 350
-    }
-    
-    try:
-        content = await asyncio.wait_for(
-            asyncio.to_thread(_call_openrouter_sync, url, headers, payload),
-            timeout=3.5
-        )
-        if content and content.strip():
-            return content.strip(), "OpenRouter Neural Brain (Live LLM)"
-    except Exception:
-        pass
-        
-    return generate_dynamic_cbt_fallback(latest_msg, analysis, psychometrics, user_name), "Dynamic CBT Intelligence Engine (Ultra-Fast)"
-
-
 @app.post("/api/chat")
 async def conversational_screening(req: ChatSessionRequest):
     """
-    Conversational mental-health screening agent with live AI Brain & calculating power.
-    Maintains dialogue context, computes cognitive distortions, and delivers real-life soothing.
+    Conversational mental-health screening agent with live LangChain AI Brain & calculating power.
+    Maintains dialogue context, computes cognitive distortions, and delivers structured clinical output.
     """
     if not req.messages:
         raise HTTPException(status_code=400, detail="No messages in chat session.")
@@ -370,111 +225,118 @@ async def conversational_screening(req: ChatSessionRequest):
     latest_msg = req.messages[-1].content
     analysis = predictor.predict(latest_msg)
     
-    is_crisis = analysis["risk_assessment"]["is_crisis"]
-    
     # Run Calculating Power Module
     psychometrics = calculate_psychometrics(latest_msg, req.messages)
     
-    # Generate authentic AI Brain response
-    bot_response, brain_source = await generate_neural_mindbot_reply(
-        req.messages, 
-        analysis, 
-        psychometrics, 
-        custom_key=req.api_key, 
-        user_name=req.user_name
+    # Generate structured AI Brain response via LangChain
+    structured_ai = await generate_langchain_clinical_response(
+        messages=req.messages,
+        analysis=analysis,
+        custom_api_key=req.api_key,
+        user_name=req.user_name or "Friend"
     )
-        
-    return {
-        "reply": bot_response,
-        "ai_brain_source": brain_source,
+    
+    # Backwards compatibility and rich structured output
+    response_payload = {
+        **structured_ai,
+        "reply": structured_ai.get("dialogue_response", ""),
         "message_analysis": analysis,
         "psychometrics": psychometrics,
-        "distress_flag": is_crisis,
-        "triage_recommendation": analysis["risk_assessment"]["clinical_recommendation"],
-        "crisis_directory": CRISIS_HELPLINES if is_crisis else []
+        "triage_recommendation": structured_ai.get("clinical_boundary", {}).get("mandatory_action", analysis["risk_assessment"]["clinical_recommendation"]),
+        "crisis_directory": structured_ai.get("clinical_boundary", {}).get("helplines", CRISIS_HELPLINES if analysis["risk_assessment"]["is_crisis"] else [])
     }
+    
+    return response_payload
+
+
+@app.post("/api/analyze-file")
+async def analyze_file_endpoint(file: UploadFile = File(...)):
+    """
+    Upload and analyze PDF, DOCX, CSV, or TXT documents for clinical mental health assessment.
+    Performs multi-level sentence classification, distortion extraction, and triage synthesis.
+    """
+    filename = file.filename or "uploaded_file.txt"
+    ext = os.path.splitext(filename)[1].lower()
+    
+    valid_exts = [".pdf", ".docx", ".csv", ".txt"]
+    if ext not in valid_exts:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Unsupported file format '{ext}'. Supported formats: PDF, DOCX, CSV, TXT."
+        )
+        
+    try:
+        content_bytes = await file.read()
+        if not content_bytes:
+            raise HTTPException(status_code=400, detail="Uploaded file is empty.")
+            
+        result = analyze_document_mental_health(content_bytes, filename)
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to process and analyze file: {str(e)}")
+
 
 @app.post("/api/batch")
-async def batch_screening(file: UploadFile = File(...)):
-    """
-    Batch processing endpoint for CSV or TXT file uploads.
-    Extracts text statements, runs 7-class inference, and compiles audit statistics.
-    """
+async def batch_classification(file: UploadFile = File(...)):
+    """Processes a CSV file for high-throughput batch classification."""
     try:
-        content = await file.read()
-        filename = file.filename.lower()
-        statements = []
-        
-        if filename.endswith(".csv"):
-            import io
-            df = pd.read_csv(io.BytesIO(content))
-            # Find candidate text column
-            candidate_cols = [c for c in df.columns if any(k in c.lower() for k in ["statement", "text", "message", "post", "sentence"])]
-            text_col = candidate_cols[0] if candidate_cols else df.columns[0]
-            statements = df[text_col].dropna().astype(str).tolist()
-        else: # TXT file, one line per statement
-            text_lines = content.decode("utf-8", errors="replace").splitlines()
-            statements = [line.strip() for line in text_lines if line.strip()]
-            
-        if not statements:
-            raise HTTPException(status_code=400, detail="No readable statements found in uploaded file.")
-            
-        # Process first 500 statements for fast interactive response
-        limit_statements = statements[:500]
-        results = []
-        class_counts = {c: 0 for c in CLASSES}
-        risk_counts = {"Normal": 0, "Mild": 0, "Elevated": 0, "Critical": 0}
-        
-        for stmt in limit_statements:
-            pred = predictor.predict(stmt)
-            top_cls = pred["primary_class"]
-            class_counts[top_cls] += 1
-            
-            if pred["risk_assessment"]["is_crisis"]:
-                risk_counts["Critical"] += 1
-            elif "ELEVATED" in pred["risk_assessment"]["level"]:
-                risk_counts["Elevated"] += 1
-            elif "MILD" in pred["risk_assessment"]["level"]:
-                risk_counts["Mild"] += 1
-            else:
-                risk_counts["Normal"] += 1
-                
-            results.append({
-                "statement": stmt[:100] + ("..." if len(stmt) > 100 else ""),
-                "predicted_class": top_cls,
-                "confidence": pred["confidence_percentage"],
-                "risk": pred["risk_assessment"]["level"]
-            })
-            
-        return {
-            "total_processed": len(limit_statements),
-            "class_distribution": class_counts,
-            "risk_summary": risk_counts,
-            "sample_results": results[:50] # Preview top 50
-        }
+        df = pd.read_csv(file.file)
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to process batch file: {str(e)}")
+        raise HTTPException(status_code=400, detail=f"Invalid CSV file format: {str(e)}")
+        
+    text_column = None
+    for candidate in ["text", "statement", "prompt", "message", "utterance"]:
+        if candidate in df.columns:
+            text_column = candidate
+            break
+            
+    if not text_column:
+        for col in df.columns:
+            if df[col].dtype == object:
+                text_column = col
+                break
+                
+    if not text_column:
+        raise HTTPException(status_code=400, detail="Could not identify a text column in CSV.")
+        
+    results = []
+    class_counts = {c: 0 for c in CLASSES}
+    crisis_flag_count = 0
+    
+    for idx, row in df.iterrows():
+        val = str(row[text_column]) if pd.notna(row[text_column]) else ""
+        if not val.strip():
+            continue
+            
+        pred = predictor.predict(val)
+        class_counts[pred["primary_class"]] += 1
+        
+        if pred["risk_assessment"]["is_crisis"]:
+            crisis_flag_count += 1
+            
+        results.append({
+            "row_index": idx,
+            "text": val[:120] + ("..." if len(val) > 120 else ""),
+            "primary_class": pred["primary_class"],
+            "confidence_percentage": pred["confidence_percentage"],
+            "is_crisis": pred["risk_assessment"]["is_crisis"]
+        })
+        
+    total_processed = len(results)
+    
+    return {
+        "status": "success",
+        "total_records": total_processed,
+        "class_distribution": class_counts,
+        "crisis_flags_detected": crisis_flag_count,
+        "summary": f"Analyzed {total_processed} items. Normal: {class_counts.get('Normal', 0)}, Depression: {class_counts.get('Depression', 0)}, Suicidal: {class_counts.get('Suicidal', 0)}.",
+        "records": results[:100]
+    }
 
 @app.get("/api/benchmarks")
 def get_benchmarks():
-    """Returns research paper experimental results, tables, and Vishwakarma University metadata."""
     return PAPER_BENCHMARKS
 
 @app.get("/api/helplines")
 def get_helplines():
-    """Returns official verified 24/7 mental health crisis helplines."""
-    return {"helplines": CRISIS_HELPLINES}
-
-@app.get("/api/samples")
-def get_sample_statements():
-    """Returns authentic sample statements across all 7 classes from the benchmark corpus."""
-    samples_path = os.path.join(os.path.dirname(__file__), "..", "data", "test_samples.json")
-    if os.path.exists(samples_path):
-        with open(samples_path, "r", encoding="utf-8") as f:
-            return json.load(f)
-    return {}
-
-# Serve Frontend static assets
-frontend_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "frontend"))
-if os.path.exists(frontend_dir):
-    app.mount("/", StaticFiles(directory=frontend_dir, html=True), name="frontend")
+    return {"status": "success", "helplines": CRISIS_HELPLINES}

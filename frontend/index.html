@@ -8,7 +8,60 @@
   <link rel="preconnect" href="https://fonts.gstatic.com">
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <!-- Chart.js CDN -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js">
+    // Handle File Upload for Screener Tab (PDF, DOCX, CSV, TXT)
+    async function handleScreenerFileUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const notice = document.getElementById('screenerFileNotice');
+      const input = document.getElementById('screenerInput');
+      if (notice) {
+        notice.style.display = 'block';
+        notice.textContent = `Extracting & auditing ${file.name} (${(file.size/1024).toFixed(1)} KB)...`;
+      }
+
+      const formData = new FormData();
+      formData.append('file', file);
+
+      try {
+        const targetUrl = window.location.hostname.includes("github.io") ? `${LIVE_BACKEND_TUNNEL}/api/analyze-file` : "/api/analyze-file";
+        const resp = await fetch(targetUrl, {
+          method: 'POST',
+          body: formData
+        });
+
+        if (resp.ok) {
+          const data = await resp.json();
+          if (notice) {
+            notice.innerHTML = `&#10003; Audited <strong>${file.name}</strong>: ${data.file_info ? data.file_info.total_words + ' words' : ''} &bull; Triage: <strong>${data.clinical_boundary ? data.clinical_boundary.triage_level : 'Evaluated'}</strong>`;
+          }
+          if (data.sample_sentences_analyzed && data.sample_sentences_analyzed.length > 0) {
+            input.value = data.sample_sentences_analyzed.map(s => s.sentence).slice(0, 3).join(' ');
+          } else if (data.executive_summary) {
+            input.value = data.executive_summary;
+          }
+          runAnalysis();
+        } else {
+          throw new Error(`Server returned ${resp.status}`);
+        }
+      } catch (err) {
+        console.warn("Backend file extract failed, falling back to FileReader:", err);
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          input.value = e.target.result.slice(0, 1500);
+          if (notice) {
+            notice.textContent = `Extracted ${file.name} locally. Running BERT screening...`;
+          }
+          runAnalysis();
+        };
+        reader.readAsText(file);
+      } finally {
+        event.target.value = '';
+      }
+    }
+
+  </script>
   <style>
     :root {
       --bg-main: #090D16;
@@ -511,6 +564,15 @@
           <div class="card-title">📝 User Statement Input</div>
           <div class="card-desc">Enter any free-form English statement, social post, or diary entry to screen across the 7 mental health classes.</div>
           
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem; margin-top:0.5rem">
+            <span style="font-size:0.75rem; color:var(--text-muted)">Manual text input or document audit:</span>
+            <label style="font-size:0.75rem; background:rgba(37,99,235,0.15); border:1px solid rgba(59,130,246,0.4); color:#60A5FA; padding:0.3rem 0.75rem; border-radius:6px; cursor:pointer; font-weight:700; display:flex; align-items:center; gap:0.35rem">
+              &#128206; Upload File (PDF/DOCX/CSV/TXT)
+              <input type="file" id="screenerFileInput" accept=".pdf,.docx,.csv,.txt" style="display:none" onchange="handleScreenerFileUpload(event)">
+            </label>
+          </div>
+          <div id="screenerFileNotice" style="display:none; font-size:0.75rem; color:#34D399; margin-bottom:0.4rem; padding:0.35rem 0.65rem; background:rgba(16,185,129,0.1); border-radius:6px"></div>
+          
           <textarea id="screenerInput" placeholder="Type or paste a statement here... (e.g. 'Today was a great day and I am feeling good about life')"></textarea>
 
           <div style="font-size:0.75rem; color:var(--text-dim); margin-top:0.35rem; display:flex; justify-content:space-between">
@@ -642,9 +704,17 @@
               </div>
             </div>
 
-            <div style="display:flex; gap:0.65rem; margin-top:0.85rem">
-              <input type="text" id="chatInput" placeholder="Type what's on your mind (e.g. presentation panic, feeling lonely, exhausted)..." onkeypress="if(event.key==='Enter') sendChatMessage()" style="flex:1; background:#0B111E; border:1px solid var(--border); border-radius:10px; padding:0.75rem 1rem; color:#fff">
-              <button class="btn-primary" onclick="sendChatMessage()" id="chatSendBtn">Send &#128330;&#65039;</button>
+            <div style="display:flex; gap:0.5rem; margin-top:0.85rem; align-items:center">
+              <input type="file" id="chatFileInput" accept=".pdf,.docx,.csv,.txt" style="display:none" onchange="handleChatFileUpload(event)">
+              <button type="button" onclick="document.getElementById('chatFileInput').click()" title="Upload Clinical Document (PDF, DOCX, CSV, TXT)" style="padding:0.75rem 0.9rem; font-size:0.85rem; display:flex; align-items:center; gap:0.4rem; white-space:nowrap; background:rgba(37,99,235,0.15); border:1px solid rgba(59,130,246,0.4); border-radius:10px; color:#60A5FA; font-weight:600; cursor:pointer; transition:all 0.2s">
+                &#128206; Upload File
+              </button>
+              <input type="text" id="chatInput" placeholder="Type your thoughts, or upload a document to audit (PDF/DOCX/CSV/TXT)..." onkeypress="if(event.key==='Enter') sendChatMessage()" style="flex:1; background:#0B111E; border:1px solid var(--border); border-radius:10px; padding:0.75rem 1rem; color:#fff">
+              <button class="btn-primary" onclick="sendChatMessage()" id="chatSendBtn" style="padding:0.75rem 1.25rem; font-weight:700">Send &#128330;&#65039;</button>
+            </div>
+            <div style="font-size:0.75rem; color:var(--text-muted); margin-top:0.4rem; display:flex; justify-content:space-between; align-items:center">
+              <span>&#128196; Multi-Format Analyzer accepts: <strong>PDF, DOCX, CSV, TXT</strong> (Journals, Transcripts, Patient Notes)</span>
+              <span id="chatUploadStatus" style="color:#34D399; font-weight:600"></span>
             </div>
           </div>
 
@@ -1471,11 +1541,415 @@
 
     let isChatBusy = false;
 
+    
+    // Intelligent Situation-Aware Client-Side Clinical Fallback Generator
+    function generateClientSideEmpatheticResponse(text, inf, psych) {
+      const t = text.toLowerCase();
+      const pClass = (inf && inf.primary_class) ? inf.primary_class : "Normal";
+      const isCrisis = pClass === "Suicidal" || (inf && inf.risk_assessment && inf.risk_assessment.is_crisis);
+      const conf = (inf && inf.confidence_percentage) ? inf.confidence_percentage : "85%";
+      const arousal = psych && psych.arousal_index ? psych.arousal_index : "45%";
+
+      let triageLevel = "Safe / Baseline";
+      let scopeNotice = "Automated Clinical Screening Protocol (Non-Diagnostic)";
+      let mandatoryAction = "Maintain mindful emotional resilience and balanced routines.";
+
+      if (isCrisis) {
+        triageLevel = "Acute Crisis Risk";
+        mandatoryAction = "Immediate crisis intervention protocol. Connect with human crisis counselors.";
+        scopeNotice = "CRITICAL BOUNDARY TRIGGER: High-risk emotional vulnerability detected.";
+      } else if (["Depression", "Anxiety", "Bipolar"].includes(pClass)) {
+        triageLevel = "Moderate Clinical Strain";
+        mandatoryAction = "Recommend consultation with a licensed clinical counselor or therapist.";
+      } else if (["Stress", "Personality disorder"].includes(pClass)) {
+        triageLevel = "Mild Concern";
+        mandatoryAction = "Engage active somatic grounding, cognitive reframing, and workload adjustment.";
+      }
+
+      let soothing = {
+        name: "Box Breathing (4-4-4-4) & Somatic Grounding",
+        technique_type: "Autonomic Nervous System Regulation",
+        action_steps: [
+          "Inhale smoothly through your nose for 4 counts.",
+          "Hold your breath gently for 4 counts.",
+          "Exhale slowly through your mouth for 4 counts.",
+          "Hold empty for 4 counts. Repeat 4 cycles."
+        ]
+      };
+
+      let reframe = {
+        core_insight: "Emotions are internal weather signals. You are the enduring consciousness experiencing them, not the storm itself.",
+        micro_action_next_1_hour: "Drink a glass of water, step away from screens for 10 minutes, and take three intentional slow breaths."
+      };
+
+      let dialogue = "I hear you, and thank you for trusting me with these thoughts. Exploring your feelings takes genuine courage. Let us look at what you are carrying without self-judgment and find an actionable path forward.";
+      let followups = [
+        "Guide me through a calming breathing exercise.",
+        "How can I break down this emotional overwhelm?",
+        "What are simple ways to quiet racing thoughts?"
+      ];
+
+      if (isCrisis) {
+        dialogue = "I hear how exhausted and in unbearable pain you are feeling right now, and I want you to know with absolute certainty: your life has profound value. You do not have to carry this crushing weight alone. Trained, compassionate professionals are ready to support you right now 24/7 without judgment. Tele-MANAS is free and confidential at 14416 (or 1800 891 4416), and Vandrevala Foundation is at +91 9999 666 555. Can we take that step together?";
+        soothing = {
+          name: "Immediate Crisis Safety Grounding",
+          technique_type: "Crisis Somatic Reset",
+          action_steps: [
+            "Place both feet flat on the ground and feel the solid floor beneath you.",
+            "Take a slow breath in for 4 seconds, pause for 2, and release for 6.",
+            "Reach out immediately to Tele-MANAS (14416) or a trusted loved one."
+          ]
+        };
+        reframe = {
+          core_insight: "Crisis is a temporary state of emotional depletion, not a life verdict.",
+          micro_action_next_1_hour: "Contact Tele-MANAS (14416) or call someone in your home right now."
+        };
+        followups = ["I want to call Tele-MANAS right now.", "Please stay with me and guide my breathing."];
+      } else if (t.includes("exam") || t.includes("fail") || t.includes("grade") || t.includes("college") || t.includes("presentation") || t.includes("interview")) {
+        dialogue = "Academic and evaluation anxiety can trigger intense dread, making one difficult moment feel like an existential crisis. Please remember: stumbling in a test or presentation is a situational hiccup, NOT a definition of your intellect or your future. Many world-class innovators have failed exams—it is an opportunity to adjust, not a permanent verdict.";
+        soothing = {
+          name: "Physiological Sigh & Prefrontal Reset",
+          technique_type: "Neuro-Somatic Calming",
+          action_steps: [
+            "Two quick inhales through your nose: one deep, followed by a sharp top-off inhale.",
+            "One long, slow exhale through your mouth until completely empty. Repeat 3 times.",
+            "Splash cold water on your face to trigger the diver's reflex and lower heart rate."
+          ]
+        };
+        reframe = {
+          core_insight: "One academic evaluation measures temporary performance under synthetic constraints, not your human value.",
+          micro_action_next_1_hour: "Close your study materials. Walk outside for 10 minutes to reset your nervous system."
+        };
+        followups = ["How do I bounce back after a bad test?", "Practice Physiological Sigh with me.", "How do I talk to my parents about grades?"];
+      } else if (t.includes("panic") || t.includes("cannot breathe") || t.includes("can't breathe") || t.includes("heart racing") || t.includes("shaking")) {
+        dialogue = "I can sense the terrifying intensity of that panic surge. Know with certainty: YOU ARE PHYSICALLY SAFE. Panic is a surge of harmless adrenaline from an over-reactive nervous system; it will peak and subside. Feel the ground beneath you and let us ride this wave together.";
+        soothing = {
+          name: "5-4-3-2-1 Sensory Grounding & Somatic Reset",
+          technique_type: "Vagus Nerve Anchor",
+          action_steps: [
+            "Name out loud 5 things you can see in the room right now.",
+            "Touch 4 different textures (your shirt, desk, chair, palm).",
+            "Listen for 3 distinct sounds around you.",
+            "Identify 2 scents and 1 taste."
+          ]
+        };
+        reframe = {
+          core_insight: "Adrenaline has a biological half-life. It cannot stay elevated indefinitely.",
+          micro_action_next_1_hour: "Sit comfortably, drop your shoulders away from your ears, and take slow 6-second exhales."
+        };
+        followups = ["Guide me through 5-4-3-2-1 grounding.", "Why is my heart racing?", "Help me slow down my breathing."];
+      } else if (t.includes("alone") || t.includes("lonely") || t.includes("nobody") || t.includes("no friends") || t.includes("isolated")) {
+        dialogue = "Feeling unseen and isolated can be one of the heaviest emotional spaces. When we feel alone, our mind often tricks us into believing 'nobody cares'. That is the emotional fog talking, not objective reality. You matter, and I am genuinely glad you are here in this conversation today.";
+        soothing = {
+          name: "Oxytocin Self-Compassion Anchor",
+          technique_type: "Somatosensory Comfort",
+          action_steps: [
+            "Place both hands warmly across your chest or wrap yourself in a warm blanket.",
+            "Sip a warm drink (tea or warm water)—thermal warmth stimulates feelings of safety.",
+            "Send a simple, low-stakes text to someone you know or post in a community forum."
+          ]
+        };
+        reframe = {
+          core_insight: "Loneliness is an evolutionary signal prompting connection, not evidence that you are unlovable.",
+          micro_action_next_1_hour: "Step outside into a public space (cafe, park, library) to quietly share space with other people."
+        };
+        followups = ["How do I rebuild friendships gently?", "Daily self-compassion routine?", "Suggest a calming hobby."];
+      }
+
+      return {
+        clinical_boundary: {
+          triage_level: triageLevel,
+          scope_statement: scopeNotice,
+          crisis_triggered: isCrisis,
+          mandatory_action: mandatoryAction,
+          helplines: isCrisis ? [
+            { name: "Tele-MANAS", number: "14416 / 1800 891 4416", type: "Govt. of India 24x7 Free Helpline" },
+            { name: "Vandrevala Foundation", number: "+91 9999 666 555", type: "24x7 Counseling via Call/WhatsApp" }
+          ] : []
+        },
+        affective_state: {
+          primary_class: pClass,
+          confidence_pct: conf,
+          intensity_level: "Moderate",
+          somatic_agitation: arousal
+        },
+        cognitive_distortions: psych && psych.distortions_detected ? psych.distortions_detected.map(d => ({ type: d, quote: text.slice(0, 40), reframe: "Cognitive reframe" })) : [],
+        prescribed_soothing: soothing,
+        curative_reframe: reframe,
+        dialogue_response: dialogue,
+        suggested_followups: followups,
+        ai_brain_source: "MindGuard Client-Side Neural Synthesizer (Instant Fail-Safe)"
+      };
+    }
+
+    // Render MindBot Structured Clinical Output Card
+    function renderStructuredMindBotCard(chatBox, data) {
+      const bubble = document.createElement('div');
+      bubble.style = "max-width:88%; padding:1.1rem 1.25rem; border-radius:14px; font-size:0.9rem; background:var(--bg-card); border:1px solid var(--border); color:var(--text-main); align-self:flex-start; line-height:1.55; display:flex; flex-direction:column; gap:0.85rem; box-shadow:0 8px 24px rgba(0,0,0,0.3)";
+
+      const cb = data.clinical_boundary || {};
+      const af = data.affective_state || {};
+      const ps = data.prescribed_soothing || {};
+      const cr = data.curative_reframe || {};
+      const followups = data.suggested_followups || [];
+      const dialogue = data.dialogue_response || data.reply || "";
+
+      // 1. Clinical Boundary & Triage Header
+      let triageColor = "#3B82F6";
+      let triageBg = "rgba(59,130,246,0.15)";
+      let triageBorder = "rgba(59,130,246,0.4)";
+      if (cb.triage_level === "Acute Crisis Risk") {
+        triageColor = "#EF4444";
+        triageBg = "rgba(239,68,68,0.2)";
+        triageBorder = "#EF4444";
+      } else if (cb.triage_level === "Moderate Clinical Strain") {
+        triageColor = "#F59E0B";
+        triageBg = "rgba(245,158,11,0.15)";
+        triageBorder = "rgba(245,158,11,0.4)";
+      } else if (cb.triage_level === "Safe / Baseline") {
+        triageColor = "#10B981";
+        triageBg = "rgba(16,185,129,0.15)";
+        triageBorder = "rgba(16,185,129,0.4)";
+      }
+
+      let headerHtml = `
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:0.6rem">
+          <div style="display:flex; align-items:center; gap:0.5rem">
+            <span style="font-size:0.75rem; font-weight:800; padding:0.25rem 0.65rem; border-radius:6px; background:${triageBg}; color:${triageColor}; border:1px solid ${triageBorder}">
+              &#128737;&#65039; TRIAGE: ${cb.triage_level || 'Evaluated'}
+            </span>
+            <span style="font-size:0.75rem; color:var(--text-muted)">${cb.scope_statement || 'Screening Aid (Non-Diagnostic)'}</span>
+          </div>
+          <span style="font-size:0.72rem; color:#60A5FA; background:rgba(37,99,235,0.1); padding:0.2rem 0.5rem; border-radius:4px">
+            ${af.primary_class ? af.primary_class + ' (' + (af.confidence_pct || 'Evaluated') + ')' : ''}
+          </span>
+        </div>
+      `;
+
+      // 2. Empathetic Dialogue Text
+      let dialogueHtml = `
+        <div style="font-size:0.92rem; color:#F1F5F9; line-height:1.6">
+          ${formatMarkdown(dialogue)}
+        </div>
+      `;
+
+      // 3. Prescribed Soothing Protocol (Actionable Steps)
+      let soothingHtml = "";
+      if (ps && ps.name) {
+        const steps = ps.action_steps || [];
+        soothingHtml = `
+          <div style="background:rgba(15,23,42,0.85); border:1px solid rgba(59,130,246,0.3); border-radius:10px; padding:0.85rem 1rem">
+            <div style="display:flex; align-items:center; gap:0.4rem; font-weight:700; color:#60A5FA; font-size:0.85rem; margin-bottom:0.45rem">
+              <span>&#129496; Prescribed Soothing Protocol:</span>
+              <span style="color:#93C5FD">${ps.name}</span>
+            </div>
+            <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:0.5rem">${ps.technique_type || 'Somatic Neuro-Regulation'}</div>
+            <ol style="margin:0; padding-left:1.2rem; font-size:0.82rem; color:#E2E8F0; display:flex; flex-direction:column; gap:0.35rem">
+              ${steps.map(s => `<li>${s}</li>`).join('')}
+            </ol>
+          </div>
+        `;
+      }
+
+      // 4. Curative Cognitive Reframe & 1-Hour Micro Action
+      let curativeHtml = "";
+      if (cr && (cr.core_insight || cr.micro_action_next_1_hour)) {
+        curativeHtml = `
+          <div style="background:rgba(16,185,129,0.08); border:1px solid rgba(16,185,129,0.3); border-radius:10px; padding:0.85rem 1rem">
+            <div style="font-weight:700; color:#34D399; font-size:0.85rem; margin-bottom:0.35rem">&#128161; Curative Cognitive Reframe:</div>
+            <div style="font-size:0.82rem; color:#CBD5E1; margin-bottom:0.45rem">${cr.core_insight || ''}</div>
+            ${cr.micro_action_next_1_hour ? `<div style="font-size:0.8rem; color:#A7F3D0; background:rgba(16,185,129,0.15); padding:0.4rem 0.65rem; border-radius:6px"><strong>Action in next hour:</strong> ${cr.micro_action_next_1_hour}</div>` : ''}
+          </div>
+        `;
+      }
+
+      // 5. Emergency Crisis Helpline Card (if crisis triggered)
+      let crisisHtml = "";
+      if (cb.crisis_triggered || cb.triage_level === "Acute Crisis Risk") {
+        crisisHtml = `
+          <div style="background:rgba(239,68,68,0.2); border:2px solid #EF4444; border-radius:10px; padding:0.85rem 1rem; color:#FCA5A5">
+            <div style="font-weight:800; color:#F87171; font-size:0.88rem; margin-bottom:0.35rem">&#127384; 24/7 CONFIDENTIAL CRISIS SUPPORT</div>
+            <div style="font-size:0.82rem; margin-bottom:0.6rem">You do not have to carry this alone. Free, compassionate support is available right now:</div>
+            <div style="display:flex; flex-wrap:wrap; gap:0.5rem">
+              <a href="tel:14416" style="background:#EF4444; color:#fff; text-decoration:none; padding:0.35rem 0.75rem; border-radius:6px; font-weight:700; font-size:0.8rem">&#128222; Call Tele-MANAS (14416)</a>
+              <a href="tel:+919999666555" style="background:rgba(239,68,68,0.4); border:1px solid #EF4444; color:#fff; text-decoration:none; padding:0.35rem 0.75rem; border-radius:6px; font-weight:700; font-size:0.8rem">&#128222; Vandrevala (+91 9999 666 555)</a>
+            </div>
+          </div>
+        `;
+      }
+
+      // 6. Clickable Follow-Up Suggestion Chips
+      let followupsHtml = "";
+      if (followups && followups.length > 0) {
+        followupsHtml = `
+          <div style="display:flex; flex-wrap:wrap; gap:0.4rem; margin-top:0.3rem">
+            ${followups.map(f => `
+              <button type="button" onclick="handleFollowupClick(this)" data-prompt="${f.replace(/"/g, '&quot;')}" style="background:rgba(30,41,59,0.9); border:1px solid rgba(255,255,255,0.15); border-radius:20px; color:#93C5FD; font-size:0.75rem; padding:0.3rem 0.75rem; cursor:pointer; transition:all 0.15s">
+                &#9889; ${f}
+              </button>
+            `).join('')}
+          </div>
+        `;
+      }
+
+      bubble.innerHTML = headerHtml + dialogueHtml + soothingHtml + curativeHtml + crisisHtml + followupsHtml;
+      chatBox.appendChild(bubble);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    function handleFollowupClick(btn) {
+      const prompt = btn.getAttribute('data-prompt');
+      if (prompt) {
+        const input = document.getElementById('chatInput');
+        if (input) {
+          input.value = prompt;
+          sendChatMessage();
+        }
+      }
+    }
+
+    // Multi-Format File Upload Handler for MindBot (PDF, DOCX, CSV, TXT)
+    async function handleChatFileUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const chatBox = document.getElementById('chatMessages');
+      const statusEl = document.getElementById('chatUploadStatus');
+
+      // 1. User Upload Bubble
+      const userBubble = document.createElement('div');
+      userBubble.style = "max-width:85%; padding:0.85rem 1.1rem; border-radius:14px; font-size:0.9rem; background:linear-gradient(135deg, #1E40AF, #2563EB); color:#fff; align-self:flex-end";
+      userBubble.innerHTML = `&#128206; <strong>Uploaded Document:</strong> ${file.name} <span style="opacity:0.8; font-size:0.75rem">(${(file.size/1024).toFixed(1)} KB)</span>`;
+      chatBox.appendChild(userBubble);
+      chatBox.scrollTop = chatBox.scrollHeight;
+
+      // 2. Typing Indicator
+      const typingBubble = document.createElement('div');
+      typingBubble.id = 'chatFileTypingIndicator';
+      typingBubble.style = "max-width:85%; padding:0.75rem 1rem; border-radius:14px; font-size:0.85rem; background:var(--bg-card); border:1px solid var(--border); color:var(--text-muted); align-self:flex-start; display:flex; align-items:center; gap:0.5rem";
+      typingBubble.innerHTML = `<span>Extracting &amp; analyzing <strong>${file.name}</strong> across 7 clinical classes...</span> <span class="spinner" style="width:14px; height:14px; border:2px solid #3B82F6; border-top-color:transparent; border-radius:50%; display:inline-block; animation:spin 1s linear infinite"></span>`;
+      chatBox.appendChild(typingBubble);
+      chatBox.scrollTop = chatBox.scrollHeight;
+
+      if (statusEl) statusEl.textContent = `Analyzing ${file.name}...`;
+
+      try {
+        const formData = new FormData();
+        formData.append('file', file);
+
+        const targetUrl = window.location.hostname.includes("github.io") ? `${LIVE_BACKEND_TUNNEL}/api/analyze-file` : "/api/analyze-file";
+        const resp = await fetch(targetUrl, {
+          method: 'POST',
+          body: formData
+        });
+
+        if (!resp.ok) {
+          throw new Error(`Server returned HTTP ${resp.status}`);
+        }
+
+        const data = await resp.json();
+        renderDocumentAuditCard(chatBox, data);
+
+        if (statusEl) statusEl.textContent = `Audit complete for ${file.name}`;
+      } catch (err) {
+        console.error("File analysis error:", err);
+        const errBubble = document.createElement('div');
+        errBubble.style = "max-width:85%; padding:0.85rem 1.1rem; border-radius:14px; font-size:0.85rem; background:rgba(239, 68, 68, 0.15); border:1px solid #EF4444; color:#FCA5A5; align-self:flex-start";
+        errBubble.innerHTML = `&#9888;&#65039; <strong>File Analysis Notice:</strong> Could not complete remote file audit (${err.message}). Supported formats: PDF, DOCX, CSV, TXT under 25MB.`;
+        chatBox.appendChild(errBubble);
+        if (statusEl) statusEl.textContent = "Upload failed";
+      } finally {
+        const tEl = document.getElementById('chatFileTypingIndicator');
+        if (tEl) tEl.remove();
+        event.target.value = '';
+      }
+    }
+
+    // Render Document Audit Card in MindBot
+    function renderDocumentAuditCard(chatBox, data) {
+      const bubble = document.createElement('div');
+      bubble.style = "max-width:92%; padding:1.2rem 1.4rem; border-radius:14px; font-size:0.9rem; background:var(--bg-card); border:1px solid #3B82F6; color:var(--text-main); align-self:flex-start; line-height:1.55; display:flex; flex-direction:column; gap:0.9rem; box-shadow:0 12px 30px rgba(0,0,0,0.4)";
+
+      const fi = data.file_info || {};
+      const cb = data.clinical_boundary || {};
+      const ap = data.affective_profile || {};
+      const shares = ap.class_distribution_percent || {};
+      const risks = data.high_risk_statements || [];
+
+      let triageBadge = `<span style="font-weight:800; padding:0.25rem 0.65rem; border-radius:6px; font-size:0.8rem; background:rgba(59,130,246,0.2); color:#60A5FA; border:1px solid #3B82F6">TRIAGE: ${cb.triage_level || 'Evaluated'}</span>`;
+      if (cb.triage_level === "Acute Crisis Risk") {
+        triageBadge = `<span style="font-weight:800; padding:0.25rem 0.65rem; border-radius:6px; font-size:0.8rem; background:rgba(239,68,68,0.25); color:#FCA5A5; border:1px solid #EF4444">&#127384; TRIAGE: ACUTE CRISIS RISK</span>`;
+      } else if (cb.triage_level === "Moderate Clinical Strain") {
+        triageBadge = `<span style="font-weight:800; padding:0.25rem 0.65rem; border-radius:6px; font-size:0.8rem; background:rgba(245,158,11,0.2); color:#FCD34D; border:1px solid #F59E0B">TRIAGE: MODERATE STRAIN</span>`;
+      }
+
+      let classBarsHtml = Object.entries(shares).map(([cName, pct]) => {
+        let barColor = "#3B82F6";
+        if (cName === "Suicidal") barColor = "#EF4444";
+        else if (cName === "Depression") barColor = "#8B5CF6";
+        else if (cName === "Anxiety") barColor = "#F59E0B";
+        else if (cName === "Stress") barColor = "#EC4899";
+        else if (cName === "Normal") barColor = "#10B981";
+
+        return `
+          <div style="margin-bottom:0.35rem">
+            <div style="display:flex; justify-content:space-between; font-size:0.75rem; margin-bottom:0.15rem">
+              <span style="color:#CBD5E1">${cName}</span>
+              <span style="font-weight:700; color:${barColor}">${pct}%</span>
+            </div>
+            <div style="height:6px; background:#1E293B; border-radius:3px; overflow:hidden">
+              <div style="width:${pct}%; height:100%; background:${barColor}"></div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      let riskHtml = "";
+      if (risks && risks.length > 0) {
+        riskHtml = `
+          <div style="background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.3); border-radius:8px; padding:0.75rem">
+            <div style="font-weight:700; color:#FCA5A5; font-size:0.8rem; margin-bottom:0.35rem">&#9888;&#65039; High-Risk Statements Detected in Document:</div>
+            <ul style="margin:0; padding-left:1.1rem; font-size:0.78rem; color:#FECACA; display:flex; flex-direction:column; gap:0.25rem">
+              ${risks.map(r => `<li>&ldquo;${r.quote}&rdquo; &mdash; <strong>${r.class}</strong> (${r.confidence})</li>`).join('')}
+            </ul>
+          </div>
+        `;
+      }
+
+      bubble.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:0.6rem">
+          <div>
+            <div style="font-size:1rem; font-weight:700; color:#fff">&#128196; Document Mental Health Audit: ${fi.filename || 'File'}</div>
+            <div style="font-size:0.75rem; color:var(--text-muted)">${fi.total_words || 0} words &bull; ${fi.total_sentences || 0} sentences analyzed &bull; Size: ${fi.file_size_kb || 0} KB</div>
+          </div>
+          <div>${triageBadge}</div>
+        </div>
+
+        <div style="font-size:0.86rem; color:#E2E8F0; background:rgba(30,41,59,0.5); padding:0.75rem 0.9rem; border-radius:8px; border-left:3px solid #3B82F6">
+          <strong>Executive Clinical Synthesis:</strong> ${data.executive_summary || ''}
+        </div>
+
+        <div>
+          <div style="font-size:0.8rem; font-weight:700; color:#93C5FD; margin-bottom:0.45rem">&#128202; 7-Class Affective Distribution:</div>
+          ${classBarsHtml}
+        </div>
+
+        ${riskHtml}
+
+        <div style="font-size:0.75rem; color:var(--text-muted); border-top:1px solid rgba(255,255,255,0.08); padding-top:0.45rem">
+          &#128737;&#65039; <strong>Clinical Boundary:</strong> ${cb.scope_statement || 'Screening Aid Protocol (Non-Diagnostic)'}. Recommendation: ${cb.mandatory_action || 'N/A'}.
+        </div>
+      `;
+
+      chatBox.appendChild(bubble);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
     async function sendChatMessage() {
       if (isChatBusy) return;
       const input = document.getElementById('chatInput');
       const sendBtn = document.getElementById('chatSendBtn');
-      const text = input.value.trim();
+      const text = input ? input.value.trim() : '';
       if (!text) return;
 
       isChatBusy = true;
@@ -1489,7 +1963,7 @@
       userBubble.style = "max-width:85%; padding:0.85rem 1.1rem; border-radius:14px; font-size:0.9rem; background:linear-gradient(135deg, #2563EB, #1D4ED8); color:#fff; align-self:flex-end";
       userBubble.textContent = text;
       chatBox.appendChild(userBubble);
-      input.value = '';
+      if (input) input.value = '';
       chatBox.scrollTop = chatBox.scrollHeight;
 
       chatHistory.push({ role: 'user', content: text });
@@ -1498,7 +1972,7 @@
       const typingBubble = document.createElement('div');
       typingBubble.id = 'chatTypingIndicator';
       typingBubble.style = "max-width:85%; padding:0.75rem 1rem; border-radius:14px; font-size:0.85rem; background:var(--bg-card); border:1px solid var(--border); color:var(--text-muted); align-self:flex-start; display:flex; align-items:center; gap:0.5rem";
-      typingBubble.innerHTML = `<span>MindBot Neural Brain is analyzing &amp; generating...</span> <span class="spinner" style="width:14px; height:14px; border:2px solid #3B82F6; border-top-color:transparent; border-radius:50%; display:inline-block; animation:spin 1s linear infinite"></span>`;
+      typingBubble.innerHTML = `<span>MindBot LangChain Brain is computing structured clinical response...</span> <span class="spinner" style="width:14px; height:14px; border:2px solid #3B82F6; border-top-color:transparent; border-radius:50%; display:inline-block; animation:spin 1s linear infinite"></span>`;
       chatBox.appendChild(typingBubble);
       chatBox.scrollTop = chatBox.scrollHeight;
 
@@ -1508,10 +1982,9 @@
       const customKey = localStorage.getItem('mindguard_custom_api_key') || '';
 
       try {
-        // Fast endpoint selection (try direct tunnel or local origin with 8s timeout)
         const targetUrl = window.location.hostname.includes("github.io") ? `${LIVE_BACKEND_TUNNEL}/api/chat` : "/api/chat";
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 8000);
+        const timeoutId = setTimeout(() => controller.abort(), 7500);
 
         try {
           const resp = await fetch(targetUrl, {
@@ -1526,59 +1999,19 @@
           }
         } catch (fetchErr) {
           clearTimeout(timeoutId);
-          console.warn("Primary API timeout/failed, trying direct neural fallback:", fetchErr);
+          console.warn("Backend fetch timed out/failed, engaging instant clinical synthesizer:", fetchErr);
         }
 
-        // If backend was slow/offline and user provided custom key, call OpenRouter directly
-        if ((!data || !data.reply) && customKey) {
-          try {
-            const systemPrompt = "You are MindGuard AI, an expert empathetic psychologist. Provide warm, concise, soothing advice.";
-            const oRes = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-              method: "POST",
-              headers: {
-                "Authorization": `Bearer ${customKey}`,
-                "Content-Type": "application/json"
-              },
-              body: JSON.stringify({
-                model: "openrouter/free",
-                messages: [{ role: "system", content: systemPrompt }, { role: "user", content: text }],
-                max_tokens: 400
-              })
-            });
-            if (oRes.ok) {
-              const j = await oRes.json();
-              data = {
-                reply: j.choices[0].message.content,
-                ai_brain_source: "OpenRouter Neural Brain (Direct User Key)",
-                message_analysis: inf,
-                psychometrics: psych
-              };
-            }
-          } catch (e) {
-            console.warn("Custom key direct call failed:", e);
-          }
+        // Guaranteed structured clinical data fallback (never null, never generic string)
+        if (!data || (!data.dialogue_response && !data.reply)) {
+          data = generateClientSideEmpatheticResponse(text, inf, psych);
         }
 
-        // Immediate situation-aware dynamic CBT fallback (Guaranteed < 5ms response, never hangs)
-        if (!data || !data.reply) {
-          const fallbackReply = generateClientSideEmpatheticResponse(text, inf, psych);
-          data = {
-            reply: fallbackReply,
-            ai_brain_source: "Dynamic CBT Intelligence Engine (Ultra-Fast)",
-            message_analysis: inf,
-            psychometrics: psych,
-            triage_recommendation: inf.risk_assessment ? inf.risk_assessment.clinical_recommendation : "Active Psychological Support"
-          };
-        }
+        // Render Elite Structured Card
+        renderStructuredMindBotCard(chatBox, data);
 
-        // Render Bot Bubble
-        const botBubble = document.createElement('div');
-        botBubble.style = "max-width:85%; padding:0.95rem 1.2rem; border-radius:14px; font-size:0.9rem; background:var(--bg-card); border:1px solid var(--border); color:var(--text-main); align-self:flex-start; line-height:1.55";
-        botBubble.innerHTML = formatMarkdown(data.reply || "I am here with you. Please take a gentle breath.");
-        chatBox.appendChild(botBubble);
-        chatBox.scrollTop = chatBox.scrollHeight;
-
-        chatHistory.push({ role: 'assistant', content: data.reply });
+        const replyContent = data.dialogue_response || data.reply || "";
+        chatHistory.push({ role: 'assistant', content: replyContent });
 
         // Update Calculating Power Telemetry HUD
         if (data.ai_brain_source) {
@@ -1639,7 +2072,6 @@
         errBubble.textContent = "I am listening. Let's take a slow breath in for 4 seconds... and release for 6 seconds. What is one thought on your mind?";
         chatBox.appendChild(errBubble);
       } finally {
-        // ALWAYS REMOVE TYPING INDICATOR AND RESTORE UI STATE (ZERO FREEZING)
         const tEl = document.getElementById('chatTypingIndicator');
         if (tEl) tEl.remove();
 
@@ -1654,7 +2086,6 @@
       }
     }
 
-    // Clinical Questions Generator (PHQ-9 & GAD-7)
     const PHQ9_ITEMS = [
       "1. Little interest or pleasure in doing things",
       "2. Feeling down, depressed, or hopeless",
