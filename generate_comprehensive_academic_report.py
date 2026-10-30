@@ -1562,7 +1562,7 @@ def build_academic_pdf(output_path):
         "[5] Spitzer, R. L., Kroenke, K., Williams, J. B., & Löwe, B. (2006). A brief measure for assessing generalized anxiety disorder: the GAD-7. <i>Archives of Internal Medicine</i>, 166(10), 1092–1097.",
         "[6] Loshchilov, I., & Hutter, F. (2019). Decoupled weight decay regularization. In <i>International Conference on Learning Representations (ICLR 2019)</i>.",
         "[7] World Health Organization. (2022). <i>World mental health report: Transforming mental health for all</i>. Geneva: World Health Organization.",
-        "[8] Bhatia, B., Meher, S., Phuke, A., Ingle, S., & Radke, S. (2026). Sentimental Analysis for Mental Health Detection. Minor Project Monograph, Dept. of Computer Engineering, Vishwakarma University, Pune. Mentor: Clinical NLP & Cognitive Systems Advisory Board."
+        "[8] MindGuard Clinical AI Research Consortium. (2026). Sentimental Analysis for Mental Health Detection. Minor Project Monograph, Dept. of Computer Engineering, Vishwakarma University, Pune. Mentor: Clinical NLP & Cognitive Systems Advisory Board."
     ]
     for ref in refs:
         story.append(Paragraph(ref, styles['AcademicBody']))

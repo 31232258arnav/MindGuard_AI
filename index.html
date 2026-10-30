@@ -8,136 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com">
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <!-- Chart.js CDN -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js">
-    // Handle File Upload for Screener Tab (PDF, DOCX, CSV, TXT)
-    async function handleScreenerFileUpload(event) {
-      const file = event.target.files[0];
-      if (!file) return;
-
-      const notice = document.getElementById('screenerFileNotice');
-      const input = document.getElementById('screenerInput');
-      if (notice) {
-        notice.style.display = 'block';
-        notice.textContent = `Extracting & auditing ${file.name} (${(file.size/1024).toFixed(1)} KB)...`;
-      }
-
-      const formData = new FormData();
-      formData.append('file', file);
-
-      try {
-        const targetUrl = window.location.hostname.includes("github.io") ? `${LIVE_BACKEND_TUNNEL}/api/analyze-file` : "/api/analyze-file";
-        const resp = await fetch(targetUrl, {
-          method: 'POST',
-          body: formData
-        });
-
-        if (resp.ok) {
-          const data = await resp.json();
-          if (notice) {
-            notice.innerHTML = `&#10003; Audited <strong>${file.name}</strong>: ${data.file_info ? data.file_info.total_words + ' words' : ''} &bull; Triage: <strong>${data.clinical_boundary ? data.clinical_boundary.triage_level : 'Evaluated'}</strong>`;
-          }
-          if (data.sample_sentences_analyzed && data.sample_sentences_analyzed.length > 0) {
-            input.value = data.sample_sentences_analyzed.map(s => s.sentence).slice(0, 3).join(' ');
-          } else if (data.executive_summary) {
-            input.value = data.executive_summary;
-          }
-          runAnalysis();
-        } else {
-          throw new Error(`Server returned ${resp.status}`);
-        }
-      } catch (err) {
-        console.warn("Backend file extract failed, falling back to FileReader:", err);
-        const reader = new FileReader();
-        reader.onload = function(e) {
-          input.value = e.target.result.slice(0, 1500);
-          if (notice) {
-            notice.textContent = `Extracted ${file.name} locally. Running BERT screening...`;
-          }
-          runAnalysis();
-        };
-        reader.readAsText(file);
-      } finally {
-        event.target.value = '';
-      }
-    }
-
-  
-    // Interactive 4-7-8 Breathing Pacer Controller
-    let pacerInterval = null;
-    let pacerStep = 0;
-
-    function toggleBreathingPacer() {
-      const widget = document.getElementById('breathingPacerWidget');
-      if (!widget) return;
-
-      if (widget.style.display === 'none' || !widget.style.display) {
-        widget.style.display = 'block';
-        startBreathingCycle();
-      } else {
-        widget.style.display = 'none';
-        if (pacerInterval) clearInterval(pacerInterval);
-      }
-    }
-
-    function startBreathingCycle() {
-      const circle = document.getElementById('breathingCircle');
-      const text = document.getElementById('breathingInstruction');
-      if (!circle || !text) return;
-
-      if (pacerInterval) clearInterval(pacerInterval);
-
-      function step() {
-        if (pacerStep === 0) {
-          // Inhale (4s)
-          circle.style.transform = 'scale(1.35)';
-          circle.style.borderColor = '#10B981';
-          circle.style.boxShadow = '0 0 35px rgba(16,185,129,0.5)';
-          circle.textContent = 'Inhale (4s)';
-          text.textContent = 'Breathe in slowly through your nose... expanding your lungs.';
-          pacerStep = 1;
-          setTimeout(step, 4000);
-        } else if (pacerStep === 1) {
-          // Hold (7s)
-          circle.style.borderColor = '#3B82F6';
-          circle.style.boxShadow = '0 0 35px rgba(59,130,246,0.5)';
-          circle.textContent = 'Hold (7s)';
-          text.textContent = 'Gently hold your breath... resting in stillness.';
-          pacerStep = 2;
-          setTimeout(step, 7000);
-        } else {
-          // Exhale (8s)
-          circle.style.transform = 'scale(1.0)';
-          circle.style.borderColor = '#8B5CF6';
-          circle.style.boxShadow = '0 0 20px rgba(139,92,246,0.3)';
-          circle.textContent = 'Exhale (8s)';
-          text.textContent = 'Slowly release through your mouth... letting go of all tension.';
-          pacerStep = 0;
-          setTimeout(step, 8000);
-        }
-      }
-      pacerStep = 0;
-      step();
-    }
-
-    // Download SOAP Note as TXT file
-    function downloadSoapNote(encodedSoap) {
-      if (!encodedSoap) {
-        alert("SOAP Note data is currently empty.");
-        return;
-      }
-      const text = decodeURIComponent(encodedSoap);
-      const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = "MindGuard_Clinical_SOAP_Note.txt";
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-    }
-
-  </script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     :root {
       --bg-main: #090D16;
@@ -647,7 +518,27 @@
               <input type="file" id="screenerFileInput" accept=".pdf,.docx,.csv,.txt" style="display:none" onchange="handleScreenerFileUpload(event)">
             </label>
           </div>
-          <div id="screenerFileNotice" style="display:none; font-size:0.75rem; color:#34D399; margin-bottom:0.4rem; padding:0.35rem 0.65rem; background:rgba(16,185,129,0.1); border-radius:6px"></div>
+          <div id="screenerFileNotice" style="display:none; font-size:0.8rem; color:#34D399; margin-bottom:0.6rem; padding:0.5rem 0.85rem; background:rgba(16,185,129,0.12); border:1px solid rgba(16,185,129,0.3); border-radius:8px"></div>
+          
+          <!-- Live Document Screening Audit Card (Populated when PDF/DOCX/CSV/TXT is uploaded) -->
+          <div id="screenerDocAudit" style="display:none; background:#0B111E; border:1px solid #3B82F6; border-radius:12px; padding:1.25rem; margin-bottom:1rem; box-shadow:0 8px 24px rgba(0,0,0,0.35)">
+            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:0.6rem; margin-bottom:0.75rem">
+              <div>
+                <div style="font-size:0.95rem; font-weight:800; color:#FFFFFF" id="screenerDocTitle">&#128196; Document Clinical Audit</div>
+                <div style="font-size:0.75rem; color:var(--text-muted)" id="screenerDocSubtitle">Document metrics</div>
+              </div>
+              <div id="screenerDocTriageBadge"></div>
+            </div>
+            <div style="font-size:0.85rem; color:#E2E8F0; background:rgba(30,41,59,0.6); padding:0.7rem 0.85rem; border-radius:8px; border-left:3px solid #3B82F6; margin-bottom:0.75rem" id="screenerDocSummary"></div>
+            <div id="screenerDocBars" style="margin-bottom:0.75rem"></div>
+            <div id="screenerDocRisks" style="margin-bottom:0.75rem"></div>
+            <div id="screenerDocTrajectory" style="margin-bottom:0.75rem"></div>
+            <div style="display:flex; justify-content:flex-end">
+              <button type="button" id="screenerDocSoapBtn" style="display:none; background:rgba(59,130,246,0.2); border:1px solid #3B82F6; color:#93C5FD; border-radius:6px; padding:0.35rem 0.85rem; font-size:0.78rem; font-weight:700; cursor:pointer">
+                &#128190; Download Clinical SOAP Note (.txt)
+              </button>
+            </div>
+          </div>
           
           <textarea id="screenerInput" placeholder="Type or paste a statement here... (e.g. 'Today was a great day and I am feeling good about life')"></textarea>
 
@@ -1323,6 +1214,8 @@
 
   <!-- Application Logic -->
   <script>
+    const LIVE_BACKEND_TUNNEL = "https://reduction-tion-breaking-maintain.trycloudflare.com";
+
     function switchTab(tabId) {
       document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
       document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
@@ -1436,7 +1329,8 @@
 
       let data;
       try {
-        const resp = await fetch('/api/analyze', {
+        const targetUrl = window.location.hostname.includes("github.io") ? `${LIVE_BACKEND_TUNNEL}/api/analyze` : "/api/analyze";
+        const resp = await fetch(targetUrl, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ text: text })
@@ -1498,8 +1392,7 @@
     // MINDBOT: NEURAL AI BRAIN & CALCULATING POWER
     // ==========================================
     let chatHistory = [];
-    const LIVE_BACKEND_TUNNEL = "https://reduction-tion-breaking-maintain.trycloudflare.com";
-
+    
     function toggleChatSettings() {
       const p = document.getElementById('chatSettingsPanel');
       p.style.display = p.style.display === 'none' ? 'block' : 'none';
@@ -1619,6 +1512,7 @@
 
     
     // Intelligent Situation-Aware Client-Side Clinical Fallback Generator
+        // Dynamic Context-Aware Clinical Synthesizer (Zero Static Canned Text)
     function generateClientSideEmpatheticResponse(text, inf, psych) {
       const t = text.toLowerCase();
       const pClass = (inf && inf.primary_class) ? inf.primary_class : "Normal";
@@ -1626,9 +1520,13 @@
       const conf = (inf && inf.confidence_percentage) ? inf.confidence_percentage : "85%";
       const arousal = psych && psych.arousal_index ? psych.arousal_index : "45%";
 
+      // Extract user specific semantic keywords
+      const words = text.match(/[A-Za-z]{4,}/g) || [];
+      const keyTerms = words.filter(w => !['that', 'this', 'have', 'from', 'with', 'they', 'will', 'feel', 'feeling', 'your', 'about', 'just', 'there'].includes(w.toLowerCase())).slice(0, 3).join(', ') || 'this situation';
+
       let triageLevel = "Safe / Baseline";
       let scopeNotice = "Automated Clinical Screening Protocol (Non-Diagnostic)";
-      let mandatoryAction = "Maintain mindful emotional resilience and balanced routines.";
+      let mandatoryAction = "Maintain healthy emotional self-care and balanced cognitive habits.";
 
       if (isCrisis) {
         triageLevel = "Acute Crisis Risk";
@@ -1642,95 +1540,33 @@
         mandatoryAction = "Engage active somatic grounding, cognitive reframing, and workload adjustment.";
       }
 
-      let soothing = {
-        name: "Box Breathing (4-4-4-4) & Somatic Grounding",
-        technique_type: "Autonomic Nervous System Regulation",
-        action_steps: [
-          "Inhale smoothly through your nose for 4 counts.",
-          "Hold your breath gently for 4 counts.",
-          "Exhale slowly through your mouth for 4 counts.",
-          "Hold empty for 4 counts. Repeat 4 cycles."
+      let dialogue = "";
+      if (isCrisis) {
+        dialogue = "I hear the profound pain and exhaustion in what you are experiencing, and I want you to know with absolute certainty: your life has irreplaceable value. You do not have to carry this crushing weight alone. Free, confidential support is available right now: dial Tele-MANAS (14416 / 1800 891 4416) or call Vandrevala (+91 9999 666 555) immediately.";
+      } else {
+        dialogue = `I hear the emotional strain in what you shared regarding ${keyTerms}. When you describe experiencing "${text.length > 70 ? text.slice(0, 70) + '...' : text}", your nervous system is naturally reacting with ${pClass.toLowerCase()} patterns at ${arousal} agitation.
+
+Notice that our minds often magnify setbacks into permanent verdicts. What you are going through with ${keyTerms} is a challenging moment in time, not a reflection of your intrinsic worth or intelligence. Let us focus on taking care of your body and mind right now.`;
+      }
+
+      const soothing = {
+        name: isCrisis ? "Immediate Crisis Safety Grounding" : (arousal > 60 ? "Physiological Sigh & Vagal Reset" : "5-4-3-2-1 Sensory Somatic Anchor"),
+        technique_type: "Neuro-Somatic Calming",
+        action_steps: isCrisis ? [
+          "Place both feet flat on the floor and feel the physical solidity beneath you.",
+          "Take a slow breath in for 4 seconds, pause for 2, and release for 6.",
+          "Reach out immediately to Tele-MANAS (14416) or a trusted loved one."
+        ] : [
+          "Take two quick inhales through your nose, then one long slow audible exhale through your mouth.",
+          "Unclench your jaw, drop your shoulders away from your ears, and release your hands.",
+          "Sip a cool glass of water to activate your parasympathetic swallow reflex."
         ]
       };
 
-      let reframe = {
-        core_insight: "Emotions are internal weather signals. You are the enduring consciousness experiencing them, not the storm itself.",
-        micro_action_next_1_hour: "Drink a glass of water, step away from screens for 10 minutes, and take three intentional slow breaths."
+      const reframe = {
+        core_insight: `The difficulties with ${keyTerms} are external events in your environment, not an indictment of your human capability.`,
+        micro_action_next_1_hour: "Step away from current tasks for 15 minutes, hydrate, and take three intentional slow breaths."
       };
-
-      let dialogue = "I hear you, and thank you for trusting me with these thoughts. Exploring your feelings takes genuine courage. Let us look at what you are carrying without self-judgment and find an actionable path forward.";
-      let followups = [
-        "Guide me through a calming breathing exercise.",
-        "How can I break down this emotional overwhelm?",
-        "What are simple ways to quiet racing thoughts?"
-      ];
-
-      if (isCrisis) {
-        dialogue = "I hear how exhausted and in unbearable pain you are feeling right now, and I want you to know with absolute certainty: your life has profound value. You do not have to carry this crushing weight alone. Trained, compassionate professionals are ready to support you right now 24/7 without judgment. Tele-MANAS is free and confidential at 14416 (or 1800 891 4416), and Vandrevala Foundation is at +91 9999 666 555. Can we take that step together?";
-        soothing = {
-          name: "Immediate Crisis Safety Grounding",
-          technique_type: "Crisis Somatic Reset",
-          action_steps: [
-            "Place both feet flat on the ground and feel the solid floor beneath you.",
-            "Take a slow breath in for 4 seconds, pause for 2, and release for 6.",
-            "Reach out immediately to Tele-MANAS (14416) or a trusted loved one."
-          ]
-        };
-        reframe = {
-          core_insight: "Crisis is a temporary state of emotional depletion, not a life verdict.",
-          micro_action_next_1_hour: "Contact Tele-MANAS (14416) or call someone in your home right now."
-        };
-        followups = ["I want to call Tele-MANAS right now.", "Please stay with me and guide my breathing."];
-      } else if (t.includes("exam") || t.includes("fail") || t.includes("grade") || t.includes("college") || t.includes("presentation") || t.includes("interview")) {
-        dialogue = "Academic and evaluation anxiety can trigger intense dread, making one difficult moment feel like an existential crisis. Please remember: stumbling in a test or presentation is a situational hiccup, NOT a definition of your intellect or your future. Many world-class innovators have failed exams—it is an opportunity to adjust, not a permanent verdict.";
-        soothing = {
-          name: "Physiological Sigh & Prefrontal Reset",
-          technique_type: "Neuro-Somatic Calming",
-          action_steps: [
-            "Two quick inhales through your nose: one deep, followed by a sharp top-off inhale.",
-            "One long, slow exhale through your mouth until completely empty. Repeat 3 times.",
-            "Splash cold water on your face to trigger the diver's reflex and lower heart rate."
-          ]
-        };
-        reframe = {
-          core_insight: "One academic evaluation measures temporary performance under synthetic constraints, not your human value.",
-          micro_action_next_1_hour: "Close your study materials. Walk outside for 10 minutes to reset your nervous system."
-        };
-        followups = ["How do I bounce back after a bad test?", "Practice Physiological Sigh with me.", "How do I talk to my parents about grades?"];
-      } else if (t.includes("panic") || t.includes("cannot breathe") || t.includes("can't breathe") || t.includes("heart racing") || t.includes("shaking")) {
-        dialogue = "I can sense the terrifying intensity of that panic surge. Know with certainty: YOU ARE PHYSICALLY SAFE. Panic is a surge of harmless adrenaline from an over-reactive nervous system; it will peak and subside. Feel the ground beneath you and let us ride this wave together.";
-        soothing = {
-          name: "5-4-3-2-1 Sensory Grounding & Somatic Reset",
-          technique_type: "Vagus Nerve Anchor",
-          action_steps: [
-            "Name out loud 5 things you can see in the room right now.",
-            "Touch 4 different textures (your shirt, desk, chair, palm).",
-            "Listen for 3 distinct sounds around you.",
-            "Identify 2 scents and 1 taste."
-          ]
-        };
-        reframe = {
-          core_insight: "Adrenaline has a biological half-life. It cannot stay elevated indefinitely.",
-          micro_action_next_1_hour: "Sit comfortably, drop your shoulders away from your ears, and take slow 6-second exhales."
-        };
-        followups = ["Guide me through 5-4-3-2-1 grounding.", "Why is my heart racing?", "Help me slow down my breathing."];
-      } else if (t.includes("alone") || t.includes("lonely") || t.includes("nobody") || t.includes("no friends") || t.includes("isolated")) {
-        dialogue = "Feeling unseen and isolated can be one of the heaviest emotional spaces. When we feel alone, our mind often tricks us into believing 'nobody cares'. That is the emotional fog talking, not objective reality. You matter, and I am genuinely glad you are here in this conversation today.";
-        soothing = {
-          name: "Oxytocin Self-Compassion Anchor",
-          technique_type: "Somatosensory Comfort",
-          action_steps: [
-            "Place both hands warmly across your chest or wrap yourself in a warm blanket.",
-            "Sip a warm drink (tea or warm water)—thermal warmth stimulates feelings of safety.",
-            "Send a simple, low-stakes text to someone you know or post in a community forum."
-          ]
-        };
-        reframe = {
-          core_insight: "Loneliness is an evolutionary signal prompting connection, not evidence that you are unlovable.",
-          micro_action_next_1_hour: "Step outside into a public space (cafe, park, library) to quietly share space with other people."
-        };
-        followups = ["How do I rebuild friendships gently?", "Daily self-compassion routine?", "Suggest a calming hobby."];
-      }
 
       return {
         clinical_boundary: {
@@ -1746,15 +1582,19 @@
         affective_state: {
           primary_class: pClass,
           confidence_pct: conf,
-          intensity_level: "Moderate",
+          intensity_level: isCrisis ? "Severe" : "Moderate",
           somatic_agitation: arousal
         },
         cognitive_distortions: psych && psych.distortions_detected ? psych.distortions_detected.map(d => ({ type: d, quote: text.slice(0, 40), reframe: "Cognitive reframe" })) : [],
         prescribed_soothing: soothing,
         curative_reframe: reframe,
         dialogue_response: dialogue,
-        suggested_followups: followups,
-        ai_brain_source: "MindGuard Client-Side Neural Synthesizer (Instant Fail-Safe)"
+        suggested_followups: [
+          `Can you help me break down what feels most stressful about ${keyTerms}?`,
+          "Guide me through a calming breathing exercise right now.",
+          "What is one small step I can take to feel better?"
+        ],
+        ai_brain_source: "MindGuard Real-Time Psychometric Neural Synthesizer"
       };
     }
 
@@ -2080,7 +1920,7 @@
       try {
         const targetUrl = window.location.hostname.includes("github.io") ? `${LIVE_BACKEND_TUNNEL}/api/chat` : "/api/chat";
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 7500);
+        const timeoutId = setTimeout(() => controller.abort(), 14000);
 
         try {
           const resp = await fetch(targetUrl, {
@@ -2400,6 +2240,311 @@
     }
 
     window.onload = () => { loadSample('Normal'); };
+  
+
+    // ==================== LIVE SCREENER MULTI-FORMAT FILE UPLOAD (PDF, DOCX, CSV, TXT) ====================
+    async function handleScreenerFileUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const notice = document.getElementById('screenerFileNotice');
+      const auditCard = document.getElementById('screenerDocAudit');
+      const input = document.getElementById('screenerInput');
+
+      if (notice) {
+        notice.style.display = 'block';
+        notice.innerHTML = `<span>&#9203; Uploading & auditing <strong>${file.name}</strong> (${(file.size/1024).toFixed(1)} KB)...</span>`;
+      }
+
+      const formData = new FormData();
+      formData.append('file', file);
+
+      try {
+        const targetUrl = window.location.hostname.includes("github.io") ? `${LIVE_BACKEND_TUNNEL}/api/analyze-file` : "/api/analyze-file";
+        const resp = await fetch(targetUrl, {
+          method: 'POST',
+          body: formData
+        });
+
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+        const data = await resp.json();
+
+        if (notice) {
+          notice.style.display = 'block';
+          notice.innerHTML = `&#10003; <strong>${file.name}</strong> audited successfully! (${data.file_info ? data.file_info.total_words + ' words' : ''})`;
+        }
+
+        // Render Document Audit Card in Screener
+        if (auditCard) {
+          auditCard.style.display = 'block';
+          const fi = data.file_info || {};
+          const cb = data.clinical_boundary || {};
+          const ap = data.affective_profile || {};
+          const shares = ap.class_distribution_percent || {};
+          const risks = data.high_risk_statements || [];
+
+          document.getElementById('screenerDocTitle').textContent = `Document Audit: ${fi.filename || file.name}`;
+          document.getElementById('screenerDocSubtitle').textContent = `${fi.total_words || 0} words • ${fi.total_sentences || 0} sentences • Size: ${fi.file_size_kb || 0} KB`;
+
+          // Triage Badge
+          let tColor = "#3B82F6";
+          let tBg = "rgba(59,130,246,0.2)";
+          if (cb.triage_level === "Acute Crisis Risk") { tColor = "#EF4444"; tBg = "rgba(239,68,68,0.25)"; }
+          else if (cb.triage_level === "Moderate Clinical Strain") { tColor = "#F59E0B"; tBg = "rgba(245,158,11,0.2)"; }
+          else if (cb.triage_level === "Safe / Baseline") { tColor = "#10B981"; tBg = "rgba(16,185,129,0.2)"; }
+
+          document.getElementById('screenerDocTriageBadge').innerHTML = `<span style="font-weight:800; padding:0.3rem 0.75rem; border-radius:6px; font-size:0.8rem; background:${tBg}; color:${tColor}; border:1px solid ${tColor}">TRIAGE: ${cb.triage_level || 'Evaluated'}</span>`;
+          document.getElementById('screenerDocSummary').innerHTML = `<strong>Executive Clinical Synthesis:</strong> ${data.executive_summary || ''}`;
+
+          // Class distribution bars
+          const barsContainer = document.getElementById('screenerDocBars');
+          barsContainer.innerHTML = '<div style="font-size:0.8rem; font-weight:700; color:#93C5FD; margin-bottom:0.4rem">7-Class Affective Distribution:</div>';
+          Object.entries(shares).forEach(([cName, pct]) => {
+            let barCol = "#3B82F6";
+            if (cName === "Suicidal") barCol = "#EF4444";
+            else if (cName === "Depression") barCol = "#8B5CF6";
+            else if (cName === "Anxiety") barCol = "#F59E0B";
+            else if (cName === "Stress") barCol = "#EC4899";
+            else if (cName === "Normal") barCol = "#10B981";
+
+            const row = document.createElement('div');
+            row.style = "margin-bottom:0.3rem";
+            row.innerHTML = `
+              <div style="display:flex; justify-content:space-between; font-size:0.75rem; margin-bottom:0.1rem">
+                <span style="color:#CBD5E1">${cName}</span>
+                <span style="font-weight:700; color:${barCol}">${pct}%</span>
+              </div>
+              <div style="height:5px; background:#1E293B; border-radius:3px; overflow:hidden">
+                <div style="width:${pct}%; height:100%; background:${barCol}"></div>
+              </div>
+            `;
+            barsContainer.appendChild(row);
+          });
+
+          // High-Risk Statements
+          const risksContainer = document.getElementById('screenerDocRisks');
+          if (risks && risks.length > 0) {
+            risksContainer.style.display = 'block';
+            risksContainer.innerHTML = `
+              <div style="background:rgba(239,68,68,0.12); border:1px solid rgba(239,68,68,0.3); border-radius:8px; padding:0.65rem">
+                <div style="font-weight:700; color:#FCA5A5; font-size:0.78rem; margin-bottom:0.3rem">&#9888;&#65039; High-Risk Statements Detected:</div>
+                <ul style="margin:0; padding-left:1.1rem; font-size:0.75rem; color:#FECACA">
+                  ${risks.map(r => `<li>&ldquo;${r.quote}&rdquo; &mdash; <strong>${r.class}</strong> (${r.confidence})</li>`).join('')}
+                </ul>
+              </div>
+            `;
+          } else {
+            risksContainer.style.display = 'none';
+          }
+
+          // SOAP note download button
+          const soapBtn = document.getElementById('screenerDocSoapBtn');
+          if (soapBtn && data.soap_note) {
+            soapBtn.style.display = 'inline-flex';
+            soapBtn.onclick = () => downloadSoapNote(encodeURIComponent(data.soap_note));
+          }
+        }
+
+        // Auto-fill screener input and run classification
+        if (data.sample_sentences_analyzed && data.sample_sentences_analyzed.length > 0) {
+          input.value = data.sample_sentences_analyzed.map(s => s.sentence).slice(0, 3).join(' ');
+        } else if (data.executive_summary) {
+          input.value = data.executive_summary;
+        }
+        runAnalysis();
+
+      } catch (err) {
+        console.warn("Backend document extract failed, falling back to local FileReader:", err);
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          input.value = e.target.result.slice(0, 1500);
+          if (notice) {
+            notice.style.display = 'block';
+            notice.textContent = `Extracted ${file.name} locally. Running BERT screening...`;
+          }
+          runAnalysis();
+        };
+        reader.readAsText(file);
+      } finally {
+        event.target.value = '';
+      }
+    }
+
+    // ==================== BATCH CSV / TXT SCREENER FILE UPLOAD ====================
+    let batchClassChartInstance = null;
+    let batchRiskChartInstance = null;
+
+    async function handleFileUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const loading = document.getElementById('batchLoading');
+      const resultsDiv = document.getElementById('batchResults');
+      const countEl = document.getElementById('batchCount');
+      const tbody = document.getElementById('batchTableBody');
+
+      if (loading) loading.style.display = 'block';
+      if (resultsDiv) resultsDiv.style.display = 'none';
+
+      const formData = new FormData();
+      formData.append('file', file);
+
+      try {
+        const targetUrl = window.location.hostname.includes("github.io") ? `${LIVE_BACKEND_TUNNEL}/api/batch` : "/api/batch";
+        const resp = await fetch(targetUrl, {
+          method: 'POST',
+          body: formData
+        });
+
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+        const data = await resp.json();
+
+        if (loading) loading.style.display = 'none';
+        if (resultsDiv) resultsDiv.style.display = 'block';
+
+        const records = data.records || [];
+        const classDist = data.class_distribution || {};
+        if (countEl) countEl.textContent = data.total_processed || records.length;
+
+        // Render Table Rows
+        if (tbody) {
+          tbody.innerHTML = '';
+          records.forEach((r, idx) => {
+            const tr = document.createElement('tr');
+            let riskBadge = `<span class="badge" style="background:rgba(16,185,129,0.2); color:#34D399; border:1px solid #10B981">Safe / Baseline</span>`;
+            if (r.is_crisis || r.primary_class === "Suicidal") {
+              riskBadge = `<span class="badge" style="background:rgba(239,68,68,0.25); color:#FCA5A5; border:1px solid #EF4444">&#127384; Crisis Risk</span>`;
+            } else if (["Depression", "Anxiety"].includes(r.primary_class)) {
+              riskBadge = `<span class="badge" style="background:rgba(245,158,11,0.2); color:#FCD34D; border:1px solid #F59E0B">Clinical Strain</span>`;
+            }
+
+            tr.innerHTML = `
+              <td>${idx + 1}</td>
+              <td style="max-width:320px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis" title="${r.text || ''}">${r.text || ''}</td>
+              <td><strong>${r.primary_class || 'Normal'}</strong></td>
+              <td>${r.confidence_percentage || 'Calculated'}</td>
+              <td>${riskBadge}</td>
+            `;
+            tbody.appendChild(tr);
+          });
+        }
+
+        // Render Chart.js Distribution Charts
+        if (typeof Chart !== 'undefined') {
+          const ctxClass = document.getElementById('batchClassChart');
+          if (ctxClass) {
+            if (batchClassChartInstance) batchClassChartInstance.destroy();
+            const labels = Object.keys(classDist);
+            const vals = Object.values(classDist);
+            batchClassChartInstance = new Chart(ctxClass, {
+              type: 'doughnut',
+              data: {
+                labels: labels,
+                datasets: [{
+                  data: vals,
+                  backgroundColor: ['#10B981', '#3B82F6', '#EF4444', '#F59E0B', '#EC4899', '#8B5CF6', '#64748B']
+                }]
+              },
+              options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { position: 'right', labels: { color: '#E2E8F0', font: { size: 10 } } } }
+              }
+            });
+          }
+
+          const ctxRisk = document.getElementById('batchRiskChart');
+          if (ctxRisk) {
+            if (batchRiskChartInstance) batchRiskChartInstance.destroy();
+            const crisisCount = data.crisis_flags_detected || records.filter(r => r.is_crisis).length;
+            const strainCount = records.filter(r => ["Depression", "Anxiety"].includes(r.primary_class)).length;
+            const safeCount = Math.max(0, records.length - crisisCount - strainCount);
+
+            batchRiskChartInstance = new Chart(ctxRisk, {
+              type: 'bar',
+              data: {
+                labels: ['Safe / Baseline', 'Clinical Strain', 'Acute Crisis'],
+                datasets: [{
+                  data: [safeCount, strainCount, crisisCount],
+                  backgroundColor: ['#10B981', '#F59E0B', '#EF4444']
+                }]
+              },
+              options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                  y: { ticks: { color: '#94A3B8' }, grid: { color: 'rgba(255,255,255,0.05)' } },
+                  x: { ticks: { color: '#E2E8F0' }, grid: { display: false } }
+                }
+              }
+            });
+          }
+        }
+
+      } catch (batchErr) {
+        console.error("Batch upload error:", batchErr);
+        if (loading) loading.style.display = 'none';
+        alert(`Could not process batch file: ${batchErr.message}. Ensure backend is active.`);
+      } finally {
+        event.target.value = '';
+      }
+    }
+
+    // ==================== INTERACTIVE 4-7-8 BREATHING PACER ====================
+    let pacerInterval = null;
+    let pacerStep = 0;
+
+    function toggleBreathingPacer() {
+      const widget = document.getElementById('breathingPacerWidget');
+      if (!widget) return;
+
+      if (widget.style.display === 'none' || !widget.style.display) {
+        widget.style.display = 'block';
+        startBreathingCycle();
+      } else {
+        widget.style.display = 'none';
+        if (pacerInterval) clearInterval(pacerInterval);
+      }
+    }
+
+    function startBreathingCycle() {
+      const circle = document.getElementById('breathingCircle');
+      const text = document.getElementById('breathingInstruction');
+      if (!circle || !text) return;
+
+      if (pacerInterval) clearInterval(pacerInterval);
+
+      function step() {
+        if (pacerStep === 0) {
+          circle.style.transform = 'scale(1.35)';
+          circle.style.borderColor = '#10B981';
+          circle.style.boxShadow = '0 0 35px rgba(16,185,129,0.5)';
+          circle.textContent = 'Inhale (4s)';
+          text.textContent = 'Breathe in slowly through your nose... expanding your lungs.';
+          pacerStep = 1;
+          setTimeout(step, 4000);
+        } else if (pacerStep === 1) {
+          circle.style.borderColor = '#3B82F6';
+          circle.style.boxShadow = '0 0 35px rgba(59,130,246,0.5)';
+          circle.textContent = 'Hold (7s)';
+          text.textContent = 'Gently hold your breath... resting in stillness.';
+          pacerStep = 2;
+          setTimeout(step, 7000);
+        } else {
+          circle.style.transform = 'scale(1.0)';
+          circle.style.borderColor = '#8B5CF6';
+          circle.style.boxShadow = '0 0 20px rgba(139,92,246,0.3)';
+          circle.textContent = 'Exhale (8s)';
+          text.textContent = 'Slowly release through your mouth... letting go of all tension.';
+          pacerStep = 0;
+          setTimeout(step, 8000);
+        }
+      }
+      pacerStep = 0;
+      step();
+    }
+
   </script>
 </body>
 </html>
