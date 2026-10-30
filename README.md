@@ -15,14 +15,14 @@ A full-scale, production-ready BERT-based text classification and early mental-h
 ## Academic Project Details
 * **Project Title:** Sentimental Analysis for Mental Health Detection (A BERT-based text classification system for early mental-health screening)
 * **Institution:** Vishwakarma University, Pune — Faculty of Science and Technology, Department of Computer Engineering
-* **Division:** Research Division | **Group Number:** 21
-* **Project Guide / Mentor:** Clinical NLP & Cognitive Systems Advisory Board
+* **Division:** B | **Group Number:** 21
+* **Project Guide / Mentor:** Professor Richa Agnihotri 
 * **Authors & Student Researchers:**
-  1. **Lead ML Engineer** (Roll No: RES-2026-02)
-  2. **Psychometric Research Specialist** (Roll No: RES-2026-03)
-  3. **Core System Architect** (Roll No: RES-2026-01)
-  4. **Backend Systems Engineer** (Roll No: RES-2026-04)
-  5. **Clinical UI Specialist** (Roll No: RES-2026-05)
+  1. **Arnav Phuke** (SRN: 31232258)
+  2. **Bhupesh Bhatia** (SRN:)
+  3. **Sushrut Ingle** (SRN:)
+  4. **Samruddhi Meher** (SRN: )
+  5. **Saket Radke** (SRN: )
 
 ---
 
