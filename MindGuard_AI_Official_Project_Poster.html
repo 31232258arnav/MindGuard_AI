@@ -10,263 +10,382 @@
     body { font-family: 'Inter', sans-serif; background-color: #090d16; color: #1e293b; }
     .mono { font-family: 'JetBrains Mono', monospace; }
     @media print {
-      @page { size: A3 landscape; margin: 10mm; }
+      @page { size: A3 landscape; margin: 8mm; }
       body { background: white !important; }
       .no-print { display: none !important; }
     }
   </style>
 </head>
-<body class="p-6 flex flex-col items-center">
-  <div class="no-print mb-4 flex gap-4">
-    <a href="MindGuard_AI_Official_Project_Poster.pdf" target="_blank" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-bold shadow-lg flex items-center gap-2 transition">
-      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-      Download Vector PDF Poster (A3 Printable)
+<body class="p-4 lg:p-6 flex flex-col items-center">
+  <div class="no-print mb-4 flex flex-wrap gap-4 justify-center">
+    <a href="MindGuard_AI_Official_Project_Poster.pdf" target="_blank" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-bold shadow-lg flex items-center gap-2 transition text-sm">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+      Download Vector PDF (A3 Printable)
     </a>
-    <button onclick="window.print()" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-white rounded-lg font-bold shadow flex items-center gap-2 transition">
-      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+    <a href="MindGuard_AI_Official_Project_Poster.png" target="_blank" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-bold shadow-lg flex items-center gap-2 transition text-sm">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+      Download 300 DPI Ultra-HD Image (PNG)
+    </a>
+    <button onclick="window.print()" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-white rounded-lg font-bold shadow flex items-center gap-2 transition text-sm">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
       Print / Save as PDF
     </button>
   </div>
 
-  <!-- POSTER CONTAINER (A3 Landscape Aspect Ratio) -->
-  <div class="w-full max-w-[1550px] bg-slate-100 rounded-2xl shadow-2xl overflow-hidden border-2 border-slate-700 flex flex-col p-6 gap-5">
+  <!-- POSTER CONTAINER (A3 Landscape Proportions) -->
+  <div class="w-full max-w-[1550px] bg-slate-100 rounded-2xl shadow-2xl overflow-hidden border-2 border-slate-700 flex flex-col p-5 gap-4">
     
     <!-- HEADER BANNER -->
-    <header class="bg-gradient-to-r from-slate-950 via-indigo-950 to-slate-900 border-2 border-blue-500 rounded-xl p-5 text-white shadow-md">
+    <header class="bg-gradient-to-r from-slate-950 via-indigo-950 to-slate-900 border-2 border-blue-500 rounded-xl p-4 text-white shadow-md">
       <div class="flex justify-between items-center text-xs tracking-wider uppercase font-bold text-blue-300 pb-2 border-b border-indigo-800">
         <span>Vishwakarma University, Pune &bull; Department of Computer Engineering &bull; A.Y. 2026-2027</span>
-        <span class="bg-blue-600/30 text-blue-200 px-3 py-1 rounded-full border border-blue-400">Division B &bull; Group 21</span>
+        <span class="bg-blue-600/30 text-blue-200 px-3 py-0.5 rounded-full border border-blue-400">Division B &bull; Group 21</span>
       </div>
-      <div class="mt-3 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+      <div class="mt-2.5 flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
         <div>
-          <h1 class="text-3xl lg:text-4xl font-extrabold tracking-tight text-white flex items-center gap-3">
+          <h1 class="text-2xl lg:text-3xl font-extrabold tracking-tight text-white flex items-center gap-3">
             <span class="text-blue-400">MindGuard AI:</span> Sentimental Analysis for Mental Health Detection
           </h1>
-          <p class="text-sm lg:text-base text-teal-300 font-medium mt-1">
-            A Deep Bidirectional Transformer (BERT) Architecture for Multi-Class Affective Classification, Token Attention Explainability & Crisis Triage
+          <p class="text-xs lg:text-sm text-teal-300 font-medium mt-0.5">
+            A Deep Bidirectional Transformer (BERT) Architecture for 7-Class Affective Classification, Explainable Attention Saliency & Crisis Triage
           </p>
         </div>
-        <div class="text-right text-xs text-slate-300 shrink-0 bg-slate-900/60 p-3 rounded-lg border border-slate-700">
-          <div class="font-bold text-white text-sm">Project Guide / Mentor</div>
-          <div class="text-blue-300 font-semibold text-sm">Professor Richa Agnihotri</div>
+        <div class="text-right text-xs text-slate-300 shrink-0 bg-slate-900/60 px-3 py-2 rounded-lg border border-slate-700">
+          <div class="font-bold text-white text-xs">Project Guide / Mentor</div>
+          <div class="text-blue-300 font-semibold text-xs">Professor Richa Agnihotri</div>
           <div>Dept. of Computer Engineering</div>
         </div>
       </div>
-      <div class="mt-4 pt-3 border-t border-indigo-900/80 flex flex-wrap justify-between items-center text-xs gap-3">
-        <div class="text-slate-200">
-          <span class="font-bold text-white uppercase text-[11px] tracking-wide mr-2 text-teal-400">Student Investigators:</span>
+      <div class="mt-2.5 pt-2 border-t border-indigo-900/80 flex flex-wrap justify-between items-center text-xs gap-2">
+        <div class="text-slate-200 text-[11px]">
+          <span class="font-bold text-teal-400 uppercase tracking-wide mr-2">Student Investigators:</span>
           1) <b>Arnav Phuke</b> &bull; 2) <b>Sushrut Ingle</b> &bull; 3) <b>Bhupesh Bhatia</b> &bull; 4) <b>Saket Radke</b> &bull; 5) <b>Samruddhi Meher</b>
         </div>
-        <div class="text-amber-300 font-bold bg-amber-950/40 px-3 py-1 rounded border border-amber-500/40">
+        <div class="text-amber-300 font-bold bg-amber-950/40 px-2.5 py-0.5 rounded border border-amber-500/40 text-[11px]">
           Official Benchmark: 83.00% Test Accuracy &bull; 0.8299 Weighted F1 (10,536 Samples)
         </div>
       </div>
     </header>
 
+    <!-- HERO KPI METRICS RIBBON (GRAPHIC) -->
+    <section class="grid grid-cols-2 md:grid-cols-6 gap-3">
+      <div class="bg-blue-50 border border-blue-300 rounded-lg p-2.5 text-center shadow-sm">
+        <div class="text-xl font-extrabold text-blue-700">83.00%</div>
+        <div class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Test Accuracy</div>
+      </div>
+      <div class="bg-indigo-50 border border-indigo-300 rounded-lg p-2.5 text-center shadow-sm">
+        <div class="text-xl font-extrabold text-indigo-700">110M</div>
+        <div class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">BERT Parameters</div>
+      </div>
+      <div class="bg-teal-50 border border-teal-300 rounded-lg p-2.5 text-center shadow-sm">
+        <div class="text-xl font-extrabold text-teal-700">52,680</div>
+        <div class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Clinical Statements</div>
+      </div>
+      <div class="bg-emerald-50 border border-emerald-300 rounded-lg p-2.5 text-center shadow-sm">
+        <div class="text-xl font-extrabold text-emerald-700">96.8%</div>
+        <div class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Top-2 Diff. Accuracy</div>
+      </div>
+      <div class="bg-amber-50 border border-amber-300 rounded-lg p-2.5 text-center shadow-sm">
+        <div class="text-xl font-extrabold text-amber-700">~142 ms</div>
+        <div class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Inference Latency</div>
+      </div>
+      <div class="bg-purple-50 border border-purple-300 rounded-lg p-2.5 text-center shadow-sm">
+        <div class="text-xl font-extrabold text-purple-700">$0.00 / mo</div>
+        <div class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Cloud Hosting Budget</div>
+      </div>
+    </section>
+
     <!-- MAIN 3-COLUMN CONTENT GRID -->
-    <main class="grid grid-cols-1 lg:grid-cols-3 gap-5 items-start">
+    <main class="grid grid-cols-1 lg:grid-cols-3 gap-4 items-start">
       
-      <!-- COLUMN 1: PROBLEM, OBJECTIVES & DATASET -->
-      <div class="flex flex-col gap-4">
+      <!-- COLUMN 1: PROBLEM, DATASET & PIPELINE -->
+      <div class="flex flex-col gap-3.5">
         
         <!-- Card 1: Problem Statement -->
         <div class="bg-white rounded-xl shadow-sm border border-slate-300 overflow-hidden">
-          <div class="bg-slate-900 text-white font-bold text-xs uppercase px-4 py-2.5 flex items-center gap-2">
-            <span class="w-2.5 h-2.5 bg-blue-500 rounded-full"></span> 1. Problem Statement & Clinical Motivation
+          <div class="bg-slate-900 text-white font-bold text-[11px] uppercase px-3.5 py-2 flex items-center gap-2">
+            <span class="w-2 h-2 bg-blue-500 rounded-full"></span> 1. Clinical Problem & Motivation
           </div>
-          <div class="p-4 text-xs leading-relaxed text-slate-700 space-y-2">
-            <p><b>Clinical Crisis:</b> Over 1 billion individuals globally suffer from psychiatric conditions (WHO). Suicide ranks as the 3rd leading cause of death among youth. Shortages of clinical psychologists, stigma, and cost prevent 75%+ from seeking care.</p>
-            <p><b>The Linguistic Challenge:</b> Early distress indicators manifest extensively within <i>informal, unstructured digital text</i> (journals, forums, chat). Conventional sentiment tools use simplistic binary labels (positive/negative), completely failing to detect complex co-morbid psychiatric states.</p>
-          </div>
-        </div>
-
-        <!-- Card 2: Objectives -->
-        <div class="bg-white rounded-xl shadow-sm border border-slate-300 overflow-hidden">
-          <div class="bg-slate-900 text-white font-bold text-xs uppercase px-4 py-2.5 flex items-center gap-2">
-            <span class="w-2.5 h-2.5 bg-teal-500 rounded-full"></span> 2. Core Research Objectives
-          </div>
-          <div class="p-4 text-xs leading-relaxed text-slate-700">
-            <ul class="list-disc pl-4 space-y-1.5">
-              <li><b>7-Class Classification:</b> Fine-tune BERT on 7 affective categories.</li>
-              <li><b>Explainable AI (XAI):</b> Extract self-attention weights for token heatmaps.</li>
-              <li><b>Clinical Batteries:</b> Digitize standardized DSM-5 PHQ-9 and GAD-7 tests.</li>
-              <li><b>MindBot Chat:</b> Empathetic screener strictly bounded to mental health.</li>
-              <li><b>Crisis Escalation:</b> Hardcoded emergency routing to Tele-MANAS (14416).</li>
-              <li><b>Zero-Cost Cloud:</b> Resilient tri-tier topology (GitHub Pages, Cloudflare, Render).</li>
-            </ul>
+          <div class="p-3 text-[11px] leading-relaxed text-slate-700 space-y-1.5">
+            <p><b>Clinical Crisis:</b> 1B+ individuals suffer from mental health disorders (WHO). Acute shortages of psychiatric professionals, stigma, and cost prevent 75%+ from seeking care. Suicide is the 3rd leading cause of death among youths aged 15–29.</p>
+            <p><b>The NLP Challenge:</b> Early psychological distress hides in <i>informal, unstructured digital language</i> (journals, messaging, social posts). Binary tools (positive/negative) fail to differentiate co-morbid affective states like clinical depression and acute suicidal ideation.</p>
           </div>
         </div>
 
-        <!-- Card 3: Dataset -->
+        <!-- Card 2: Dataset Corpus Donut Chart (Graphic) -->
         <div class="bg-white rounded-xl shadow-sm border border-slate-300 overflow-hidden">
-          <div class="bg-slate-900 text-white font-bold text-xs uppercase px-4 py-2.5 flex items-center gap-2">
-            <span class="w-2.5 h-2.5 bg-indigo-500 rounded-full"></span> 3. Dataset Corpus & Stratified Split
+          <div class="bg-slate-900 text-white font-bold text-[11px] uppercase px-3.5 py-2 flex items-center gap-2">
+            <span class="w-2 h-2 bg-teal-500 rounded-full"></span> 2. Dataset Corpus (7 Affective Classes)
           </div>
-          <div class="p-4 text-xs text-slate-700">
-            <p class="mb-2 font-medium">Standardized corpus of <b>52,680 text statements</b> (72% Train / 8% Val / 20% Held-Out Test):</p>
-            <table class="w-full text-left text-[11px] border border-slate-200">
-              <thead class="bg-slate-100 font-bold border-b border-slate-300">
-                <tr><th class="p-1">Affective Class</th><th class="p-1">Support</th><th class="p-1">Share</th><th class="p-1">Clinical Risk</th></tr>
-              </thead>
-              <tbody class="divide-y divide-slate-200">
-                <tr><td class="p-1 font-semibold">Normal</td><td class="p-1">3,269</td><td class="p-1">31.0%</td><td class="p-1 text-emerald-700">Safe Baseline</td></tr>
-                <tr><td class="p-1 font-semibold">Depression</td><td class="p-1">3,081</td><td class="p-1">29.2%</td><td class="p-1 text-amber-700">Clinical Strain</td></tr>
-                <tr class="bg-red-50"><td class="p-1 font-bold text-red-700">Suicidal</td><td class="p-1 font-bold text-red-700">2,130</td><td class="p-1 font-bold text-red-700">20.2%</td><td class="p-1 font-bold text-red-700">CRITICAL EMERGENCY</td></tr>
-                <tr><td class="p-1 font-semibold">Anxiety</td><td class="p-1">768</td><td class="p-1">7.3%</td><td class="p-1 text-amber-600">Distress Monitor</td></tr>
-                <tr><td class="p-1 font-semibold">Bipolar</td><td class="p-1">555</td><td class="p-1">5.3%</td><td class="p-1">Clinical Strain</td></tr>
-                <tr><td class="p-1 font-semibold">Stress</td><td class="p-1">518</td><td class="p-1">4.9%</td><td class="p-1">Situational Strain</td></tr>
-                <tr><td class="p-1 font-semibold">Personality</td><td class="p-1">215</td><td class="p-1">2.0%</td><td class="p-1">Regulation Needed</td></tr>
-              </tbody>
-            </table>
+          <div class="p-3 text-[11px] text-slate-700">
+            <p class="font-medium mb-2">Trained on <b>52,680 statements</b> with stratified 72% Train, 8% Val, and 20% Held-Out Test:</p>
+            
+            <!-- Graphic Donut Bar representation -->
+            <div class="space-y-1.5">
+              <div>
+                <div class="flex justify-between text-[10px] font-semibold text-slate-700 mb-0.5">
+                  <span>Normal (Safe Baseline)</span><span>3,269 (31.0%)</span>
+                </div>
+                <div class="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+                  <div class="bg-emerald-500 h-full rounded-full" style="width: 31%"></div>
+                </div>
+              </div>
+              <div>
+                <div class="flex justify-between text-[10px] font-semibold text-slate-700 mb-0.5">
+                  <span>Depression (Elevated Strain)</span><span>3,081 (29.2%)</span>
+                </div>
+                <div class="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+                  <div class="bg-blue-600 h-full rounded-full" style="width: 29.2%"></div>
+                </div>
+              </div>
+              <div>
+                <div class="flex justify-between text-[10px] font-bold text-red-700 mb-0.5">
+                  <span>Suicidal (CRITICAL EMERGENCY)</span><span>2,130 (20.2%)</span>
+                </div>
+                <div class="w-full bg-red-100 h-2 rounded-full overflow-hidden">
+                  <div class="bg-red-600 h-full rounded-full" style="width: 20.2%"></div>
+                </div>
+              </div>
+              <div>
+                <div class="flex justify-between text-[10px] font-semibold text-slate-700 mb-0.5">
+                  <span>Anxiety (Distress Monitoring)</span><span>768 (7.3%)</span>
+                </div>
+                <div class="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+                  <div class="bg-cyan-500 h-full rounded-full" style="width: 7.3%"></div>
+                </div>
+              </div>
+              <div>
+                <div class="flex justify-between text-[10px] font-semibold text-slate-700 mb-0.5">
+                  <span>Bipolar (Mood Oscillations)</span><span>555 (5.3%)</span>
+                </div>
+                <div class="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+                  <div class="bg-purple-500 h-full rounded-full" style="width: 5.3%"></div>
+                </div>
+              </div>
+              <div>
+                <div class="flex justify-between text-[10px] font-semibold text-slate-700 mb-0.5">
+                  <span>Stress (Situational Strain)</span><span>518 (4.9%)</span>
+                </div>
+                <div class="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+                  <div class="bg-amber-500 h-full rounded-full" style="width: 4.9%"></div>
+                </div>
+              </div>
+              <div>
+                <div class="flex justify-between text-[10px] font-semibold text-slate-700 mb-0.5">
+                  <span>Personality Disorder (Regulation Needed)</span><span>215 (2.0%)</span>
+                </div>
+                <div class="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+                  <div class="bg-pink-500 h-full rounded-full" style="width: 2.0%"></div>
+                </div>
+              </div>
+            </div>
+
           </div>
         </div>
 
-        <!-- Card 4: Architecture Parameters -->
+        <!-- Card 3: Deep NLP Pipeline (Graphic Flow) -->
         <div class="bg-white rounded-xl shadow-sm border border-slate-300 overflow-hidden">
-          <div class="bg-slate-900 text-white font-bold text-xs uppercase px-4 py-2.5 flex items-center gap-2">
-            <span class="w-2.5 h-2.5 bg-blue-500 rounded-full"></span> 4. BERT Transformer Neural Backbone
+          <div class="bg-slate-900 text-white font-bold text-[11px] uppercase px-3.5 py-2 flex items-center gap-2">
+            <span class="w-2 h-2 bg-indigo-500 rounded-full"></span> 3. Deep NLP Processing Pipeline
           </div>
-          <div class="p-4 text-xs leading-relaxed text-slate-700 space-y-1.5">
-            <div>&bull; <b>Base Model:</b> <code>bert-base-uncased</code> (12 layers, 768 hidden, 12 attention heads, 110M params).</div>
-            <div>&bull; <b>Input Pipeline:</b> WordPiece tokenization (Max sequence 128 tokens) with <code>[CLS]</code> pooled output.</div>
-            <div>&bull; <b>Optimization:</b> AdamW (&epsilon; = 1e-8), lr = 2e-5 with linear decay, 7 training epochs (~16,597 gradient steps).</div>
-            <div>&bull; <b>Checkpoint:</b> Best validation accuracy at <b>Epoch 5 (82.80%)</b> to prevent overfitting.</div>
+          <div class="p-3 text-[11px] text-slate-700">
+            <p class="mb-2"><b>BERT-base-uncased</b> (12 layers, 768 hidden, 12 attention heads, 110M params). Optimized via AdamW across 7 epochs; best checkpoint selected at <b>Epoch 5</b>.</p>
+            
+            <!-- Graphic Step Pipeline -->
+            <div class="grid grid-cols-5 gap-1.5 text-center mt-2">
+              <div class="bg-blue-600 text-white p-1.5 rounded-lg text-[9px] font-bold">
+                Raw Input
+                <div class="text-[7.5px] font-normal text-blue-100 mt-0.5">Journals / Chat</div>
+              </div>
+              <div class="bg-cyan-600 text-white p-1.5 rounded-lg text-[9px] font-bold">
+                WordPiece
+                <div class="text-[7.5px] font-normal text-cyan-100 mt-0.5">Max 128 Tokens</div>
+              </div>
+              <div class="bg-indigo-600 text-white p-1.5 rounded-lg text-[9px] font-bold">
+                BERT-base
+                <div class="text-[7.5px] font-normal text-indigo-100 mt-0.5">12 Layers (110M)</div>
+              </div>
+              <div class="bg-purple-600 text-white p-1.5 rounded-lg text-[9px] font-bold">
+                Attention
+                <div class="text-[7.5px] font-normal text-purple-100 mt-0.5">Token Saliency</div>
+              </div>
+              <div class="bg-red-600 text-white p-1.5 rounded-lg text-[9px] font-bold">
+                Softmax
+                <div class="text-[7.5px] font-normal text-red-100 mt-0.5">7 Classes / Triage</div>
+              </div>
+            </div>
+
           </div>
         </div>
 
       </div>
 
-      <!-- COLUMN 2: SYSTEM ARCHITECTURE & CLINICAL SAFETY -->
-      <div class="flex flex-col gap-4">
+      <!-- COLUMN 2: ARCHITECTURE & SAFETY -->
+      <div class="flex flex-col gap-3.5">
         
-        <!-- Card 5: System Topology Diagram -->
+        <!-- Card 4: Architecture Topology -->
         <div class="bg-white rounded-xl shadow-sm border border-slate-300 overflow-hidden">
-          <div class="bg-slate-900 text-white font-bold text-xs uppercase px-4 py-2.5 flex items-center gap-2">
-            <span class="w-2.5 h-2.5 bg-blue-500 rounded-full"></span> 5. Distributed System Architecture
+          <div class="bg-slate-900 text-white font-bold text-[11px] uppercase px-3.5 py-2 flex items-center gap-2">
+            <span class="w-2 h-2 bg-blue-500 rounded-full"></span> 4. Tri-Tier Distributed Topology ($0 Cost)
           </div>
-          <div class="p-3 bg-slate-950 text-slate-200 mono text-[10px] leading-tight rounded-b-xl overflow-x-auto">
-+-------------------------------------------------------------------+
-|               1. CLIENT TIER (SPA on GitHub Pages)                |
-|  - HTML5 / Tailwind CSS / Vanilla JS / Web Speech API (STT & TTS) |
-|  - Token Saliency Canvas &bull; PHQ-9 &bull; GAD-7 &bull; Automated SOAP Exporter |
-|  - Client-Side Fallback Engine (Zero-dependency embedded JS)      |
-+-------------------------------------------------------------------+
-                   │                              │ (Offline)
-                   ▼ (HTTPS / TLS 1.3)            ▼
-+------------------------------------+ +----------------------------+
-|   2. EDGE & TUNNEL GATEWAY TIER    | |   CLIENT HEURISTIC ENGINE  |
-|  - Cloudflare Secure Edge Tunnel   | |   - Zero-latency fallback  |
-|  - Dynamic endpoint autodiscovery  | |   - Operates offline       |
-+------------------------------------+ +----------------------------+
-                   │
-                   ▼ (FastAPI ASGI)
-+-------------------------------------------------------------------+
-|             3. ASYNCHRONOUS APPLICATION TIER (Uvicorn)            |
-|  - Endpoints: /api/analyze &bull; /api/chat &bull; /api/batch &bull; /api/benchmarks |
-|  - Document Parser: Multi-format PDF, DOCX, CSV, TXT processor    |
-+-------------------------------------------------------------------+
-                   │                              │
-         ┌─────────┴─────────┐                    │
-         ▼                   ▼                    ▼
-+-----------------+ +-----------------+ +---------------------------+
-| 4. BERT ENCODER | | 5. GEMINI LLM   | | 6. CLINICAL SAFETY CORE   |
-| - PyTorch GPU   | | - Empathetic    | | - Tele-MANAS (14416)      |
-| - 7-Class Head  | |   MindBot Brain | | - Suicide Crisis Triage   |
-| - Attention Map | | - Coping Guide  | | - Automated SOAP Notes    |
-+-----------------+ +-----------------+ +---------------------------+
+          <div class="p-3 text-[11px] leading-relaxed text-slate-700 space-y-1.5">
+            <div>&bull; <b>Tier 1 (Web Edge):</b> Single Page App hosted on <b>GitHub Pages</b> (100% uptime, global CDN, 0ms cold start).</div>
+            <div>&bull; <b>Tier 2 (GPU Tunnel):</b> Encrypted <b>Cloudflare edge tunnel</b> bridges local high-power GPU PyTorch inference directly to the web.</div>
+            <div>&bull; <b>Tier 3 (Cloud Fallback):</b> Containerized FastAPI ASGI backend on <b>Render</b> and serverless edge on <b>Vercel</b>.</div>
+            <div>&bull; <b>Tier 4 (Offline Engine):</b> Embedded client-side JS classifier provides instant local fallback if all network drops.</div>
           </div>
         </div>
 
-        <!-- Card 6: Psychometrics -->
+        <!-- Card 5: Psychometrics -->
         <div class="bg-white rounded-xl shadow-sm border border-slate-300 overflow-hidden">
-          <div class="bg-slate-900 text-white font-bold text-xs uppercase px-4 py-2.5 flex items-center gap-2">
-            <span class="w-2.5 h-2.5 bg-teal-500 rounded-full"></span> 6. Validated Psychometrics (PHQ-9 & GAD-7)
+          <div class="bg-slate-900 text-white font-bold text-[11px] uppercase px-3.5 py-2 flex items-center gap-2">
+            <span class="w-2 h-2 bg-teal-500 rounded-full"></span> 5. Clinical Psychometrics (PHQ-9 & GAD-7)
           </div>
-          <div class="p-4 text-xs leading-relaxed text-slate-700 space-y-2">
-            <div><b>PHQ-9 (Patient Health Questionnaire-9):</b> Standardized depression severity scoring (0–27). Evaluates anhedonia, fatigue, sleep disruption, appetite, and suicidal ideation under DSM-5 criteria.</div>
-            <div><b>GAD-7 (Generalized Anxiety Disorder-7):</b> Standardized anxiety assessment (0–21). Quantifies autonomic nervousness, catastrophic worry, and panic triggers.</div>
-            <div class="bg-teal-50 p-2.5 rounded border border-teal-200 text-teal-800 font-medium">
-              Automated DSM-5 stratification delivers instant severity category assignment (Minimal, Mild, Moderate, Severe) with actionable clinical coping recommendations.
+          <div class="p-3 text-[11px] leading-relaxed text-slate-700 space-y-2">
+            <div><b>PHQ-9 (Depression: 0–27):</b> Evaluates anhedonia, fatigue, sleep disruption, appetite, and suicidal ideation under DSM-5 criteria.</div>
+            <div><b>GAD-7 (Anxiety: 0–21):</b> Quantifies autonomic nervousness, panic triggers, and catastrophic worry.</div>
+            <div class="bg-teal-50 p-2 rounded border border-teal-200 text-teal-800 font-semibold text-[10.5px]">
+              Automated DSM-5 stratification delivers instant severity scoring (Minimal, Mild, Moderate, Severe) and exports clinical SOAP notes.
             </div>
           </div>
         </div>
 
-        <!-- Card 7: MindBot & Crisis Triage -->
-        <div class="bg-white rounded-xl shadow-sm border-2 border-red-400 overflow-hidden">
-          <div class="bg-red-700 text-white font-bold text-xs uppercase px-4 py-2.5 flex items-center gap-2">
-            <span class="w-2.5 h-2.5 bg-white rounded-full animate-ping"></span> 7. MindBot Neural Chat & Crisis Helpline Triage
+        <!-- Card 6: MindBot & Crisis Escalation (Graphic Red Alert) -->
+        <div class="bg-white rounded-xl shadow-sm border-2 border-red-500 overflow-hidden">
+          <div class="bg-red-700 text-white font-bold text-[11px] uppercase px-3.5 py-2 flex items-center gap-2">
+            <span class="w-2 h-2 bg-white rounded-full animate-ping"></span> 6. MindBot Chat & Crisis Helpline Triage
           </div>
-          <div class="p-4 text-xs leading-relaxed text-slate-700 space-y-2">
+          <div class="p-3 text-[11px] leading-relaxed text-slate-700 space-y-2">
             <div><b>Empathetic Brain:</b> Powered by Gemini 2.5 Flash / Claude 3.5 Sonnet. Strictly bounded to mental health dialogue with evidence-based soothing (4-7-8 breathing, 5-4-3-2-1 sensory grounding).</div>
-            <div class="bg-red-50 p-2.5 rounded border border-red-300">
-              <div class="font-bold text-red-800 text-[11px] mb-1 uppercase tracking-wide">Emergency Crisis Escalation Protocol:</div>
-              <p class="text-red-900 mb-2">Suicidal markers trigger instant regex-level hard overrides, flashing high-visibility national distress helplines:</p>
-              <ul class="text-[11px] space-y-1 font-semibold text-slate-800">
-                <li>&bull; <b class="text-red-700">Tele-MANAS:</b> <code>14416</code> / <code>1800-891-4416</code> (24/7 National Helpline)</li>
-                <li>&bull; <b class="text-red-700">KIRAN:</b> <code>1800-599-0019</code> (Ministry of Social Justice)</li>
-                <li>&bull; <b class="text-red-700">Vandrevala Foundation:</b> <code>+91 9999 666 555</code> (24/7 Triage)</li>
-              </ul>
+            
+            <!-- Graphic Emergency Badges -->
+            <div class="bg-red-50 p-2.5 rounded-lg border border-red-300 space-y-1.5">
+              <div class="font-bold text-red-900 text-[10px] uppercase tracking-wider flex items-center gap-1.5">
+                <span class="w-2 h-2 bg-red-600 rounded-full"></span> Hardcoded Suicide Crisis Override:
+              </div>
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-1.5 text-center text-[9.5px]">
+                <div class="bg-white p-1.5 rounded border border-red-200 shadow-xs">
+                  <div class="font-bold text-red-700 text-xs">14416</div>
+                  <div class="text-slate-600 font-semibold text-[8px]">Tele-MANAS (Govt of India)</div>
+                </div>
+                <div class="bg-white p-1.5 rounded border border-red-200 shadow-xs">
+                  <div class="font-bold text-red-700 text-xs">1800-599-0019</div>
+                  <div class="text-slate-600 font-semibold text-[8px]">KIRAN Mental Health</div>
+                </div>
+                <div class="bg-white p-1.5 rounded border border-red-200 shadow-xs">
+                  <div class="font-bold text-red-700 text-xs">+91 9999 666 555</div>
+                  <div class="text-slate-600 font-semibold text-[8px]">Vandrevala Foundation</div>
+                </div>
+              </div>
             </div>
+
           </div>
         </div>
 
       </div>
 
-      <!-- COLUMN 3: BENCHMARKS, CLOUD SELECTION & CONCLUSION -->
-      <div class="flex flex-col gap-4">
+      <!-- COLUMN 3: BENCHMARKS & VISUAL IMPACT -->
+      <div class="flex flex-col gap-3.5">
         
-        <!-- Card 8: Official Benchmark Results -->
+        <!-- Card 7: Model Benchmarks (Graphic Bar Breakdown) -->
         <div class="bg-white rounded-xl shadow-sm border border-slate-300 overflow-hidden">
-          <div class="bg-slate-900 text-white font-bold text-xs uppercase px-4 py-2.5 flex items-center gap-2">
-            <span class="w-2.5 h-2.5 bg-blue-500 rounded-full"></span> 8. Official Benchmark Results (10,536 Test Set)
+          <div class="bg-slate-900 text-white font-bold text-[11px] uppercase px-3.5 py-2 flex items-center gap-2">
+            <span class="w-2 h-2 bg-blue-500 rounded-full"></span> 7. Official Model Benchmarks (10,536 Samples)
           </div>
-          <div class="p-4 text-xs text-slate-700">
-            <table class="w-full text-left text-[11px] border border-slate-200">
-              <thead class="bg-slate-900 text-white font-bold">
-                <tr><th class="p-1">Class</th><th class="p-1">Precision</th><th class="p-1">Recall</th><th class="p-1">F1-Score</th><th class="p-1">Support</th></tr>
-              </thead>
-              <tbody class="divide-y divide-slate-200">
-                <tr><td class="p-1 font-semibold">Normal</td><td class="p-1">0.9576</td><td class="p-1">0.9523</td><td class="p-1 font-bold">0.9549</td><td class="p-1">3,269</td></tr>
-                <tr><td class="p-1 font-semibold">Anxiety</td><td class="p-1">0.8753</td><td class="p-1">0.8958</td><td class="p-1 font-bold">0.8855</td><td class="p-1">768</td></tr>
-                <tr><td class="p-1 font-semibold">Bipolar</td><td class="p-1">0.8330</td><td class="p-1">0.8721</td><td class="p-1 font-bold">0.8521</td><td class="p-1">555</td></tr>
-                <tr><td class="p-1 font-semibold">Depression</td><td class="p-1">0.7712</td><td class="p-1">0.7790</td><td class="p-1 font-bold">0.7751</td><td class="p-1">3,081</td></tr>
-                <tr><td class="p-1 font-semibold">Personality</td><td class="p-1">0.8093</td><td class="p-1">0.7302</td><td class="p-1 font-bold">0.7677</td><td class="p-1">215</td></tr>
-                <tr><td class="p-1 font-semibold">Stress</td><td class="p-1">0.7866</td><td class="p-1">0.7471</td><td class="p-1 font-bold">0.7663</td><td class="p-1">518</td></tr>
-                <tr class="bg-red-50"><td class="p-1 font-bold text-red-700">Suicidal</td><td class="p-1">0.7151</td><td class="p-1">0.7117</td><td class="p-1 font-bold text-red-700">0.7134</td><td class="p-1">2,130</td></tr>
-                <tr class="bg-blue-50 font-bold border-t-2 border-blue-400">
-                  <td class="p-1 text-blue-900">Overall Accuracy</td><td colspan="2" class="p-1 text-center">&mdash;</td><td class="p-1 text-blue-900 text-sm">83.00%</td><td class="p-1 text-blue-900">10,536</td>
-                </tr>
-                <tr class="bg-blue-50 font-bold">
-                  <td class="p-1 text-blue-900">Weighted F1</td><td class="p-1 text-blue-900">0.8301</td><td class="p-1 text-blue-900">0.8300</td><td class="p-1 text-blue-900 text-sm">0.8299</td><td class="p-1 text-blue-900">10,536</td>
-                </tr>
-              </tbody>
-            </table>
-            <div class="mt-2.5 p-2 bg-emerald-50 rounded border border-emerald-200 text-emerald-900 font-semibold text-[11px]">
-              &bull; <b>Top-2 Accuracy:</b> <b>96.8%</b> (True condition in top 2 predictions)<br/>
-              &bull; <b>High Confidence (&gt;0.85):</b> <b>98.2% Precision</b> on filtered sub-cohort
+          <div class="p-3 text-[11px] text-slate-700">
+            <p class="font-medium mb-2">Class-specific F1 performance across held-out test data:</p>
+            
+            <!-- Graphic F1 Bars -->
+            <div class="space-y-1.5">
+              <div>
+                <div class="flex justify-between text-[10px] font-semibold text-slate-700 mb-0.5">
+                  <span>Normal</span><span class="font-bold text-emerald-700">0.9549 (95.5%)</span>
+                </div>
+                <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                  <div class="bg-emerald-500 h-full rounded-full" style="width: 95.5%"></div>
+                </div>
+              </div>
+              <div>
+                <div class="flex justify-between text-[10px] font-semibold text-slate-700 mb-0.5">
+                  <span>Anxiety</span><span class="font-bold text-cyan-700">0.8855 (88.6%)</span>
+                </div>
+                <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                  <div class="bg-cyan-500 h-full rounded-full" style="width: 88.6%"></div>
+                </div>
+              </div>
+              <div>
+                <div class="flex justify-between text-[10px] font-semibold text-slate-700 mb-0.5">
+                  <span>Bipolar</span><span class="font-bold text-blue-700">0.8521 (85.2%)</span>
+                </div>
+                <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                  <div class="bg-blue-500 h-full rounded-full" style="width: 85.2%"></div>
+                </div>
+              </div>
+              <div>
+                <div class="flex justify-between text-[10px] font-semibold text-slate-700 mb-0.5">
+                  <span>Depression</span><span class="font-bold text-indigo-700">0.7751 (77.5%)</span>
+                </div>
+                <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                  <div class="bg-indigo-500 h-full rounded-full" style="width: 77.5%"></div>
+                </div>
+              </div>
+              <div>
+                <div class="flex justify-between text-[10px] font-semibold text-slate-700 mb-0.5">
+                  <span>Personality Disorder</span><span class="font-bold text-purple-700">0.7677 (76.8%)</span>
+                </div>
+                <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                  <div class="bg-purple-500 h-full rounded-full" style="width: 76.8%"></div>
+                </div>
+              </div>
+              <div>
+                <div class="flex justify-between text-[10px] font-semibold text-slate-700 mb-0.5">
+                  <span>Stress</span><span class="font-bold text-amber-700">0.7663 (76.6%)</span>
+                </div>
+                <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                  <div class="bg-amber-500 h-full rounded-full" style="width: 76.6%"></div>
+                </div>
+              </div>
+              <div>
+                <div class="flex justify-between text-[10px] font-bold text-red-700 mb-0.5">
+                  <span>Suicidal Ideation</span><span class="font-bold text-red-700">0.7134 (71.3%)</span>
+                </div>
+                <div class="w-full bg-red-100 h-2 rounded-full overflow-hidden">
+                  <div class="bg-red-500 h-full rounded-full" style="width: 71.3%"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="mt-2.5 p-2 bg-blue-50 rounded border border-blue-200 text-blue-900 font-semibold text-[10px]">
+              &bull; <b>Top-2 Accuracy:</b> <b>96.8%</b> &bull; <b>High Confidence (&gt;0.85):</b> <b>98.2% Precision</b>
             </div>
           </div>
         </div>
 
-        <!-- Card 9: Explainability & Cloud Strategy -->
+        <!-- Card 8: Explainable AI Token Heatmaps -->
         <div class="bg-white rounded-xl shadow-sm border border-slate-300 overflow-hidden">
-          <div class="bg-slate-900 text-white font-bold text-xs uppercase px-4 py-2.5 flex items-center gap-2">
-            <span class="w-2.5 h-2.5 bg-amber-500 rounded-full"></span> 9. Explainable AI & Zero-Cost Cloud Strategy
+          <div class="bg-slate-900 text-white font-bold text-[11px] uppercase px-3.5 py-2 flex items-center gap-2">
+            <span class="w-2 h-2 bg-amber-500 rounded-full"></span> 8. Explainable AI (XAI) Token Heatmaps
           </div>
-          <div class="p-4 text-xs leading-relaxed text-slate-700 space-y-2">
-            <div><b>Token Attention Saliency (XAI):</b> Softmax attention weights from BERT's 12th layer are projected onto UI tokens. Clinicians can audit exactly which words drove affective predictions.</div>
-            <div><b>$0 Infrastructure Architecture:</b> Combines GitHub Pages (static edge CDN), Cloudflare Tunnels (local GPU bridge), Render/Vercel (cloud backups), and embedded JS heuristics for 99.99% availability at <b>$0.00/month</b>.</div>
+          <div class="p-3 text-[11px] leading-relaxed text-slate-700 space-y-1.5">
+            <p>Attention weights from BERT's 12th layer are extracted and projected onto words. Clinicians can visually inspect exactly which words drove affective predictions:</p>
+            <div class="bg-slate-50 p-2 rounded border border-slate-200 mono text-[9.5px] text-center">
+              <span class="bg-red-100 text-red-800 px-1 py-0.5 rounded font-bold">unbearable: 0.94</span> &bull; 
+              <span class="bg-red-100 text-red-800 px-1 py-0.5 rounded font-bold">exhausted: 0.88</span> &bull; 
+              <span class="text-slate-600">studying: 0.12</span> &bull; 
+              <span class="bg-emerald-100 text-emerald-800 px-1 py-0.5 rounded font-bold">calm: -0.76</span> &bull; 
+              <span class="bg-emerald-100 text-emerald-800 px-1 py-0.5 rounded font-bold">hopeful: -0.89</span>
+            </div>
           </div>
         </div>
 
-        <!-- Card 10: Conclusion & Impact -->
+        <!-- Card 9: Conclusion -->
         <div class="bg-white rounded-xl shadow-sm border-2 border-emerald-500 overflow-hidden">
-          <div class="bg-emerald-700 text-white font-bold text-xs uppercase px-4 py-2.5 flex items-center gap-2">
-            <span class="w-2.5 h-2.5 bg-white rounded-full"></span> 10. Societal Impact & Conclusion
+          <div class="bg-emerald-700 text-white font-bold text-[11px] uppercase px-3.5 py-2 flex items-center gap-2">
+            <span class="w-2 h-2 bg-white rounded-full"></span> 9. Societal Impact & Conclusion
           </div>
-          <div class="p-4 text-xs leading-relaxed text-slate-700 space-y-2">
+          <div class="p-3 text-[11px] leading-relaxed text-slate-700 space-y-1">
             <p><b>Impact:</b> MindGuard AI democratizes early psychological screening. By providing confidential, non-stigmatizing, 24/7 automated assessments coupled with instant crisis escalation, the system prevents harm and bridges the gap before clinical psychiatric intervention.</p>
-            <p class="font-semibold text-slate-900">Successfully validated and approved under the guidance of Professor Richa Agnihotri at Vishwakarma University, Pune.</p>
+            <p class="font-bold text-slate-900 text-[10.5px]">Approved under the guidance of Professor Richa Agnihotri at Vishwakarma University, Pune.</p>
           </div>
         </div>
 
@@ -275,11 +394,11 @@
     </main>
 
     <!-- FOOTER BANNER -->
-    <footer class="bg-slate-950 border border-slate-700 rounded-xl px-5 py-3 text-white flex flex-col md:flex-row justify-between items-center text-xs gap-3">
+    <footer class="bg-slate-950 border border-slate-700 rounded-xl px-4 py-2.5 text-white flex flex-col md:flex-row justify-between items-center text-[11px] gap-2">
       <div class="text-slate-300">
         MindGuard AI &bull; Clinical Decision-Support Research Prototype &bull; Vishwakarma University, Pune (A.Y. 2026-2027)
       </div>
-      <div class="text-yellow-400 font-bold bg-yellow-950/40 px-3 py-1 rounded border border-yellow-500/30">
+      <div class="text-yellow-400 font-bold bg-yellow-950/40 px-3 py-0.5 rounded border border-yellow-500/30">
         National Distress Helplines: Tele-MANAS (14416 / 1800-891-4416) &bull; KIRAN (1800-599-0019) &bull; Active 24/7/365
       </div>
     </footer>
