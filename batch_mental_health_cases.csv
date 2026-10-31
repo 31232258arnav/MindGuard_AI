@@ -1,0 +1,16 @@
+case_id,subject_text,expected_category,clinical_urgency,target_module
+1,"Passed all my end-semester engineering examinations with distinction! Feeling joyful and celebrating with friends.",Normal,NORMAL / SAFE,Live Screener & Batch
+2,"My chest is constricting, my heart is beating out of my chest, and I feel terrified that something terrible is happening right now.",Anxiety,ELEVATED DISTRESS,Live Screener & Batch
+3,"I have been lying in the dark for three days feeling like an empty shell, unable to eat, shower, or find any reason to care.",Depression,MODERATE CLINICAL STRAIN,Live Screener & Batch
+4,"I cannot take this unbearable psychological pain anymore, I wrote my final farewell notes and I am ready to end it all tonight.",Suicidal,CRITICAL EMERGENCY (TRIAGE),Crisis Escalation Protocol
+5,"Balancing five simultaneous coding deadlines, part-time shifts, and continuous exams has completely drained every ounce of my energy.",Stress,MILD TO MODERATE STRAIN,Live Screener & Batch
+6,"Yesterday I had superhuman energy and cleaned my house at 4 AM coding three websites, but today I plummeted into a black abyss of sorrow.",Bipolar,ELEVATED CLINICAL STRAIN,Live Screener & Batch
+7,"I am terrified everyone secretly despises me, my intense attachment flips to burning hatred in minutes and I feel so unstable inside.",Personality disorder,ELEVATED REGULATION NEEDED,Live Screener & Batch
+8,"Just completed a peaceful 5km morning run by the river, breathing the cool morning air and feeling calm and grounded.",Normal,NORMAL / SAFE,Live Screener & Batch
+9,"What if I mess up my upcoming job interview and never get hired? My brain keeps looping the absolute worst catastrophe scenarios.",Anxiety,ELEVATED DISTRESS,Live Screener & Batch
+10,"Everything I try fails, I am an unbearable burden to my family and I just want to disappear so everyone can be peaceful.",Suicidal,CRITICAL EMERGENCY (TRIAGE),Crisis Escalation Protocol
+11,"Working 14-hour days without breaks while juggling semester exams and family medical bills is burning me out completely.",Stress,MILD TO MODERATE STRAIN,Live Screener & Batch
+12,"I feel like a ghost drifting through college halls; people talk to me but their voices sound muffled and distant.",Depression,MODERATE CLINICAL STRAIN,Live Screener & Batch
+13,"One week I feel like an invincible genius destined to change the world, and the next week I cannot even get out of bed to brush my teeth.",Bipolar,ELEVATED CLINICAL STRAIN,Live Screener & Batch
+14,"I push away the people who love me because I am terrified they will leave me first, and then I hate myself for being alone.",Personality disorder,ELEVATED REGULATION NEEDED,Live Screener & Batch
+15,"Enjoyed cooking a wholesome lunch with my roommates today and learned some new guitar chords this evening.",Normal,NORMAL / SAFE,Live Screener & Batch

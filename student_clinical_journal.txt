@@ -1,0 +1,29 @@
+[STUDENT CONFIDENTIAL CLINICAL JOURNAL]
+Patient / Student ID: VU-2026-ENG-409
+Age: 21 | Academic Program: B.Tech Computer Engineering
+Monitoring Period: October 2026 | Longitudinal Sentiment Audit
+
+--------------------------------------------------------------------------------
+Entry 1 — Monday, October 19, 2026 (08:30 PM)
+Tag: Academic Stress & Heavy Workload
+The mid-semester project deadline is approaching and our team is running into endless merge conflicts. I spent eight hours in the computer lab trying to fix the Docker deployment and PyTorch dependencies. My neck is constantly stiff, my shoulders are tense, and I feel completely overwhelmed by the amount of work remaining. I skipped lunch because I was racing to finish the documentation before the portal closes. Feeling fried and exhausted, but hoping a good night's rest helps.
+
+--------------------------------------------------------------------------------
+Entry 2 — Wednesday, October 21, 2026 (11:45 PM)
+Tag: Acute Anxiety & Panic Symptoms
+I had a terrible episode during today's technical seminar presentation. Right before stepping up to the podium, my heart began pounding uncontrollably in my chest. My hands were shaking so badly I could barely hold the clicker, and I felt this sudden, terrifying sensation of dizziness and shortness of breath like I was suffocating. I thought everyone in the auditorium was noticing how weak and terrified I looked. Even now, hours later in my room, I keep replaying the humiliating moment in my head and can't calm down.
+
+--------------------------------------------------------------------------------
+Entry 3 — Friday, October 23, 2026 (03:15 AM)
+Tag: Depressive Exhaustion & Low Valence
+Another sleepless night staring blankly at the ceiling. For the past four days, a deep emptiness has settled over me. Nothing brings any enjoyment anymore—not music, not gaming, not talking with friends. Everything feels like an insurmountable chore: getting out of bed, showering, eating breakfast. I constantly feel like a disappointment to my parents and teachers. I feel hollow, emotionally numb, and trapped inside a foggy cloud that refuses to lift.
+
+--------------------------------------------------------------------------------
+Entry 4 — Saturday, October 24, 2026 (04:00 PM)
+Tag: Emotional Support & Mild Recovery
+My roommate noticed I hadn't left the room all morning and convinced me to walk over to the campus library lawn. We sat in the warm sunlight, had some chai, and talked honestly about how stressful this semester has been. It felt comforting to realize I am not the only one struggling. I drank some cold water, practiced deep breathing, and managed to eat a proper meal. Still feeling fatigued, but the intense knot of anxiety has loosened a bit.
+
+--------------------------------------------------------------------------------
+Entry 5 — Sunday, October 25, 2026 (09:00 PM)
+Tag: Normal Stability & Balanced Mindset
+Woke up after eight full hours of uninterrupted sleep feeling refreshed and calm. I finished revising our project report ahead of time and cooked dinner with my family. Feeling optimistic and steady. I realize that bad weeks pass and that taking small daily breaks makes an enormous difference. Looking forward to presenting our project with confidence tomorrow.
